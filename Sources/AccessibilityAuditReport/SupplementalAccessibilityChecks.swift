@@ -125,6 +125,34 @@ public enum SupplementalAccessibilityChecks {
             }
     }
 
+    /// Flags a layout that stays portrait-proportioned after the device
+    /// rotates to landscape (WCAG 1.3.4 Orientation). The comparison is
+    /// inconclusive — and skipped — when either size is empty or the window
+    /// was not taller than wide before rotating.
+    public static func orientationLockIssues(
+        portraitWindowSize: CGSize,
+        landscapeWindowSize: CGSize
+    ) -> [Issue] {
+        guard portraitWindowSize.width > 0, portraitWindowSize.height > 0,
+              landscapeWindowSize.width > 0, landscapeWindowSize.height > 0,
+              portraitWindowSize.height > portraitWindowSize.width else {
+            return []
+        }
+        guard landscapeWindowSize.width <= landscapeWindowSize.height else {
+            return []
+        }
+        return [
+            Issue(
+                auditType: "Orientation",
+                compactDescription: "Layout did not respond to device rotation",
+                detailedDescription: "The root window stayed \(format(landscapeWindowSize.width))×\(format(landscapeWindowSize.height))pt (portrait-proportioned) after the device rotated to landscape, so the app or screen appears locked to a single orientation. WCAG 1.3.4 requires content to work in both portrait and landscape unless a specific orientation is essential.",
+                elementIdentifier: "No element identifier",
+                elementLabel: "No element label",
+                elementFrame: nil
+            )
+        ]
+    }
+
     /// Shortest edge-to-edge distance between two non-intersecting rects;
     /// zero when they intersect.
     private static func gap(between first: CGRect, and second: CGRect) -> CGFloat {

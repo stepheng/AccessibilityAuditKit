@@ -289,4 +289,59 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
 
         XCTAssertTrue(issues.isEmpty)
     }
+
+    // MARK: - Orientation (WCAG 1.3.4)
+
+    func testOrientationFlagsLayoutUnchangedAfterRotation() throws {
+        let issues = SupplementalAccessibilityChecks.orientationLockIssues(
+            portraitWindowSize: CGSize(width: 402, height: 874),
+            landscapeWindowSize: CGSize(width: 402, height: 874)
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Orientation")
+        XCTAssertTrue(issue.detailedDescription.contains("1.3.4"))
+        XCTAssertNil(issue.elementFrame)
+    }
+
+    func testOrientationFlagsLandscapeWindowStillTallerThanWide() {
+        // The window resized but stayed portrait-proportioned, so the layout
+        // did not adopt the landscape orientation.
+        let issues = SupplementalAccessibilityChecks.orientationLockIssues(
+            portraitWindowSize: CGSize(width: 402, height: 874),
+            landscapeWindowSize: CGSize(width: 402, height: 800)
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testOrientationPassesWhenLayoutRotates() {
+        let issues = SupplementalAccessibilityChecks.orientationLockIssues(
+            portraitWindowSize: CGSize(width: 402, height: 874),
+            landscapeWindowSize: CGSize(width: 874, height: 402)
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testOrientationSkipsWhenPortraitWindowIsNotPortrait() {
+        // If the window was not taller than wide before rotating, the
+        // comparison is inconclusive (for example iPad multitasking).
+        let issues = SupplementalAccessibilityChecks.orientationLockIssues(
+            portraitWindowSize: CGSize(width: 874, height: 402),
+            landscapeWindowSize: CGSize(width: 874, height: 402)
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testOrientationSkipsZeroSizedWindows() {
+        let issues = SupplementalAccessibilityChecks.orientationLockIssues(
+            portraitWindowSize: .zero,
+            landscapeWindowSize: .zero
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
 }

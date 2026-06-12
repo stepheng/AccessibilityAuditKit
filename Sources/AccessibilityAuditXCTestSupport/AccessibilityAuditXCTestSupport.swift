@@ -133,4 +133,46 @@ public extension XCUIApplication {
             )
         )
     }
+
+    #if os(iOS)
+    /// Rotates the device from portrait to landscape, compares the root
+    /// window's proportions before and after, and records an Orientation
+    /// issue (WCAG 1.3.4) when the layout does not respond. The device is
+    /// restored to its starting orientation afterwards.
+    @MainActor
+    func recordOrientationLockCheck(
+        _ name: String = "Orientation",
+        variant: String = "Default",
+        settleTime: TimeInterval = 1,
+        in report: inout AccessibilityAuditHTMLReport
+    ) {
+        let device = XCUIDevice.shared
+        let initialOrientation = device.orientation
+
+        device.orientation = .portrait
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: settleTime))
+        let portraitWindowSize = windows.firstMatch.frame.size
+
+        device.orientation = .landscapeLeft
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: settleTime))
+        let landscapeWindowSize = windows.firstMatch.frame.size
+        let screenshot = XCUIScreen.main.screenshot()
+
+        device.orientation = initialOrientation == .unknown ? .portrait : initialOrientation
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: settleTime))
+
+        report.record(
+            ScreenResult(
+                variant: variant,
+                name: name,
+                screenshotPNGData: screenshot.pngRepresentation,
+                screenshotSize: screenshot.image.size,
+                issues: SupplementalAccessibilityChecks.orientationLockIssues(
+                    portraitWindowSize: portraitWindowSize,
+                    landscapeWindowSize: landscapeWindowSize
+                )
+            )
+        )
+    }
+    #endif
 }

@@ -122,6 +122,16 @@ Notes:
 
 Non-XCTest callers can run the same logic directly via `SupplementalAccessibilityChecks` in `AccessibilityAuditReport` by supplying `AuditedElement` values.
 
+### Orientation Lock Check
+
+Orientation (WCAG 1.3.4) cannot be checked from a snapshot, so it is a separate one-off helper rather than a `supplementalChecks` option. It rotates the device from portrait to landscape, compares the root window's proportions before and after, restores the starting orientation, and records an `Orientation` issue when the layout does not respond:
+
+```swift
+app.recordOrientationLockCheck(in: &report)
+```
+
+Run it once per audit session (it exercises the whole app, not a single screen), and not from a screen that legitimately locks orientation — WCAG 1.3.4 exempts content where a specific orientation is essential. The comparison is skipped as inconclusive when the window is not portrait-proportioned before rotating (for example iPad multitasking). The pure decision logic is available to non-XCTest callers as `SupplementalAccessibilityChecks.orientationLockIssues(portraitWindowSize:landscapeWindowSize:)`.
+
 ## Recording Non-Audit Failures
 
 Report generation can also capture automation failures where a screen could not be audited.
