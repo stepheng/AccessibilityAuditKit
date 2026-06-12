@@ -46,7 +46,7 @@ public extension XCTestCase {
     @MainActor
     func attachAccessibilityAuditReport(
         _ report: AccessibilityAuditHTMLReport,
-        name: String = "Capsyl Accessibility Audit Report"
+        name: String = "Accessibility Audit Report"
     ) {
         let attachment = XCTAttachment(
             data: Data(report.renderHTML().utf8),
