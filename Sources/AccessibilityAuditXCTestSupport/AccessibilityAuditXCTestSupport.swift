@@ -73,6 +73,20 @@ public extension AccessibilityAuditHTMLReport {
         )
     }
 
+    /// Evaluates the Consistent Identification check (WCAG 3.2.4) over every
+    /// element inventory recorded so far and appends the result screen.
+    @MainActor
+    mutating func recordConsistentIdentificationCheck(
+        variant: String = "Default",
+        screenshot: XCUIScreenshot = XCUIScreen.main.screenshot()
+    ) {
+        recordConsistentIdentificationCheck(
+            variant: variant,
+            screenshotPNGData: screenshot.pngRepresentation,
+            screenshotSize: screenshot.image.size
+        )
+    }
+
     @MainActor
     mutating func recordNavigationFailure(
         for name: String,
@@ -119,7 +133,14 @@ public extension XCUIApplication {
         }
 
         if !supplementalChecks.isEmpty {
-            issues += SupplementalAuditScanner.issues(in: try snapshot(), checks: supplementalChecks)
+            let snapshot = try snapshot()
+            issues += SupplementalAuditScanner.issues(in: snapshot, checks: supplementalChecks)
+            if supplementalChecks.contains(.consistentIdentification) {
+                report.recordElementInventory(
+                    screenName: name,
+                    elements: SupplementalAuditScanner.interactiveElementInventory(in: snapshot)
+                )
+            }
         }
 
         let screenshot = screenshot ?? XCUIScreen.main.screenshot()

@@ -290,6 +290,434 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issues.isEmpty)
     }
 
+    // MARK: - Generic Labels (WCAG 2.4.4)
+
+    func testGenericLabelFlagsPureRoleWord() throws {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.action",
+                    label: "Button",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Generic Label")
+        XCTAssertEqual(issue.elementIdentifier, "home.action")
+        XCTAssertTrue(issue.detailedDescription.contains("2.4.4"))
+    }
+
+    func testGenericLabelFlagsGenericPhraseCaseInsensitively() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.action",
+                    label: "Tap Here",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelFlagsImageFilename() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "gallery.thumb",
+                    label: "IMG_0123.png",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelFlagsAssetNamePrefix() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.next",
+                    label: "ic_chevron",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelPassesDescriptiveLabel() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Send message",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testGenericLabelPassesPhraseContainingRoleWord() {
+        // Only labels that are entirely generic flag; a role word inside a
+        // descriptive phrase is fine.
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "board.add",
+                    label: "Add button to board",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testGenericLabelIgnoresEmptyLabels() {
+        // Missing labels are already covered by Apple's
+        // sufficientElementDescription audit.
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.action",
+                    label: " ",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    // MARK: - Label in Name (WCAG 2.5.3)
+
+    func testLabelInNameFlagsLabelMissingVisibleText() throws {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "submit_btn",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["Send"]
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Label in Name")
+        XCTAssertEqual(issue.elementIdentifier, "compose.send")
+        XCTAssertTrue(issue.detailedDescription.contains("Send"))
+        XCTAssertTrue(issue.detailedDescription.contains("2.5.3"))
+    }
+
+    func testLabelInNameFlagsEmptyLabelWithVisibleText() {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["Send"]
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testLabelInNamePassesLabelContainingVisibleText() {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Send message",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["Send"]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelInNameMatchesCaseInsensitively() {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "send",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["Send"]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelInNamePassesWhenAnyVisibleTextMatches() {
+        // A composite control can show several pieces of text; the accessible
+        // label only needs to include one of them to be speakable.
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Send",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["Send", "to John"]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelInNameIgnoresElementsWithoutVisibleText() {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.share",
+                    label: "Share",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelInNameIgnoresWhitespaceOnlyVisibleText() {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.share",
+                    label: "Share",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    visibleTextLabels: ["  "]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    // MARK: - Adjustable Value (WCAG 4.1.2)
+
+    func testAdjustableValueFlagsMissingValue() throws {
+        let issues = SupplementalAccessibilityChecks.adjustableValueIssues(
+            adjustableElements: [
+                AuditedElement(
+                    identifier: "player.volume",
+                    label: "Volume",
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Adjustable Value")
+        XCTAssertEqual(issue.elementIdentifier, "player.volume")
+        XCTAssertTrue(issue.detailedDescription.contains("4.1.2"))
+    }
+
+    func testAdjustableValueFlagsEmptyValue() {
+        let issues = SupplementalAccessibilityChecks.adjustableValueIssues(
+            adjustableElements: [
+                AuditedElement(
+                    identifier: "player.volume",
+                    label: "Volume",
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 44),
+                    value: " "
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testAdjustableValuePassesElementExposingValue() {
+        let issues = SupplementalAccessibilityChecks.adjustableValueIssues(
+            adjustableElements: [
+                AuditedElement(
+                    identifier: "player.volume",
+                    label: "Volume",
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 44),
+                    value: "50%"
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    // MARK: - Consistent Identification (WCAG 3.2.4)
+
+    func testConsistentIdentificationFlagsSameIdentifierWithDifferentLabels() throws {
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "Photos",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "Pictures",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Consistent Identification")
+        XCTAssertEqual(issue.elementIdentifier, "tab.photos")
+        XCTAssertTrue(issue.detailedDescription.contains("Photos"))
+        XCTAssertTrue(issue.detailedDescription.contains("Pictures"))
+        XCTAssertTrue(issue.detailedDescription.contains("Home"))
+        XCTAssertTrue(issue.detailedDescription.contains("Files"))
+        XCTAssertTrue(issue.detailedDescription.contains("3.2.4"))
+    }
+
+    func testConsistentIdentificationPassesMatchingLabels() {
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "Photos",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "Photos",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testConsistentIdentificationNormalisesCaseAndWhitespace() {
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(
+                            identifier: "toolbar.edit",
+                            label: "Edit",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(
+                            identifier: "toolbar.edit",
+                            label: " edit ",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testConsistentIdentificationIgnoresEmptyIdentifiers() {
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(
+                            identifier: "",
+                            label: "Photos",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(
+                            identifier: "",
+                            label: "Pictures",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testConsistentIdentificationIgnoresEmptyLabels() {
+        // A missing label is a sufficientElementDescription failure, not an
+        // inconsistency between screens.
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "Photos",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(
+                            identifier: "tab.photos",
+                            label: "",
+                            frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
     // MARK: - Orientation (WCAG 1.3.4)
 
     func testOrientationFlagsLayoutUnchangedAfterRotation() throws {

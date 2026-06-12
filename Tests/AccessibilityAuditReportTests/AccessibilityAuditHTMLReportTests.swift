@@ -125,6 +125,62 @@ final class AccessibilityAuditHTMLReportTests: XCTestCase {
         XCTAssertFalse(html.contains(".screenshot {\n  display: block;"))
     }
 
+    func testConsistentIdentificationCheckRecordsIssuesFromInventories() throws {
+        var report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
+        report.recordElementInventory(
+            screenName: "Home",
+            elements: [
+                AuditedElement(
+                    identifier: "tab.photos",
+                    label: "Photos",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+        report.recordElementInventory(
+            screenName: "Files",
+            elements: [
+                AuditedElement(
+                    identifier: "tab.photos",
+                    label: "Pictures",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        report.recordConsistentIdentificationCheck(
+            screenshotPNGData: Data([0]),
+            screenshotSize: CGSize(width: 10, height: 10)
+        )
+
+        XCTAssertEqual(report.issueCount, 1)
+        let screen = try XCTUnwrap(report.screens.last)
+        XCTAssertEqual(screen.name, "Consistent Identification")
+        XCTAssertEqual(screen.issues.first?.auditType, "Consistent Identification")
+    }
+
+    func testConsistentIdentificationCheckRecordsPassingScreenWhenLabelsAgree() throws {
+        var report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
+        report.recordElementInventory(
+            screenName: "Home",
+            elements: [
+                AuditedElement(
+                    identifier: "tab.photos",
+                    label: "Photos",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        report.recordConsistentIdentificationCheck(
+            screenshotPNGData: Data([0]),
+            screenshotSize: CGSize(width: 10, height: 10)
+        )
+
+        XCTAssertEqual(report.issueCount, 0)
+        XCTAssertEqual(report.screens.last?.name, "Consistent Identification")
+    }
+
     func testRenderIncludesManualFollowUpChecklist() throws {
         let report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
 

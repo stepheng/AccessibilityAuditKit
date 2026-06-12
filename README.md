@@ -103,16 +103,28 @@ final class AppAccessibilityTests: XCTestCase {
 
 ## Supplemental Checks
 
-`performAccessibilityAudit` does not cover every rule that commercial testers (for example Level Access) check. The package adds four frame- and label-based checks that close those gaps. They are opt-in via the `supplementalChecks` parameter:
+`performAccessibilityAudit` does not cover every rule that commercial testers (for example Level Access) check. The package adds frame- and label-based checks that close those gaps. They are opt-in via the `supplementalChecks` parameter:
 
 | Check | WCAG | What it flags |
 |---|---|---|
 | `.targetSize` | 2.5.5 | Interactive elements smaller than 44×44pt |
-| `.targetSpacing` | 2.5.8 | Interactive elements overlapping or closer than 6pt apart |
+| `.targetSpacing` | 2.5.8 (WCAG 2.2) | Interactive elements overlapping or closer than 6pt apart |
 | `.screenTitle` | 2.4.2 | Navigation bars with no title text |
 | `.duplicateLabels` | 2.4.6 | Interactive elements sharing the same accessible label (ambiguous for Voice Control) |
+| `.labelInName` | 2.5.3 | Accessible labels that do not contain the element's visible text (unaddressable by Voice Control) |
+| `.genericLabels` | 2.4.4 | Labels that are generic role words ("Button", "More") or asset/file names ("IMG_0123.png", "ic_chevron") |
+| `.adjustableValue` | 4.1.2 | Sliders and pickers with no accessibility value announcing their current state |
+| `.consistentIdentification` | 3.2.4 | Elements sharing an identifier but labelled differently across screens (see below) |
 
 Pass `.all` to run every check, or a subset such as `[.targetSize, .screenTitle]`. Issues appear in the report alongside XCTest audit issues.
+
+`.consistentIdentification` is a cross-screen check: during each screen scan it only records the screen's interactive elements into the report's element inventory. After the last screen, evaluate it:
+
+```swift
+report.recordConsistentIdentificationCheck()
+```
+
+This appends a "Consistent Identification" result screen flagging any identifier whose label differs between screens.
 
 Notes:
 

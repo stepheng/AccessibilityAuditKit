@@ -11,6 +11,7 @@ import Foundation
 public struct AccessibilityAuditHTMLReport {
     public let title: String
     public private(set) var screens: [ScreenResult] = []
+    public private(set) var elementInventories: [AuditedScreenElements] = []
 
     public var issueCount: Int {
         screens.reduce(0) { partialResult, screen in
@@ -24,6 +25,35 @@ public struct AccessibilityAuditHTMLReport {
 
     public mutating func record(_ screen: ScreenResult) {
         screens.append(screen)
+    }
+
+    /// Stores a screen's interactive elements for cross-screen checks; pair
+    /// with `recordConsistentIdentificationCheck` once all screens are audited.
+    public mutating func recordElementInventory(screenName: String, elements: [AuditedElement]) {
+        elementInventories.append(
+            AuditedScreenElements(screenName: screenName, elements: elements)
+        )
+    }
+
+    /// Compares the recorded element inventories across screens and records a
+    /// Consistent Identification result screen (WCAG 3.2.4).
+    public mutating func recordConsistentIdentificationCheck(
+        name: String = "Consistent Identification",
+        variant: String = "Default",
+        screenshotPNGData: Data,
+        screenshotSize: CGSize
+    ) {
+        record(
+            ScreenResult(
+                variant: variant,
+                name: name,
+                screenshotPNGData: screenshotPNGData,
+                screenshotSize: screenshotSize,
+                issues: SupplementalAccessibilityChecks.consistentIdentificationIssues(
+                    screens: elementInventories
+                )
+            )
+        )
     }
 
     public func renderHTML() -> String {

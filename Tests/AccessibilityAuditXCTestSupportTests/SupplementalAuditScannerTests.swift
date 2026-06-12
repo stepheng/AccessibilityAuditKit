@@ -16,7 +16,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
     let frame: CGRect
     let children: [any XCUIElementSnapshot]
     let exists = true
-    let value: Any? = nil
+    let value: Any?
     let placeholderValue: String? = nil
     let isEnabled = true
     let isSelected = false
@@ -31,6 +31,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
         label: String = "",
         title: String = "",
         frame: CGRect = .zero,
+        value: Any? = nil,
         children: [any XCUIElementSnapshot] = []
     ) {
         self.elementType = elementType
@@ -38,6 +39,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
         self.label = label
         self.title = title
         self.frame = frame
+        self.value = value
         self.children = children
     }
 }
@@ -200,6 +202,164 @@ final class SupplementalAuditScannerTests: XCTestCase {
 
         XCTAssertEqual(issues.count, 1)
         XCTAssertEqual(issues.first?.auditType, "Duplicate Labels")
+    }
+
+    func testCollectsDescendantStaticTextForLabelInNameCheck() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "compose.send",
+                    label: "submit_btn",
+                    frame: CGRect(x: 0, y: 0, width: 100, height: 44),
+                    children: [
+                        FakeSnapshot(
+                            elementType: .staticText,
+                            label: "Send",
+                            frame: CGRect(x: 10, y: 10, width: 80, height: 24)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .labelInName)
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Label in Name")
+        XCTAssertEqual(issue.elementIdentifier, "compose.send")
+    }
+
+    func testLabelInNamePassesButtonWhoseLabelMatchesItsText() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "compose.send",
+                    label: "Send",
+                    frame: CGRect(x: 0, y: 0, width: 100, height: 44),
+                    children: [
+                        FakeSnapshot(
+                            elementType: .staticText,
+                            label: "Send",
+                            frame: CGRect(x: 10, y: 10, width: 80, height: 24)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .labelInName)
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testFlagsGenericButtonLabel() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "home.action",
+                    label: "Button",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .genericLabels)
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.auditType, "Generic Label")
+    }
+
+    func testFlagsSliderWithoutValue() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .slider,
+                    identifier: "player.volume",
+                    label: "Volume",
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .adjustableValue)
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Adjustable Value")
+        XCTAssertEqual(issue.elementIdentifier, "player.volume")
+    }
+
+    func testPassesSliderExposingValue() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .slider,
+                    identifier: "player.volume",
+                    label: "Volume",
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 44),
+                    value: "50%"
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .adjustableValue)
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testConsistentIdentificationProducesNoPerScreenIssues() {
+        // The check compares labels across screens, so it contributes no
+        // issues during a single-screen scan.
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "tab.photos",
+                    label: "Photos",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .consistentIdentification)
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testInteractiveElementInventoryCollectsElementsForCrossScreenChecks() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "tab.photos",
+                    label: "Photos",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                ),
+                FakeSnapshot(
+                    elementType: .staticText,
+                    label: "Welcome",
+                    frame: CGRect(x: 0, y: 100, width: 200, height: 24)
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.interactiveElementInventory(in: root)
+
+        XCTAssertEqual(elements.count, 1)
+        let element = try XCTUnwrap(elements.first)
+        XCTAssertEqual(element.identifier, "tab.photos")
+        XCTAssertEqual(element.label, "Photos")
     }
 
     func testRunsOnlySelectedChecks() {

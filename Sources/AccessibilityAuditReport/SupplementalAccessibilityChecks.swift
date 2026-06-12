@@ -12,11 +12,37 @@ public struct AuditedElement {
     public let identifier: String
     public let label: String
     public let frame: CGRect
+    /// Static text visible inside the element, used to verify the accessible
+    /// label against what sighted users read (WCAG 2.5.3 Label in Name).
+    public let visibleTextLabels: [String]
+    /// The element's accessibility value, used to verify adjustable controls
+    /// announce their current state (WCAG 4.1.2 Name, Role, Value).
+    public let value: String?
 
-    public init(identifier: String, label: String, frame: CGRect) {
+    public init(
+        identifier: String,
+        label: String,
+        frame: CGRect,
+        visibleTextLabels: [String] = [],
+        value: String? = nil
+    ) {
         self.identifier = identifier
         self.label = label
         self.frame = frame
+        self.visibleTextLabels = visibleTextLabels
+        self.value = value
+    }
+}
+
+/// The interactive elements collected from one audited screen, used by
+/// cross-screen checks such as Consistent Identification (WCAG 3.2.4).
+public struct AuditedScreenElements {
+    public let screenName: String
+    public let elements: [AuditedElement]
+
+    public init(screenName: String, elements: [AuditedElement]) {
+        self.screenName = screenName
+        self.elements = elements
     }
 }
 
@@ -121,6 +147,147 @@ public enum SupplementalAccessibilityChecks {
                     elementIdentifier: group[0].identifier,
                     elementLabel: group[0].label,
                     elementFrame: group[0].frame
+                )
+            }
+    }
+
+    /// Labels that describe the control's role or prompt rather than its
+    /// purpose; matched against the whole label, case-insensitively.
+    private static let genericLabelWords: Set<String> = [
+        "button", "link", "image", "icon", "picture", "graphic",
+        "item", "label", "element", "view", "untitled", "more",
+        "tap", "tap here", "click", "click here"
+    ]
+
+    /// Flags interactive elements whose label is a generic role word ("Button",
+    /// "More") or an asset/file name ("IMG_0123.png", "ic_chevron") instead of
+    /// a description of the control's purpose (WCAG 2.4.4; also undermines
+    /// 4.1.2 Name, Role, Value). Empty labels are left to Apple's
+    /// sufficientElementDescription audit.
+    public static func genericLabelIssues(interactiveElements: [AuditedElement]) -> [Issue] {
+        interactiveElements.compactMap { element in
+            let label = element.label.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !label.isEmpty else { return nil }
+
+            let reason: String
+            if genericLabelWords.contains(label.lowercased()) {
+                reason = "a generic word that describes the control's role, not its purpose"
+            } else if isFilenameLike(label) {
+                reason = "an asset or file name leaking into the accessibility tree"
+            } else {
+                return nil
+            }
+
+            return Issue(
+                auditType: "Generic Label",
+                compactDescription: "Accessible label \"\(label)\" does not describe the element's purpose",
+                detailedDescription: "The label \"\(label)\" is \(reason). Screen reader and Voice Control users cannot tell what the control does. WCAG 2.4.4 requires the purpose of each control to be determinable from its label.",
+                elementIdentifier: element.identifier,
+                elementLabel: element.label,
+                elementFrame: element.frame
+            )
+        }
+    }
+
+    private static func isFilenameLike(_ label: String) -> Bool {
+        let lowered = label.lowercased()
+        let fileExtensions = ["png", "jpg", "jpeg", "gif", "svg", "pdf", "heic", "webp"]
+        if let dotIndex = lowered.lastIndex(of: "."),
+           fileExtensions.contains(String(lowered[lowered.index(after: dotIndex)...])),
+           !lowered[..<dotIndex].contains(" ") {
+            return true
+        }
+        let assetPrefixes = ["ic_", "ic-", "img_", "img-", "btn_", "btn-", "icon_", "icon-"]
+        return assetPrefixes.contains { lowered.hasPrefix($0) }
+    }
+
+    /// Flags interactive elements whose accessible label does not contain any
+    /// of the text visible inside them (WCAG 2.5.3 Label in Name). Voice
+    /// Control users speak the text they see; a mismatched label makes the
+    /// control unaddressable. Lenient by design: one matching visible string
+    /// is enough, so composite controls with secondary text do not flag.
+    public static func labelInNameIssues(interactiveElements: [AuditedElement]) -> [Issue] {
+        interactiveElements.compactMap { element in
+            let visibleTexts = element.visibleTextLabels
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            guard !visibleTexts.isEmpty else { return nil }
+
+            let label = element.label
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+            guard !visibleTexts.contains(where: { label.contains($0.lowercased()) }) else {
+                return nil
+            }
+
+            let quotedTexts = visibleTexts.map { "\"\($0)\"" }.joined(separator: ", ")
+            return Issue(
+                auditType: "Label in Name",
+                compactDescription: "Accessible label does not contain the element's visible text",
+                detailedDescription: "The element displays \(quotedTexts) but its accessible label is \"\(element.label)\". Voice Control users speak the visible text to activate controls, so WCAG 2.5.3 requires the accessible name to contain it.",
+                elementIdentifier: element.identifier,
+                elementLabel: element.label,
+                elementFrame: element.frame
+            )
+        }
+    }
+
+    /// Flags adjustable controls (sliders, pickers) that expose no
+    /// accessibility value (WCAG 4.1.2 Name, Role, Value). Without a value,
+    /// VoiceOver users can move the control but never hear its current state.
+    public static func adjustableValueIssues(adjustableElements: [AuditedElement]) -> [Issue] {
+        adjustableElements
+            .filter { element in
+                let value = element.value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                return value.isEmpty
+            }
+            .map { element in
+                Issue(
+                    auditType: "Adjustable Value",
+                    compactDescription: "Adjustable control does not expose its current value",
+                    detailedDescription: "The control has no accessibility value, so VoiceOver users cannot hear its current state or confirm that adjusting it had an effect. WCAG 4.1.2 requires controls to expose their name, role, and value.",
+                    elementIdentifier: element.identifier,
+                    elementLabel: element.label,
+                    elementFrame: element.frame
+                )
+            }
+    }
+
+    /// Flags elements that share an accessibility identifier but carry
+    /// different labels across screens (WCAG 3.2.4 Consistent Identification).
+    /// The same control renamed from screen to screen forces screen reader
+    /// users to re-learn it on every screen.
+    public static func consistentIdentificationIssues(screens: [AuditedScreenElements]) -> [Issue] {
+        struct Sighting {
+            let screenName: String
+            let element: AuditedElement
+            let normalizedLabel: String
+        }
+
+        let sightings = screens.flatMap { screen in
+            screen.elements.compactMap { element -> Sighting? in
+                let label = element.label
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
+                guard !element.identifier.isEmpty, !label.isEmpty else { return nil }
+                return Sighting(screenName: screen.screenName, element: element, normalizedLabel: label)
+            }
+        }
+
+        return Dictionary(grouping: sightings, by: \.element.identifier)
+            .filter { _, group in Set(group.map(\.normalizedLabel)).count > 1 }
+            .sorted { $0.key < $1.key }
+            .map { identifier, group in
+                let labelsByScreen = group
+                    .map { "\"\($0.element.label)\" on \($0.screenName)" }
+                    .joined(separator: ", ")
+                return Issue(
+                    auditType: "Consistent Identification",
+                    compactDescription: "Element \"\(identifier)\" is labelled differently across screens",
+                    detailedDescription: "The element appears as \(labelsByScreen). WCAG 3.2.4 requires components with the same function to be identified consistently, so screen reader users can recognise the control wherever it appears.",
+                    elementIdentifier: identifier,
+                    elementLabel: group[0].element.label,
+                    elementFrame: nil
                 )
             }
     }
