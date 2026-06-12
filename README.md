@@ -86,6 +86,7 @@ final class AppAccessibilityTests: XCTestCase {
             "Home",
             variant: "Default",
             auditTypes: [.sufficientElementDescription, .hitRegion, .contrast],
+            supplementalChecks: .all,
             in: &report
         )
 
@@ -99,6 +100,27 @@ final class AppAccessibilityTests: XCTestCase {
     }
 }
 ```
+
+## Supplemental Checks
+
+`performAccessibilityAudit` does not cover every rule that commercial testers (for example Level Access) check. The package adds four frame- and label-based checks that close those gaps. They are opt-in via the `supplementalChecks` parameter:
+
+| Check | WCAG | What it flags |
+|---|---|---|
+| `.targetSize` | 2.5.5 | Interactive elements smaller than 44×44pt |
+| `.targetSpacing` | 2.5.8 | Interactive elements overlapping or closer than 6pt apart |
+| `.screenTitle` | 2.4.2 | Navigation bars with no title text |
+| `.duplicateLabels` | 2.4.6 | Interactive elements sharing the same accessible label (ambiguous for Voice Control) |
+
+Pass `.all` to run every check, or a subset such as `[.targetSize, .screenTitle]`. Issues appear in the report alongside XCTest audit issues.
+
+Notes:
+
+- Checks measure `XCUIElementSnapshot` frames — the visual frame, not an extended hit region from `contentShape` or `accessibilityFrame`. Expect occasional false positives that need screen-specific exclusion.
+- Only the outermost interactive element of a composite counts as a target; nested controls inside a button are not flagged against their container.
+- Offscreen elements (outside the root snapshot frame) are ignored.
+
+Non-XCTest callers can run the same logic directly via `SupplementalAccessibilityChecks` in `AccessibilityAuditReport` by supplying `AuditedElement` values.
 
 ## Recording Non-Audit Failures
 

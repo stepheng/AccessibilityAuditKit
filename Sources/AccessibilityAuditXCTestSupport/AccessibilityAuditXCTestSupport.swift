@@ -97,6 +97,7 @@ public extension XCUIApplication {
         _ name: String,
         variant: String = "Default",
         auditTypes: XCUIAccessibilityAuditType,
+        supplementalChecks: SupplementalAuditType = [],
         in report: inout AccessibilityAuditHTMLReport,
         screenshot: XCUIScreenshot? = nil
     ) throws {
@@ -115,6 +116,10 @@ public extension XCUIApplication {
                 )
             )
             return true
+        }
+
+        if !supplementalChecks.isEmpty {
+            issues += SupplementalAuditScanner.issues(in: try snapshot(), checks: supplementalChecks)
         }
 
         let screenshot = screenshot ?? XCUIScreen.main.screenshot()
