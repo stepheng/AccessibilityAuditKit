@@ -362,6 +362,25 @@ final class SupplementalAuditScannerTests: XCTestCase {
         XCTAssertEqual(element.label, "Photos")
     }
 
+    func testFlagsLabelWithRedundantRoleSuffix() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "home.save",
+                    label: "Save button",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .labelHygiene)
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.auditType, "Label Hygiene")
+    }
+
     func testRunsOnlySelectedChecks() {
         let root = FakeSnapshot(
             frame: screen,

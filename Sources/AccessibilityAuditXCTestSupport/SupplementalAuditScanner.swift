@@ -28,10 +28,12 @@ public struct SupplementalAuditType: OptionSet, Sendable {
     /// `recordConsistentIdentificationCheck` on the report after the last
     /// screen to evaluate it.
     public static let consistentIdentification = SupplementalAuditType(rawValue: 1 << 7)
+    public static let labelHygiene = SupplementalAuditType(rawValue: 1 << 8)
 
     public static let all: SupplementalAuditType = [
         .targetSize, .targetSpacing, .screenTitle, .duplicateLabels,
-        .labelInName, .genericLabels, .adjustableValue, .consistentIdentification
+        .labelInName, .genericLabels, .adjustableValue, .consistentIdentification,
+        .labelHygiene
     ]
 }
 
@@ -58,7 +60,7 @@ public enum SupplementalAuditScanner {
         var issues: [Issue] = []
         let needsInteractive = !checks.isDisjoint(with: [
             .targetSize, .targetSpacing, .duplicateLabels, .labelInName,
-            .genericLabels
+            .genericLabels, .labelHygiene
         ])
         let interactive = needsInteractive
             ? interactiveElements(in: snapshot, within: snapshot.frame)
@@ -83,6 +85,9 @@ public enum SupplementalAuditScanner {
         }
         if checks.contains(.genericLabels) {
             issues += SupplementalAccessibilityChecks.genericLabelIssues(interactiveElements: interactive)
+        }
+        if checks.contains(.labelHygiene) {
+            issues += SupplementalAccessibilityChecks.labelHygieneIssues(interactiveElements: interactive)
         }
         if checks.contains(.adjustableValue) {
             issues += SupplementalAccessibilityChecks.adjustableValueIssues(

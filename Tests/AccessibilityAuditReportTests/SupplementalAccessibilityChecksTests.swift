@@ -352,6 +352,107 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertEqual(issues.count, 1)
     }
 
+    func testGenericLabelFlagsLabelEqualToIdentifier() throws {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "files.backupStatus",
+                    label: "files.backupStatus",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.auditType, "Generic Label")
+    }
+
+    func testGenericLabelFlagsSnakeCaseLabel() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "files.status",
+                    label: "backup_status",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelFlagsCamelCaseLabel() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "files.status",
+                    label: "backupStatus",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelFlagsDottedSymbolName() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.next",
+                    label: "chevron.right",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelFlagsSymbolOnlyLabel() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.favourite",
+                    label: "★",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelEmitsOneIssueForLabelMatchingSeveralRules() {
+        // "ic_chevron" is both an asset-name prefix and snake_case; the
+        // element should still produce a single issue.
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.next",
+                    label: "ic_chevron",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testGenericLabelPassesSingleWordWithDigits() {
+        let issues = SupplementalAccessibilityChecks.genericLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "pager.page2",
+                    label: "2",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
     func testGenericLabelPassesDescriptiveLabel() {
         let issues = SupplementalAccessibilityChecks.genericLabelIssues(
             interactiveElements: [
@@ -391,6 +492,152 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
                     identifier: "home.action",
                     label: " ",
                     frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    // MARK: - Label Hygiene (WCAG 4.1.2)
+
+    func testLabelHygieneFlagsRedundantRoleSuffix() throws {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.save",
+                    label: "Save button",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Label Hygiene")
+        XCTAssertEqual(issue.elementIdentifier, "home.save")
+        XCTAssertTrue(issue.detailedDescription.contains("button"))
+        XCTAssertTrue(issue.detailedDescription.contains("4.1.2"))
+    }
+
+    func testLabelHygieneFlagsRoleSuffixCaseInsensitively() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.photos",
+                    label: "Photos Tab",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testLabelHygienePassesLoneRoleWord() {
+        // A label that is nothing but a role word is a Generic Label issue;
+        // hygiene only flags the redundant suffix on otherwise-useful labels.
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.action",
+                    label: "Button",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelHygieneFlagsUntrimmedWhitespace() throws {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Send ",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.auditType, "Label Hygiene")
+    }
+
+    func testLabelHygieneFlagsAllCapsMultiWordLabel() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.save",
+                    label: "SAVE CAPSULE",
+                    frame: CGRect(x: 0, y: 0, width: 120, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testLabelHygieneFlagsLongAllCapsWord() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "files.delete",
+                    label: "DELETE",
+                    frame: CGRect(x: 0, y: 0, width: 80, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testLabelHygienePassesShortAcronyms() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "alert.ok",
+                    label: "OK",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                ),
+                AuditedElement(
+                    identifier: "files.export",
+                    label: "PDF",
+                    frame: CGRect(x: 50, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelHygieneReportsEachProblemSeparately() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.save",
+                    label: "Save button ",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 2)
+    }
+
+    func testLabelHygienePassesCleanLabelAndIgnoresEmptyLabels() {
+        let issues = SupplementalAccessibilityChecks.labelHygieneIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Send message",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                ),
+                AuditedElement(
+                    identifier: "hidden",
+                    label: "",
+                    frame: CGRect(x: 0, y: 50, width: 44, height: 44)
                 )
             ]
         )

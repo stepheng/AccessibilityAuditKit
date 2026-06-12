@@ -160,10 +160,11 @@ public enum SupplementalAccessibilityChecks {
     ]
 
     /// Flags interactive elements whose label is a generic role word ("Button",
-    /// "More") or an asset/file name ("IMG_0123.png", "ic_chevron") instead of
-    /// a description of the control's purpose (WCAG 2.4.4; also undermines
-    /// 4.1.2 Name, Role, Value). Empty labels are left to Apple's
-    /// sufficientElementDescription audit.
+    /// "More"), an asset/file name ("IMG_0123.png", "ic_chevron"), a leaked
+    /// identifier or code-style string ("files.backupStatus", "backup_status",
+    /// "chevron.right"), or a bare symbol ("★") instead of a description of the
+    /// control's purpose (WCAG 2.4.4; also undermines 4.1.2 Name, Role, Value).
+    /// Empty labels are left to Apple's sufficientElementDescription audit.
     public static func genericLabelIssues(interactiveElements: [AuditedElement]) -> [Issue] {
         interactiveElements.compactMap { element in
             let label = element.label.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -172,8 +173,15 @@ public enum SupplementalAccessibilityChecks {
             let reason: String
             if genericLabelWords.contains(label.lowercased()) {
                 reason = "a generic word that describes the control's role, not its purpose"
+            } else if !element.identifier.isEmpty,
+                      label.caseInsensitiveCompare(element.identifier) == .orderedSame {
+                reason = "the accessibility identifier leaking into the accessible label"
             } else if isFilenameLike(label) {
                 reason = "an asset or file name leaking into the accessibility tree"
+            } else if isCodeLike(label) {
+                reason = "a code-style string (camelCase, snake_case, or a symbol name) rather than human-readable text"
+            } else if label.rangeOfCharacter(from: .alphanumerics) == nil {
+                reason = "a bare symbol or emoji, which VoiceOver may announce unhelpfully or not at all"
             } else {
                 return nil
             }
@@ -199,6 +207,82 @@ public enum SupplementalAccessibilityChecks {
         }
         let assetPrefixes = ["ic_", "ic-", "img_", "img-", "btn_", "btn-", "icon_", "icon-"]
         return assetPrefixes.contains { lowered.hasPrefix($0) }
+    }
+
+    /// A single token in snake_case, camelCase, or dotted-path style
+    /// ("backup_status", "backupStatus", "chevron.right").
+    private static func isCodeLike(_ label: String) -> Bool {
+        guard !label.contains(where: \.isWhitespace) else { return false }
+        if label.contains("_") {
+            return true
+        }
+        var previous: Character?
+        for character in label {
+            if let previous, previous.isLowercase, character.isUppercase {
+                return true
+            }
+            previous = character
+        }
+        let dottedParts = label.split(separator: ".")
+        return dottedParts.count > 1 && dottedParts.allSatisfy { $0.first?.isLetter == true }
+    }
+
+    /// Role words VoiceOver already announces from the element's traits.
+    private static let redundantRoleSuffixes: Set<String> = [
+        "button", "tab", "link", "icon", "image", "menu"
+    ]
+
+    /// Flags labels that announce badly through VoiceOver: a redundant role
+    /// suffix ("Save button" announces as "Save button, button" — WCAG 4.1.2
+    /// hygiene), leading/trailing whitespace, or all-caps styling leaking into
+    /// the label (VoiceOver may spell it out letter by letter). One issue per
+    /// problem found. Short acronyms ("OK", "PDF") are not treated as all-caps.
+    public static func labelHygieneIssues(interactiveElements: [AuditedElement]) -> [Issue] {
+        interactiveElements.flatMap { element -> [Issue] in
+            let label = element.label.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !label.isEmpty else { return [] }
+
+            var issues: [Issue] = []
+            func record(_ compactDescription: String, _ detail: String) {
+                issues.append(
+                    Issue(
+                        auditType: "Label Hygiene",
+                        compactDescription: compactDescription,
+                        detailedDescription: detail,
+                        elementIdentifier: element.identifier,
+                        elementLabel: element.label,
+                        elementFrame: element.frame
+                    )
+                )
+            }
+
+            let words = label.lowercased().split(whereSeparator: \.isWhitespace)
+            if words.count > 1, let lastWord = words.last,
+               redundantRoleSuffixes.contains(String(lastWord)) {
+                record(
+                    "Accessible label ends with the redundant role word \"\(lastWord)\"",
+                    "VoiceOver already announces the element's role from its traits, so \"\(label)\" is read as \"\(label), \(lastWord)\". WCAG 4.1.2 expects the role to come from the element's traits, not its name."
+                )
+            }
+
+            if element.label != label {
+                record(
+                    "Accessible label has leading or trailing whitespace",
+                    "The label \"\(element.label)\" is padded with whitespace, which can affect VoiceOver pronunciation and Voice Control matching. Trim the label."
+                )
+            }
+
+            let letters = label.filter(\.isLetter)
+            if !letters.isEmpty, letters.allSatisfy(\.isUppercase),
+               words.count > 1 || letters.count >= 5 {
+                record(
+                    "Accessible label is written in all capitals",
+                    "The label \"\(label)\" is all-caps, so VoiceOver may spell it out letter by letter. Use sentence case in the accessible label and apply capitalisation visually."
+                )
+            }
+
+            return issues
+        }
     }
 
     /// Flags interactive elements whose accessible label does not contain any

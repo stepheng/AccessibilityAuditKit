@@ -112,7 +112,8 @@ final class AppAccessibilityTests: XCTestCase {
 | `.screenTitle` | 2.4.2 | Navigation bars with no title text |
 | `.duplicateLabels` | 2.4.6 | Interactive elements sharing the same accessible label (ambiguous for Voice Control) |
 | `.labelInName` | 2.5.3 | Accessible labels that do not contain the element's visible text (unaddressable by Voice Control) |
-| `.genericLabels` | 2.4.4 | Labels that are generic role words ("Button", "More") or asset/file names ("IMG_0123.png", "ic_chevron") |
+| `.genericLabels` | 2.4.4 | Labels that are generic role words ("Button", "More"), asset/file names ("IMG_0123.png", "ic_chevron"), leaked identifiers or code-style strings ("files.backupStatus", "chevron.right"), or bare symbols ("★") |
+| `.labelHygiene` | 4.1.2 | Labels that announce badly: redundant role suffixes ("Save button" → "Save button, button"), leading/trailing whitespace, all-caps styling leaking into the label |
 | `.adjustableValue` | 4.1.2 | Sliders and pickers with no accessibility value announcing their current state |
 | `.consistentIdentification` | 3.2.4 | Elements sharing an identifier but labelled differently across screens (see below) |
 
