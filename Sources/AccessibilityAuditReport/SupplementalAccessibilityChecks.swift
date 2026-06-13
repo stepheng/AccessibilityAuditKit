@@ -209,7 +209,8 @@ public enum SupplementalAccessibilityChecks {
                 detailedDescription: "The label \"\(label)\" is \(reason). Screen reader and Voice Control users cannot tell what the control does. WCAG 2.4.4 requires the purpose of each control to be determinable from its label.",
                 elementIdentifier: element.identifier,
                 elementLabel: element.label,
-                elementFrame: element.frame
+                elementFrame: element.frame,
+                severity: .warning
             )
         }
     }
@@ -268,7 +269,8 @@ public enum SupplementalAccessibilityChecks {
                         detailedDescription: detail,
                         elementIdentifier: element.identifier,
                         elementLabel: element.label,
-                        elementFrame: element.frame
+                        elementFrame: element.frame,
+                        severity: .warning
                     )
                 )
             }
