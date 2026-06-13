@@ -16,6 +16,10 @@ let package = Package(
         .library(
             name: "AccessibilityAuditXCTestSupport",
             targets: ["AccessibilityAuditXCTestSupport"]
+        ),
+        .library(
+            name: "AccessibilityAuditLiveSupport",
+            targets: ["AccessibilityAuditLiveSupport"]
         )
     ],
     targets: [
@@ -31,6 +35,14 @@ let package = Package(
         .testTarget(
             name: "AccessibilityAuditXCTestSupportTests",
             dependencies: ["AccessibilityAuditXCTestSupport"]
+        ),
+        .target(
+            name: "AccessibilityAuditLiveSupport",
+            dependencies: ["AccessibilityAuditReport"]
+        ),
+        .testTarget(
+            name: "AccessibilityAuditLiveSupportTests",
+            dependencies: ["AccessibilityAuditLiveSupport"]
         )
     ]
 )

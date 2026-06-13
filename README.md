@@ -13,14 +13,15 @@ The generated HTML includes:
 
 ## Products
 
-The package exposes two library products:
+The package exposes three library products:
 
 | Product | Use when |
 |---|---|
 | `AccessibilityAuditReport` | You already have screenshot data and issue data, or you want to render reports outside XCTest. |
 | `AccessibilityAuditXCTestSupport` | You are writing UI tests with `XCTest`, `XCUIApplication`, `XCUIScreen`, and `performAccessibilityAudit`. |
+| `AccessibilityAuditLiveSupport` | You want to audit the live app in-process from LLDB while driving it by hand (see [In-Process Audit From LLDB](#in-process-audit-from-lldb)). |
 
-`AccessibilityAuditXCTestSupport` depends on `AccessibilityAuditReport`. Consumers that only need HTML rendering do not need to link XCTest.
+Both `AccessibilityAuditXCTestSupport` and `AccessibilityAuditLiveSupport` depend on `AccessibilityAuditReport`. Consumers that only need HTML rendering do not need either.
 
 ## Requirements
 
@@ -100,6 +101,32 @@ final class AppAccessibilityTests: XCTestCase {
     }
 }
 ```
+
+## In-Process Audit From LLDB
+
+`AccessibilityAuditLiveSupport` runs the frame/label checks against the live app
+process, so you can audit the current screen while driving the app by hand —
+no UI test. Link the product into your app target (Debug only; all of its code
+is behind `#if DEBUG`), then call it from LLDB at a paused breakpoint:
+
+```
+(lldb) po AXAudit.run()              // audit current screen, write HTML, print path
+(lldb) po AXAudit.record("Memories") // accumulate multiple screens…
+(lldb) po AXAudit.record("Photos")
+(lldb) po AXAudit.dump()             // …then one combined report (+ consistent identification)
+```
+
+`run()`/`dump()` write a self-contained HTML report to `NSTemporaryDirectory()`
+and print the path; on the simulator, `open <path>` shows it.
+
+**Coverage.** The in-process path runs the supplemental frame/label checks plus
+a missing-element-description check. It cannot run Apple's pixel-based audits
+(Contrast, Text Clipped, Element Detection) — for a SwiftUI app there is no
+in-process API and text colour/font are not readable — so the report's manual
+checklist points you to **Accessibility Inspector** for those. Two fidelity
+caveats: interactivity is detected from accessibility traits (coarser than the
+XCTest element-type set), and SwiftUI often merges a control into one
+accessibility leaf, so Label-in-Name detection is best-effort.
 
 ## Supplemental Checks
 

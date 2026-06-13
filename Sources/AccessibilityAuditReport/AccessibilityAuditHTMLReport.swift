@@ -17,6 +17,11 @@ public struct AccessibilityAuditHTMLReport {
     /// consumption time, so every recorded screen is covered uniformly.
     public var acceptanceRules: [AcceptanceRule] = []
 
+    /// Extra manual follow-up notes appended to the report's manual checklist.
+    /// The in-process audit path uses this to point at Accessibility Inspector
+    /// for checks it cannot run (Contrast, Text Clipped, Element Detection).
+    public var additionalManualChecks: [String] = []
+
     public var issueCount: Int {
         screens.reduce(0) { partialResult, screen in
             partialResult + screen.issues.count
@@ -129,7 +134,7 @@ public struct AccessibilityAuditHTMLReport {
         <dl class="summary variant-summary">
         \(Self.renderVariantSummary(resolved))
         </dl>
-        \(Self.renderManualChecklist())
+        \(Self.renderManualChecklist(additionalManualChecks))
         </header>
         \(resolved.enumerated().map { Self.renderScreen($0.element, screenIndex: $0.offset) }.joined(separator: "\n"))
         </main>
@@ -160,16 +165,22 @@ public struct AccessibilityAuditHTMLReport {
         .joined(separator: "\n")
     }
 
-    private static func renderManualChecklist() -> String {
-        """
+    private static func renderManualChecklist(_ additionalChecks: [String]) -> String {
+        let baseItems = [
+            "VoiceOver focus order follows the visual and task flow.",
+            "Full Keyboard Access can reach and activate core controls.",
+            "Switch Control can reach and activate core controls.",
+            "Voice Control names are unique enough for primary actions.",
+            "Custom grouped content exposes the right accessibility children."
+        ]
+        let items = (baseItems + additionalChecks)
+            .map { "<li>\(htmlEscaped($0))</li>" }
+            .joined(separator: "\n")
+        return """
         <section class="manual-checks" aria-labelledby="manual-checks-heading">
         <h2 id="manual-checks-heading">Manual follow-up checks</h2>
         <ul>
-        <li>VoiceOver focus order follows the visual and task flow.</li>
-        <li>Full Keyboard Access can reach and activate core controls.</li>
-        <li>Switch Control can reach and activate core controls.</li>
-        <li>Voice Control names are unique enough for primary actions.</li>
-        <li>Custom grouped content exposes the right accessibility children.</li>
+        \(items)
         </ul>
         </section>
         """
