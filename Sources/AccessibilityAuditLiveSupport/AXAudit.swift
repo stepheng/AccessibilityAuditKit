@@ -35,7 +35,7 @@ public final class AXAudit: NSObject {
     /// report file path.
     @discardableResult
     @objc public static func run() -> String {
-        _ = record()
+        record()
         return dump()
     }
 
@@ -69,6 +69,11 @@ public final class AXAudit: NSObject {
 
     /// Renders the accumulated report, writes it to a temp file, resets the
     /// session, and returns the file path.
+    ///
+    /// When more than one screen was recorded, a synthetic "Consistent
+    /// Identification" screen is appended. Its screenshot comes from a fresh
+    /// scan of whatever screen is on display at dump time, which may differ
+    /// from any screen you explicitly recorded.
     @discardableResult
     @objc public static func dump() -> String {
         if report.elementInventories.count > 1,
@@ -93,7 +98,9 @@ public final class AXAudit: NSObject {
         return path
     }
 
-    /// Discards the in-progress session.
+    /// Discards the in-progress session. The report filename counter is
+    /// intentionally preserved across resets so successive reports keep unique
+    /// `accessibility-audit-<n>.html` names within a process.
     @objc public static func reset() {
         report = AccessibilityAuditHTMLReport(title: "In-Process Accessibility Audit")
         screenCounter = 0
