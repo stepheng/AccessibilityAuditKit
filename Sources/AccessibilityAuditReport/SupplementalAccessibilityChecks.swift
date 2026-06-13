@@ -51,7 +51,11 @@ public struct AuditedScreenElements {
 /// Level Access mobile accessibility tester.
 public enum SupplementalAccessibilityChecks {
     public static let defaultMinimumTargetDimension: CGFloat = 44
-    public static let defaultMinimumTargetSpacing: CGFloat = 6
+    /// WCAG 2.5.8's minimum target dimension. A target smaller than this in
+    /// either dimension is "undersized" and must instead satisfy the spacing
+    /// exception: a circle of this diameter centred on it must not overlap a
+    /// neighbouring target (or another undersized target's circle).
+    public static let undersizedTargetThreshold: CGFloat = 24
 
     /// Flags interactive elements smaller than `minimumDimension` in either
     /// dimension (WCAG 2.5.5 Target Size).
@@ -74,14 +78,19 @@ public enum SupplementalAccessibilityChecks {
             }
     }
 
-    /// Flags pairs of interactive elements that overlap or sit closer than
-    /// `minimumSpacing` (WCAG 2.5.8 Target Size (Minimum) spacing exception).
-    /// Pairs where one frame fully contains the other are treated as
-    /// parent/child composites and skipped.
+    /// Flags pairs of interactive elements that fail WCAG 2.5.8's spacing
+    /// exception: at least one element is undersized (smaller than
+    /// `threshold` in a dimension) and a `threshold`pt-diameter circle centred
+    /// on it overlaps the neighbouring target — or, when both are undersized,
+    /// their circles overlap. Well-sized targets that merely touch or overlap
+    /// each other are not flagged, since 2.5.8's spacing rule applies only to
+    /// undersized targets. Pairs where one frame fully contains the other are
+    /// treated as parent/child composites and skipped.
     public static func targetSpacingIssues(
         interactiveElements: [AuditedElement],
-        minimumSpacing: CGFloat = defaultMinimumTargetSpacing
+        threshold: CGFloat = undersizedTargetThreshold
     ) -> [Issue] {
+        let radius = threshold / 2
         let elements = interactiveElements.filter { !$0.frame.isEmpty }
         var issues: [Issue] = []
 
@@ -90,14 +99,22 @@ public enum SupplementalAccessibilityChecks {
                 if first.frame.contains(second.frame) || second.frame.contains(first.frame) {
                     continue
                 }
-                guard gap(between: first.frame, and: second.frame) < minimumSpacing else {
-                    continue
-                }
+                let firstUndersized = isUndersized(first.frame, threshold: threshold)
+                let secondUndersized = isUndersized(second.frame, threshold: threshold)
+                guard firstUndersized || secondUndersized else { continue }
+                guard spacingCirclesOverlap(
+                    first.frame,
+                    second.frame,
+                    firstUndersized: firstUndersized,
+                    secondUndersized: secondUndersized,
+                    radius: radius
+                ) else { continue }
+
                 issues.append(
                     Issue(
                         auditType: "Target Spacing",
-                        compactDescription: "Interactive targets are closer than \(format(minimumSpacing))pt apart",
-                        detailedDescription: "The element is less than \(format(minimumSpacing))pt away from (and may be overlapping) \"\(second.identifier)\" (\(second.label)). WCAG 2.5.8 requires undersized targets to have sufficient spacing.",
+                        compactDescription: "Undersized interactive target is too close to a neighbour",
+                        detailedDescription: "This target and \"\(second.identifier)\" (\(second.label)) are positioned so that a \(format(threshold))pt target-spacing circle on an undersized target overlaps the other. WCAG 2.5.8 requires undersized targets (smaller than \(format(threshold))×\(format(threshold))pt) to be spaced so their \(format(threshold))pt-diameter circles do not overlap neighbouring targets.",
                         elementIdentifier: first.identifier,
                         elementLabel: first.label,
                         elementFrame: first.frame
@@ -404,12 +421,42 @@ public enum SupplementalAccessibilityChecks {
         ]
     }
 
-    /// Shortest edge-to-edge distance between two non-intersecting rects;
-    /// zero when they intersect.
-    private static func gap(between first: CGRect, and second: CGRect) -> CGFloat {
-        let horizontalGap = max(0, max(first.minX - second.maxX, second.minX - first.maxX))
-        let verticalGap = max(0, max(first.minY - second.maxY, second.minY - first.maxY))
-        return hypot(horizontalGap, verticalGap)
+    private static func isUndersized(_ frame: CGRect, threshold: CGFloat) -> Bool {
+        frame.width < threshold || frame.height < threshold
+    }
+
+    /// Whether the WCAG 2.5.8 spacing circles for the pair overlap a
+    /// neighbouring target. Each undersized target carries a circle of the
+    /// given radius centred on it; that circle must clear the other target's
+    /// frame, and two undersized circles must clear each other.
+    private static func spacingCirclesOverlap(
+        _ first: CGRect,
+        _ second: CGRect,
+        firstUndersized: Bool,
+        secondUndersized: Bool,
+        radius: CGFloat
+    ) -> Bool {
+        let firstCentre = CGPoint(x: first.midX, y: first.midY)
+        let secondCentre = CGPoint(x: second.midX, y: second.midY)
+
+        if firstUndersized, distance(from: firstCentre, to: second) < radius {
+            return true
+        }
+        if secondUndersized, distance(from: secondCentre, to: first) < radius {
+            return true
+        }
+        if firstUndersized, secondUndersized,
+           hypot(firstCentre.x - secondCentre.x, firstCentre.y - secondCentre.y) < radius * 2 {
+            return true
+        }
+        return false
+    }
+
+    /// Shortest distance from a point to a rect; zero when the point is inside.
+    private static func distance(from point: CGPoint, to rect: CGRect) -> CGFloat {
+        let horizontal = max(0, max(rect.minX - point.x, point.x - rect.maxX))
+        let vertical = max(0, max(rect.minY - point.y, point.y - rect.maxY))
+        return hypot(horizontal, vertical)
     }
 
     private static func format(_ value: CGFloat) -> String {

@@ -108,7 +108,7 @@ final class AppAccessibilityTests: XCTestCase {
 | Check | WCAG | What it flags |
 |---|---|---|
 | `.targetSize` | 2.5.5 | Interactive elements smaller than 44×44pt |
-| `.targetSpacing` | 2.5.8 (WCAG 2.2) | Interactive elements overlapping or closer than 6pt apart |
+| `.targetSpacing` | 2.5.8 (WCAG 2.2) | An undersized target (smaller than 24×24pt) whose 24pt spacing circle overlaps a neighbouring target. Well-sized targets that merely touch or overlap are not flagged — 2.5.8's spacing rule applies only to undersized targets. |
 | `.screenTitle` | 2.4.2 | Navigation bars with no title text |
 | `.duplicateLabels` | 2.4.6 | Interactive elements sharing the same accessible label (ambiguous for Voice Control) |
 | `.labelInName` | 2.5.3 | Accessible labels that do not contain the element's visible text (unaddressable by Voice Control) |

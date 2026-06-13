@@ -87,18 +87,20 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
 
     // MARK: - Target Spacing (WCAG 2.5.8)
 
-    func testTargetSpacingFlagsOverlappingElements() throws {
+    func testTargetSpacingFlagsUndersizedTargetTouchingNeighbour() throws {
+        // A 20×20 target is undersized; its 24pt spacing circle (radius 12)
+        // overlaps the adjacent well-sized target.
         let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
             interactiveElements: [
                 AuditedElement(
                     identifier: "toolbar.share",
                     label: "Share",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 ),
                 AuditedElement(
                     identifier: "toolbar.delete",
                     label: "Delete",
-                    frame: CGRect(x: 40, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 20, y: 0, width: 44, height: 44)
                 )
             ]
         )
@@ -111,38 +113,62 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issue.detailedDescription.contains("2.5.8"))
     }
 
-    func testTargetSpacingFlagsElementsCloserThanMinimumGap() {
+    func testTargetSpacingSkipsWellSizedNeighbours() {
+        // Both targets meet the 24×24pt minimum, so 2.5.8's spacing exception
+        // does not apply even when they touch — the stacked-rows false positive.
         let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
             interactiveElements: [
                 AuditedElement(
-                    identifier: "toolbar.share",
-                    label: "Share",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    identifier: "list.row1",
+                    label: "Row 1",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
                 ),
                 AuditedElement(
-                    identifier: "toolbar.delete",
-                    label: "Delete",
-                    frame: CGRect(x: 49, y: 0, width: 44, height: 44)
+                    identifier: "list.row2",
+                    label: "Row 2",
+                    frame: CGRect(x: 0, y: 44, width: 320, height: 44)
                 )
             ]
         )
 
-        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(issues.isEmpty)
     }
 
-    func testTargetSpacingFlagsDiagonalNeighboursCloserThanMinimumGap() {
-        // Diagonal separation of hypot(4, 4) ≈ 5.66pt is under the 6pt minimum.
+    func testTargetSpacingSkipsOverlappingWellSizedTargets() {
+        // Overlap of two well-sized targets is out of 2.5.8 scope; Apple's
+        // hit-region audit covers genuinely unhittable overlaps.
+        let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "a",
+                    label: "A",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                ),
+                AuditedElement(
+                    identifier: "b",
+                    label: "B",
+                    frame: CGRect(x: 40, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testTargetSpacingFlagsTwoUndersizedTargetsWithIntersectingCircles() {
+        // Centres are 22pt apart — under the 24pt sum of the two radius-12
+        // spacing circles — so the circles intersect.
         let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
             interactiveElements: [
                 AuditedElement(
                     identifier: "grid.a",
                     label: "A",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 ),
                 AuditedElement(
                     identifier: "grid.b",
                     label: "B",
-                    frame: CGRect(x: 48, y: 48, width: 44, height: 44)
+                    frame: CGRect(x: 22, y: 0, width: 20, height: 20)
                 )
             ]
         )
@@ -150,18 +176,20 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertEqual(issues.count, 1)
     }
 
-    func testTargetSpacingPassesElementsAtMinimumGap() {
+    func testTargetSpacingPassesUndersizedTargetsWithSufficientSeparation() {
+        // Centres are 40pt apart; neither spacing circle reaches the other
+        // target or circle.
         let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
             interactiveElements: [
                 AuditedElement(
-                    identifier: "toolbar.share",
-                    label: "Share",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    identifier: "grid.a",
+                    label: "A",
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 ),
                 AuditedElement(
-                    identifier: "toolbar.delete",
-                    label: "Delete",
-                    frame: CGRect(x: 50, y: 0, width: 44, height: 44)
+                    identifier: "grid.b",
+                    label: "B",
+                    frame: CGRect(x: 40, y: 0, width: 20, height: 20)
                 )
             ]
         )
@@ -171,7 +199,7 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
 
     func testTargetSpacingSkipsContainedElements() {
         // One frame fully containing another indicates a parent/child pair,
-        // not two adjacent targets.
+        // not two adjacent targets — even when the inner one is undersized.
         let issues = SupplementalAccessibilityChecks.targetSpacingIssues(
             interactiveElements: [
                 AuditedElement(
@@ -182,7 +210,7 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
                 AuditedElement(
                     identifier: "card.favourite",
                     label: "Favourite",
-                    frame: CGRect(x: 150, y: 28, width: 44, height: 44)
+                    frame: CGRect(x: 150, y: 28, width: 20, height: 20)
                 )
             ]
         )
@@ -197,7 +225,7 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
                 AuditedElement(
                     identifier: "toolbar.share",
                     label: "Share",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 )
             ]
         )

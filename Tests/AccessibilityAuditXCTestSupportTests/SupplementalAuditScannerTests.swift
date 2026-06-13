@@ -114,7 +114,7 @@ final class SupplementalAuditScannerTests: XCTestCase {
         XCTAssertTrue(issues.isEmpty)
     }
 
-    func testFlagsAdjacentInteractiveElementsAsSpacingIssue() {
+    func testFlagsUndersizedTargetTooCloseToNeighbourAsSpacingIssue() {
         let root = FakeSnapshot(
             frame: screen,
             children: [
@@ -122,13 +122,13 @@ final class SupplementalAuditScannerTests: XCTestCase {
                     elementType: .button,
                     identifier: "toolbar.share",
                     label: "Share",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 ),
                 FakeSnapshot(
                     elementType: .button,
                     identifier: "toolbar.delete",
                     label: "Delete",
-                    frame: CGRect(x: 46, y: 0, width: 44, height: 44)
+                    frame: CGRect(x: 20, y: 0, width: 44, height: 44)
                 )
             ]
         )
