@@ -13,10 +13,54 @@ public struct AccessibilityAuditHTMLReport {
     public private(set) var screens: [ScreenResult] = []
     public private(set) var elementInventories: [AuditedScreenElements] = []
 
+    /// Baseline rules used to mark findings as accepted. Resolved at
+    /// consumption time, so every recorded screen is covered uniformly.
+    public var acceptanceRules: [AcceptanceRule] = []
+
     public var issueCount: Int {
         screens.reduce(0) { partialResult, screen in
             partialResult + screen.issues.count
         }
+    }
+
+    /// Screens with acceptance resolved against `acceptanceRules`.
+    private var resolvedScreens: [ScreenResult] {
+        screens.map { screen in
+            ScreenResult(
+                variant: screen.variant,
+                name: screen.name,
+                screenshotPNGData: screen.screenshotPNGData,
+                screenshotSize: screen.screenshotSize,
+                issues: AcceptanceResolver.resolve(
+                    issues: screen.issues,
+                    screen: screen.name,
+                    variant: screen.variant,
+                    rules: acceptanceRules
+                )
+            )
+        }
+    }
+
+    private var resolvedIssues: [Issue] {
+        resolvedScreens.flatMap(\.issues)
+    }
+
+    /// Active (non-accepted) error findings. This is the build gate.
+    public var blockingIssueCount: Int {
+        resolvedIssues.filter { $0.severity == .error && $0.acceptance == nil }.count
+    }
+
+    /// Alias of `blockingIssueCount`, named for report summaries.
+    public var errorCount: Int { blockingIssueCount }
+
+    /// Active (non-accepted) warning findings.
+    public var warningCount: Int {
+        resolvedIssues.filter { $0.severity == .warning && $0.acceptance == nil }.count
+    }
+
+    /// Findings marked accepted by the baseline (including stale ones).
+    public var acceptedCount: Int {
+        resolvedIssues.filter { $0.acceptance != nil }.count
     }
 
     public init(title: String) {
