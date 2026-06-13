@@ -36,8 +36,8 @@ enum UIAccessibilityTreeWalker {
     /// when present, otherwise the view's subviews.
     @MainActor
     private static func accessibilityChildren(of object: NSObject) -> [NSObject] {
-        if let elements = object.accessibilityElements as? [NSObject] {
-            return elements
+        if let elements = object.accessibilityElements {
+            return elements.compactMap { $0 as? NSObject }
         }
         if let view = object as? UIView {
             return view.subviews
@@ -52,20 +52,48 @@ enum UIAccessibilityTreeWalker {
         window.coordinateSpace.convert(screenFrame, from: window.screen.coordinateSpace)
     }
 
-    /// Best-effort navigation-bar titles found in the view tree. SwiftUI may
-    /// not populate `topItem.title`, in which case the screen-title check
-    /// simply does not fire.
+    /// Best-effort navigation-bar titles found in the view tree. Each bar's title
+    /// is resolved from `topItem.title`, then (for SwiftUI, which routes the title
+    /// through the accessibility tree) the first non-empty label of a `.header`- or
+    /// `.staticText`-trait descendant, and finally "" when nothing is found — so a
+    /// genuinely untitled bar is flagged while a detectable title is not. A SwiftUI
+    /// title exposed in a way none of these detect may still false-positive.
     @MainActor
     static func navigationBarTitles(in window: UIWindow) -> [String] {
         var titles: [String] = []
         func walk(_ view: UIView) {
             if let navBar = view as? UINavigationBar {
-                titles.append(navBar.topItem?.title ?? "")
+                titles.append(navigationTitle(of: navBar))
             }
             view.subviews.forEach(walk)
         }
         walk(window)
         return titles
+    }
+
+    @MainActor
+    private static func navigationTitle(of navBar: UINavigationBar) -> String {
+        if let title = navBar.topItem?.title, !title.isEmpty {
+            return title
+        }
+        return headerOrTextLabel(in: navBar) ?? ""
+    }
+
+    /// The first non-empty label of a `.header`- or `.staticText`-trait descendant,
+    /// which is how SwiftUI exposes a navigation title in the accessibility tree.
+    @MainActor
+    private static func headerOrTextLabel(in view: UIView) -> String? {
+        for subview in view.subviews {
+            let traits = subview.accessibilityTraits
+            if traits.contains(.header) || traits.contains(.staticText),
+               let label = subview.accessibilityLabel, !label.isEmpty {
+                return label
+            }
+            if let nested = headerOrTextLabel(in: subview) {
+                return nested
+            }
+        }
+        return nil
     }
 }
 #endif
