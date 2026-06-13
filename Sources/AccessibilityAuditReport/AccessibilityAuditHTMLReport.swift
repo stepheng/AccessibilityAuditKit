@@ -101,7 +101,8 @@ public struct AccessibilityAuditHTMLReport {
     }
 
     public func renderHTML() -> String {
-        """
+        let resolved = resolvedScreens
+        return """
         <!doctype html>
         <html lang="en">
         <head>
@@ -110,7 +111,7 @@ public struct AccessibilityAuditHTMLReport {
         <title>\(Self.htmlEscaped(title))</title>
         <style>
         \(Self.styles)
-        \(Self.issueHighlightStyles(screens))
+        \(Self.issueHighlightStyles(resolved))
         </style>
         </head>
         <body>
@@ -118,16 +119,19 @@ public struct AccessibilityAuditHTMLReport {
         <header>
         <h1>\(Self.htmlEscaped(title))</h1>
         <dl class="summary">
-        <dt>Screens audited</dt><dd>\(screens.count)</dd>
+        <dt>Screens audited</dt><dd>\(resolved.count)</dd>
         <dt>Issues found</dt><dd>\(issueCount)</dd>
+        <dt>Blocking errors</dt><dd>\(blockingIssueCount)</dd>
+        <dt>Warnings</dt><dd>\(warningCount)</dd>
+        <dt>Accepted</dt><dd>\(acceptedCount)</dd>
         </dl>
         <h2>Issue counts by variant</h2>
         <dl class="summary variant-summary">
-        \(Self.renderVariantSummary(screens))
+        \(Self.renderVariantSummary(resolved))
         </dl>
         \(Self.renderManualChecklist())
         </header>
-        \(screens.enumerated().map { Self.renderScreen($0.element, screenIndex: $0.offset) }.joined(separator: "\n"))
+        \(resolved.enumerated().map { Self.renderScreen($0.element, screenIndex: $0.offset) }.joined(separator: "\n"))
         </main>
         </body>
         </html>
@@ -190,11 +194,12 @@ public struct AccessibilityAuditHTMLReport {
 
     private static func renderScreen(_ screen: ScreenResult, screenIndex: Int) -> String {
         let screenshotBase64 = screen.screenshotPNGData.base64EncodedString()
-        let issueContent = screen.issues.isEmpty ? """
+        let ordered = orderedIssues(screen.issues)
+        let issueContent = ordered.isEmpty ? """
         <p class="pass">No issues found for this screen.</p>
         """ : """
         <ol class="issues">
-        \(screen.issues.enumerated().map {
+        \(ordered.enumerated().map {
             let issueID = "screen-\(screenIndex)-issue-\($0.offset)"
             return renderIssue($0.element, issueID: issueID, screenshotSize: screen.screenshotSize)
         }.joined(separator: "\n"))
@@ -212,7 +217,7 @@ public struct AccessibilityAuditHTMLReport {
         <a class="screenshot-link" href="data:image/png;base64,\(screenshotBase64)" target="_blank" rel="noopener">
         <div class="screenshot">
         <img alt="Screenshot for \(htmlEscaped(screen.name))" src="data:image/png;base64,\(screenshotBase64)">
-        \(screen.issues.enumerated().map {
+        \(ordered.enumerated().map {
             let issueID = "screen-\(screenIndex)-issue-\($0.offset)"
             return renderOverlay($0.element, issueID: issueID, screenshotSize: screen.screenshotSize)
         }.joined(separator: "\n"))
@@ -223,6 +228,22 @@ public struct AccessibilityAuditHTMLReport {
         </div>
         </section>
         """
+    }
+
+    /// Active errors first, then active warnings, then accepted findings;
+    /// original order preserved within each bucket.
+    private static func orderedIssues(_ issues: [Issue]) -> [Issue] {
+        issues.enumerated()
+            .sorted { lhs, rhs in
+                let lr = bucketRank(lhs.element), rr = bucketRank(rhs.element)
+                return lr != rr ? lr < rr : lhs.offset < rhs.offset
+            }
+            .map(\.element)
+    }
+
+    private static func bucketRank(_ issue: Issue) -> Int {
+        if issue.acceptance != nil { return 2 }
+        return issue.severity == .warning ? 1 : 0
     }
 
     private static func renderOverlay(_ issue: Issue, issueID: String, screenshotSize: CGSize) -> String {
@@ -236,18 +257,44 @@ public struct AccessibilityAuditHTMLReport {
 
     private static func renderIssue(_ issue: Issue, issueID: String, screenshotSize: CGSize) -> String {
         let frameDescription = frameDescription(for: issue.elementFrame, screenshotSize: screenshotSize)
-
         return """
-        <li class="issue-card" tabindex="0" data-issue-id="\(issueID)">
+        <li class="\(cardClass(for: issue))" tabindex="0" data-issue-id="\(issueID)">
         <h3>\(htmlEscaped(issue.auditType)): \(htmlEscaped(issue.compactDescription))</h3>
         <dl>
+        <dt>Severity</dt><dd>\(severityLabel(for: issue))</dd>
         <dt>Details</dt><dd>\(htmlEscaped(issue.detailedDescription))</dd>
         <dt>Element identifier</dt><dd>\(htmlEscaped(issue.elementIdentifier))</dd>
         <dt>Element label</dt><dd>\(htmlEscaped(issue.elementLabel))</dd>
-        <dt>Frame</dt><dd>\(htmlEscaped(frameDescription))</dd>
+        <dt>Frame</dt><dd>\(htmlEscaped(frameDescription))</dd>\(acceptanceRow(for: issue))
         </dl>
         </li>
         """
+    }
+
+    // Default error renders the bare `issue-card` class (no `severity-error`
+    // token) so the existing exact-substring assertion in
+    // AccessibilityAuditHTMLReportTests keeps passing. Only warning/accepted
+    // get modifier classes.
+    private static func cardClass(for issue: Issue) -> String {
+        if issue.acceptance != nil {
+            return "issue-card accepted"
+        }
+        return issue.severity == .warning ? "issue-card severity-warning" : "issue-card"
+    }
+
+    private static func severityLabel(for issue: Issue) -> String {
+        if let acceptance = issue.acceptance {
+            return acceptance.isStale ? "Accepted (re-review)" : "Accepted"
+        }
+        return issue.severity == .warning ? "Warning" : "Error"
+    }
+
+    private static func acceptanceRow(for issue: Issue) -> String {
+        guard let acceptance = issue.acceptance else { return "" }
+        let badge = acceptance.isStale
+            ? " <span class=\"stale-badge\">⚠ acceptance may be outdated — re-review</span>"
+            : ""
+        return "\n<dt>Accepted</dt><dd>\(htmlEscaped(acceptance.reason))\(badge)</dd>"
     }
 
     private static func frameDescription(for frame: CGRect?, screenshotSize: CGSize) -> String {
@@ -437,6 +484,17 @@ public struct AccessibilityAuditHTMLReport {
     .pass {
       color: #16833a;
       font-weight: 700;
+    }
+    .issue-card.severity-warning {
+      border-left: 4px solid color-mix(in srgb, orange 70%, CanvasText 10%);
+    }
+    .issue-card.accepted {
+      opacity: 0.75;
+      border-left: 4px solid color-mix(in srgb, gray 60%, CanvasText 10%);
+    }
+    .stale-badge {
+      color: color-mix(in srgb, red 70%, CanvasText 20%);
+      font-weight: 600;
     }
     @media (max-width: 820px) {
       main {
