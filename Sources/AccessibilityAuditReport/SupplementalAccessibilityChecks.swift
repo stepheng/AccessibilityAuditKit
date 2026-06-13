@@ -18,19 +18,26 @@ public struct AuditedElement {
     /// The element's accessibility value, used to verify adjustable controls
     /// announce their current state (WCAG 4.1.2 Name, Role, Value).
     public let value: String?
+    /// Whether this element must carry an accessible description — an
+    /// interactive control or a meaningful image. Used by the in-process
+    /// missing-description check, the equivalent of Apple's
+    /// `sufficientElementDescription` audit (which only runs under XCTest).
+    public let requiresDescription: Bool
 
     public init(
         identifier: String,
         label: String,
         frame: CGRect,
         visibleTextLabels: [String] = [],
-        value: String? = nil
+        value: String? = nil,
+        requiresDescription: Bool = false
     ) {
         self.identifier = identifier
         self.label = label
         self.frame = frame
         self.visibleTextLabels = visibleTextLabels
         self.value = value
+        self.requiresDescription = requiresDescription
     }
 }
 
@@ -372,6 +379,29 @@ public enum SupplementalAccessibilityChecks {
                     elementIdentifier: element.identifier,
                     elementLabel: element.label,
                     elementFrame: element.frame
+                )
+            }
+    }
+
+    /// Flags elements that must carry an accessible description (interactive
+    /// controls and meaningful images) but whose label is empty. This is the
+    /// in-process equivalent of Apple's `sufficientElementDescription` audit,
+    /// which only runs under XCTest. Severity `.error`: an unlabelled control or
+    /// image is unusable with VoiceOver (WCAG 4.1.2 Name, Role, Value;
+    /// WCAG 1.1.1 Non-text Content).
+    public static func missingElementDescriptionIssues(elements: [AuditedElement]) -> [Issue] {
+        elements
+            .filter(\.requiresDescription)
+            .filter { $0.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            .map { element in
+                Issue(
+                    auditType: "Element Description",
+                    compactDescription: "Interactive or image element has no accessible label",
+                    detailedDescription: "The element exposes no accessible label, so VoiceOver announces it only by role, or not at all. WCAG 4.1.2 requires every control and meaningful image to expose a name.",
+                    elementIdentifier: element.identifier,
+                    elementLabel: element.label,
+                    elementFrame: element.frame,
+                    severity: .error
                 )
             }
     }

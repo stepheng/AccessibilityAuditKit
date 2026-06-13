@@ -1071,4 +1071,67 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
 
         XCTAssertTrue(issues.isEmpty)
     }
+
+    // MARK: - Missing Element Description (WCAG 4.1.2 / 1.1.1)
+
+    func testMissingElementDescriptionFlagsRequiredEmptyLabelAsError() throws {
+        let issues = SupplementalAccessibilityChecks.missingElementDescriptionIssues(
+            elements: [
+                AuditedElement(
+                    identifier: "home.profile",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    requiresDescription: true
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Element Description")
+        XCTAssertEqual(issue.elementIdentifier, "home.profile")
+        XCTAssertEqual(issue.severity, .error)
+    }
+
+    func testMissingElementDescriptionTreatsWhitespaceLabelAsEmpty() {
+        let issues = SupplementalAccessibilityChecks.missingElementDescriptionIssues(
+            elements: [
+                AuditedElement(
+                    identifier: "x",
+                    label: "   ",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    requiresDescription: true
+                )
+            ]
+        )
+        XCTAssertEqual(issues.count, 1)
+    }
+
+    func testMissingElementDescriptionIgnoresElementsNotRequiringDescription() {
+        let issues = SupplementalAccessibilityChecks.missingElementDescriptionIssues(
+            elements: [
+                AuditedElement(
+                    identifier: "label.title",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 100, height: 20),
+                    requiresDescription: false
+                )
+            ]
+        )
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testMissingElementDescriptionPassesLabelledElement() {
+        let issues = SupplementalAccessibilityChecks.missingElementDescriptionIssues(
+            elements: [
+                AuditedElement(
+                    identifier: "x",
+                    label: "Profile",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    requiresDescription: true
+                )
+            ]
+        )
+        XCTAssertTrue(issues.isEmpty)
+    }
 }
