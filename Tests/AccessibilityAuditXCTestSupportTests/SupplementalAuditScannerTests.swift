@@ -64,7 +64,7 @@ final class SupplementalAuditScannerTests: XCTestCase {
 
         XCTAssertEqual(issues.count, 1)
         let issue = try XCTUnwrap(issues.first)
-        XCTAssertEqual(issue.auditType, "Target Size")
+        XCTAssertEqual(issue.auditType, "Target Size (Enhanced)")
         XCTAssertEqual(issue.elementIdentifier, "home.closeButton")
     }
 
@@ -420,7 +420,7 @@ final class SupplementalAuditScannerTests: XCTestCase {
 
         XCTAssertEqual(
             Set(issues.map(\.auditType)),
-            ["Target Size", "Screen Title"]
+            ["Target Size (Enhanced)", "Screen Title"]
         )
     }
 }

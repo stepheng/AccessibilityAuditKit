@@ -10,43 +10,82 @@ import CoreGraphics
 import XCTest
 
 final class SupplementalAccessibilityChecksTests: XCTestCase {
-    // MARK: - Target Size (WCAG 2.5.5)
+    // MARK: - Target Size (WCAG 2.5.8 Minimum / 2.5.5 Enhanced)
 
-    func testTargetSizeFlagsElementNarrowerThanMinimum() throws {
+    func testTargetSizeFlagsElementBelowMinimumAsAAFailure() throws {
         let issues = SupplementalAccessibilityChecks.targetSizeIssues(
             interactiveElements: [
                 AuditedElement(
-                    identifier: "home.editButton",
-                    label: "Edit",
-                    frame: CGRect(x: 0, y: 0, width: 43, height: 44)
+                    identifier: "footer.legal",
+                    label: "Legal",
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
                 )
             ]
         )
 
         XCTAssertEqual(issues.count, 1)
         let issue = try XCTUnwrap(issues.first)
-        XCTAssertEqual(issue.auditType, "Target Size")
-        XCTAssertEqual(issue.elementIdentifier, "home.editButton")
-        XCTAssertEqual(issue.elementLabel, "Edit")
-        XCTAssertEqual(issue.elementFrame, CGRect(x: 0, y: 0, width: 43, height: 44))
-        XCTAssertTrue(issue.detailedDescription.contains("2.5.5"))
+        XCTAssertEqual(issue.auditType, "Target Size (Minimum)")
+        XCTAssertEqual(issue.elementIdentifier, "footer.legal")
+        XCTAssertEqual(issue.elementLabel, "Legal")
+        XCTAssertEqual(issue.elementFrame, CGRect(x: 0, y: 0, width: 20, height: 20))
+        XCTAssertTrue(issue.detailedDescription.contains("2.5.8"))
+        XCTAssertEqual(issue.severity, .error)
     }
 
-    func testTargetSizeFlagsElementShorterThanMinimum() {
+    func testTargetSizeFlagsElementShortInOneDimensionAsAAFailure() throws {
         let issues = SupplementalAccessibilityChecks.targetSizeIssues(
             interactiveElements: [
                 AuditedElement(
-                    identifier: "home.closeButton",
-                    label: "Close",
-                    frame: CGRect(x: 0, y: 0, width: 44, height: 43)
+                    identifier: "home.search",
+                    label: "Search",
+                    frame: CGRect(x: 0, y: 0, width: 354, height: 22)
                 )
             ]
         )
 
         XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Target Size (Minimum)")
+        XCTAssertTrue(issue.detailedDescription.contains("2.5.8"))
     }
 
-    func testTargetSizePassesElementAtMinimum() {
+    func testTargetSizeFlagsElementBetweenMinimumAndEnhancedAsAAAOnly() throws {
+        let issues = SupplementalAccessibilityChecks.targetSizeIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "home.editButton",
+                    label: "Edit",
+                    frame: CGRect(x: 0, y: 0, width: 30, height: 30)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Target Size (Enhanced)")
+        XCTAssertTrue(issue.detailedDescription.contains("2.5.5"))
+        XCTAssertEqual(issue.severity, .warning)
+    }
+
+    func testTargetSizeEmitsOneIssuePerElementAtWorstLevel() {
+        // A 20×20 element fails both 24pt and 44pt thresholds but is reported
+        // once, at the more severe AA level.
+        let issues = SupplementalAccessibilityChecks.targetSizeIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "footer.legal",
+                    label: "Legal",
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.auditType, "Target Size (Minimum)")
+    }
+
+    func testTargetSizePassesElementAtEnhancedMinimum() {
         let issues = SupplementalAccessibilityChecks.targetSizeIssues(
             interactiveElements: [
                 AuditedElement(
@@ -65,21 +104,6 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
             interactiveElements: [
                 AuditedElement(identifier: "hidden", label: "", frame: .zero)
             ]
-        )
-
-        XCTAssertTrue(issues.isEmpty)
-    }
-
-    func testTargetSizeHonoursCustomMinimum() {
-        let issues = SupplementalAccessibilityChecks.targetSizeIssues(
-            interactiveElements: [
-                AuditedElement(
-                    identifier: "home.editButton",
-                    label: "Edit",
-                    frame: CGRect(x: 0, y: 0, width: 30, height: 30)
-                )
-            ],
-            minimumDimension: 24
         )
 
         XCTAssertTrue(issues.isEmpty)
