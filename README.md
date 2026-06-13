@@ -145,6 +145,61 @@ app.recordOrientationLockCheck(in: &report)
 
 Run it once per audit session (it exercises the whole app, not a single screen), and not from a screen that legitimately locks orientation — WCAG 1.3.4 exempts content where a specific orientation is essential. The comparison is skipped as inconclusive when the window is not portrait-proportioned before rotating (for example iPad multitasking). The pure decision logic is available to non-XCTest callers as `SupplementalAccessibilityChecks.orientationLockIssues(portraitWindowSize:landscapeWindowSize:)`.
 
+## Severity tiers
+
+Every finding carries a severity:
+
+- **Error** (blocking) — deterministic checks (Target Size, Target Spacing, Screen
+  Title, Duplicate Labels, Label in Name, Adjustable Value, Consistent
+  Identification, Orientation) and all `performAccessibilityAudit` issues.
+- **Warning** (non-blocking) — the heuristic label checks (Generic Label, Label
+  Hygiene), which flag *likely* problems rather than certain ones.
+
+Warnings appear in the report but never fail the build.
+
+## Acceptance baseline
+
+A checked-in JSON file marks specific findings as accepted — either a false
+positive or a violation human review judged acceptable under the current
+conditions. Each rule:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `screen` | yes | Screen name the finding appears on |
+| `auditType` | yes | The check that produced it (e.g. `Label in Name`) |
+| `reason` | yes | Why it is accepted — a rule without this fails to load |
+| `variant` | no | Match a single variant; omit or `null` to match any |
+| `elementIdentifier` | no | Identity match when present |
+| `elementLabel` | no | Fallback match when there is no usable identifier |
+| `context` | no | The finding's original description; if it later drifts, the acceptance is flagged stale |
+
+Example baseline:
+
+```json
+[
+  {
+    "screen": "Home",
+    "auditType": "Label in Name",
+    "elementIdentifier": "saveButton",
+    "elementLabel": "Save",
+    "context": "Accessible label \"Save\" does not contain visible text \"OK\"",
+    "reason": "Reviewed 2026-06-13 SG — visible 'OK' is decorative"
+  }
+]
+```
+
+Load it and gate the test on unaccepted errors:
+
+```swift
+report.acceptanceRules = try AcceptanceBaseline.load(from: baselineURL)
+// … record screens …
+XCTAssertEqual(report.blockingIssueCount, 0, "Unaccepted accessibility errors present")
+```
+
+A stale acceptance — one whose `context` no longer matches the current finding —
+stays non-blocking but is flagged with a re-review badge in the report, so drift
+is visible without breaking CI.
+
 ## Recording Non-Audit Failures
 
 Report generation can also capture automation failures where a screen could not be audited.
@@ -206,6 +261,8 @@ These checks should be treated as manual review items for critical flows.
 
 From the repository root:
 
-```sh
-swift test --package-path AccessibilityAuditReport
+```bash
+xcodebuild test \
+  -scheme AccessibilityAuditReport-Package \
+  -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
