@@ -191,4 +191,19 @@ final class AccessibilityAuditHTMLReportTests: XCTestCase {
         XCTAssertTrue(html.contains("Full Keyboard Access"))
         XCTAssertTrue(html.contains("Switch Control"))
     }
+
+    func testAdditionalManualChecksAppearInChecklist() {
+        var report = AccessibilityAuditHTMLReport(title: "T")
+        report.additionalManualChecks = ["Run Accessibility Inspector for Contrast."]
+        let html = report.renderHTML()
+        XCTAssertTrue(html.contains("Run Accessibility Inspector for Contrast."))
+        XCTAssertTrue(html.contains("VoiceOver focus order follows the visual and task flow."))
+    }
+
+    func testManualChecklistDefaultsToBaseItemsOnlyWithNoEmptyItem() {
+        let report = AccessibilityAuditHTMLReport(title: "T")
+        let html = report.renderHTML()
+        XCTAssertTrue(html.contains("Custom grouped content exposes the right accessibility children."))
+        XCTAssertFalse(html.contains("<li></li>"))
+    }
 }
