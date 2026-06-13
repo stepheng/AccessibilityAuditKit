@@ -1134,4 +1134,16 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         )
         XCTAssertTrue(issues.isEmpty)
     }
+
+    func testMissingElementDescriptionFlagsOnlyTheRequiredUnlabelledElementInAMixedArray() {
+        let issues = SupplementalAccessibilityChecks.missingElementDescriptionIssues(
+            elements: [
+                AuditedElement(identifier: "needs.it", label: "", frame: CGRect(x: 0, y: 0, width: 44, height: 44), requiresDescription: true),
+                AuditedElement(identifier: "labelled", label: "Save", frame: CGRect(x: 0, y: 0, width: 44, height: 44), requiresDescription: true),
+                AuditedElement(identifier: "static.text", label: "", frame: CGRect(x: 0, y: 0, width: 80, height: 20), requiresDescription: false)
+            ]
+        )
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.elementIdentifier, "needs.it")
+    }
 }

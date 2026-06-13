@@ -397,7 +397,7 @@ public enum SupplementalAccessibilityChecks {
                 Issue(
                     auditType: "Element Description",
                     compactDescription: "Interactive or image element has no accessible label",
-                    detailedDescription: "The element exposes no accessible label, so VoiceOver announces it only by role, or not at all. WCAG 4.1.2 requires every control and meaningful image to expose a name.",
+                    detailedDescription: "The element exposes no accessible label, so VoiceOver announces it only by role, or not at all. WCAG 4.1.2 requires every control to expose a name, and WCAG 1.1.1 requires meaningful images to have a text alternative.",
                     elementIdentifier: element.identifier,
                     elementLabel: element.label,
                     elementFrame: element.frame,
