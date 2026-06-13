@@ -13,14 +13,15 @@ The generated HTML includes:
 
 ## Products
 
-The package exposes two library products:
+The package exposes three library products:
 
 | Product | Use when |
 |---|---|
 | `AccessibilityAuditReport` | You already have screenshot data and issue data, or you want to render reports outside XCTest. |
 | `AccessibilityAuditXCTestSupport` | You are writing UI tests with `XCTest`, `XCUIApplication`, `XCUIScreen`, and `performAccessibilityAudit`. |
+| `AccessibilityAuditLiveSupport` | You want to audit the live app in-process from LLDB while driving it by hand (see [In-Process Audit From LLDB](#in-process-audit-from-lldb)). |
 
-`AccessibilityAuditXCTestSupport` depends on `AccessibilityAuditReport`. Consumers that only need HTML rendering do not need to link XCTest.
+Both `AccessibilityAuditXCTestSupport` and `AccessibilityAuditLiveSupport` depend on `AccessibilityAuditReport`. Consumers that only need HTML rendering do not need either.
 
 ## Requirements
 
