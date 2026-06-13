@@ -57,44 +57,24 @@ public enum SupplementalAccessibilityChecks {
     /// neighbouring target (or another undersized target's circle).
     public static let undersizedTargetThreshold: CGFloat = 24
 
-    /// Flags interactive elements below the WCAG target-size thresholds,
-    /// bucketing each element to its worst failing level so it is reported
-    /// once. An element smaller than `minimumDimension` in a dimension fails
-    /// 2.5.8 Target Size (Minimum), Level AA (`.error`); an element that clears
-    /// `minimumDimension` but is smaller than `enhancedDimension` fails only
-    /// 2.5.5 Target Size (Enhanced), Level AAA (`.warning`).
+    /// Flags interactive elements smaller than `minimumDimension` in either
+    /// dimension (WCAG 2.5.5 Target Size).
     public static func targetSizeIssues(
         interactiveElements: [AuditedElement],
-        minimumDimension: CGFloat = undersizedTargetThreshold,
-        enhancedDimension: CGFloat = defaultMinimumTargetDimension
+        minimumDimension: CGFloat = defaultMinimumTargetDimension
     ) -> [Issue] {
         interactiveElements
             .filter { !$0.frame.isEmpty }
-            .compactMap { element -> Issue? in
-                let frame = element.frame
-                if frame.width < minimumDimension || frame.height < minimumDimension {
-                    return Issue(
-                        auditType: "Target Size (Minimum)",
-                        compactDescription: "Interactive target is smaller than \(format(minimumDimension))×\(format(minimumDimension))pt",
-                        detailedDescription: "The element measures \(format(frame.width))×\(format(frame.height))pt. WCAG 2.5.8 (Level AA) requires a minimum target size of \(format(minimumDimension))×\(format(minimumDimension))pt unless the target has sufficient spacing (see Target Spacing).",
-                        elementIdentifier: element.identifier,
-                        elementLabel: element.label,
-                        elementFrame: frame,
-                        severity: .error
-                    )
-                }
-                if frame.width < enhancedDimension || frame.height < enhancedDimension {
-                    return Issue(
-                        auditType: "Target Size (Enhanced)",
-                        compactDescription: "Interactive target is smaller than \(format(enhancedDimension))×\(format(enhancedDimension))pt",
-                        detailedDescription: "The element measures \(format(frame.width))×\(format(frame.height))pt. WCAG 2.5.5 (Level AAA) recommends a minimum target size of \(format(enhancedDimension))×\(format(enhancedDimension))pt.",
-                        elementIdentifier: element.identifier,
-                        elementLabel: element.label,
-                        elementFrame: frame,
-                        severity: .warning
-                    )
-                }
-                return nil
+            .filter { $0.frame.width < minimumDimension || $0.frame.height < minimumDimension }
+            .map { element in
+                Issue(
+                    auditType: "Target Size",
+                    compactDescription: "Interactive target is smaller than \(format(minimumDimension))×\(format(minimumDimension))pt",
+                    detailedDescription: "The element measures \(format(element.frame.width))×\(format(element.frame.height))pt. WCAG 2.5.5 recommends a minimum target size of \(format(minimumDimension))×\(format(minimumDimension))pt.",
+                    elementIdentifier: element.identifier,
+                    elementLabel: element.label,
+                    elementFrame: element.frame
+                )
             }
     }
 
