@@ -200,6 +200,14 @@ final class AccessibilityAuditHTMLReportTests: XCTestCase {
         XCTAssertTrue(html.contains("VoiceOver focus order follows the visual and task flow."))
     }
 
+    func testAdditionalManualChecksAreHTMLEscaped() {
+        var report = AccessibilityAuditHTMLReport(title: "T")
+        report.additionalManualChecks = ["Check contrast (ratio > 4.5:1)"]
+        let html = report.renderHTML()
+        XCTAssertTrue(html.contains("Check contrast (ratio &gt; 4.5:1)"))
+        XCTAssertFalse(html.contains("Check contrast (ratio > 4.5:1)"))
+    }
+
     func testManualChecklistDefaultsToBaseItemsOnlyWithNoEmptyItem() {
         let report = AccessibilityAuditHTMLReport(title: "T")
         let html = report.renderHTML()
