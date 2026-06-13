@@ -91,7 +91,13 @@ enum LiveScreenScan {
         _ make: (AccessibilityNode) -> AuditedElement
     ) -> [AuditedElement] {
         if !node.traits.isDisjoint(with: traits) {
-            guard bounds.intersects(node.frame), !node.frame.isEmpty else { return [] }
+            if node.frame.isEmpty {
+                // A zero-frame match (e.g. an unlaid-out container) is not itself a
+                // visible target, but its descendants may be — recurse rather than
+                // drop them.
+                return node.children.flatMap { collectOutermost($0, within: bounds, matching: traits, make) }
+            }
+            guard bounds.intersects(node.frame) else { return [] }
             return [make(node)]
         }
         return node.children.flatMap { collectOutermost($0, within: bounds, matching: traits, make) }
