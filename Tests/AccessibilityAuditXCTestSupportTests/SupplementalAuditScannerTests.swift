@@ -423,4 +423,65 @@ final class SupplementalAuditScannerTests: XCTestCase {
             ["Target Size (Enhanced)", "Screen Title"]
         )
     }
+
+    func testFlagsTextFieldCollectingPersonalDataAsInputPurpose() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .textField,
+                    identifier: "login.email",
+                    label: "Email",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .inputPurpose)
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Input Purpose")
+        XCTAssertEqual(issue.elementIdentifier, "login.email")
+    }
+
+    func testInputPurposeIgnoresNonTextEntryElements() {
+        // A button labelled "Email" is not an input field, so 1.3.5 does not
+        // apply — only text and secure fields are collected.
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "share.email",
+                    label: "Email",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .inputPurpose)
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testInputPurposeIgnoresSearchFields() {
+        // Search content is a query, not information about the user; search
+        // fields are excluded even when the label looks like a personal purpose.
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .searchField,
+                    identifier: "contacts.search",
+                    label: "Email",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        let issues = SupplementalAuditScanner.issues(in: root, checks: .inputPurpose)
+
+        XCTAssertTrue(issues.isEmpty)
+    }
 }

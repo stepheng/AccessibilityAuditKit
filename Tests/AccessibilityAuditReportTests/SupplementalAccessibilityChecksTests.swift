@@ -1071,4 +1071,135 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
 
         XCTAssertTrue(issues.isEmpty)
     }
+
+    // MARK: - Input Purpose (WCAG 1.3.5)
+
+    func testInputPurposeFlagsEmailFieldFromLabel() throws {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "login.email",
+                    label: "Email",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.auditType, "Input Purpose")
+        XCTAssertEqual(issue.elementIdentifier, "login.email")
+        XCTAssertTrue(issue.detailedDescription.contains("1.3.5"))
+        XCTAssertTrue(issue.detailedDescription.contains("textContentType"))
+        XCTAssertEqual(issue.severity, .warning)
+    }
+
+    func testInputPurposeDetectsPhoneFromCamelCaseIdentifier() {
+        // No accessible label: the purpose must still be recoverable from the
+        // identifier, split on its camelCase boundary.
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "signup.phoneNumber",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(issues.first?.compactDescription.contains("phone number") == true)
+    }
+
+    func testInputPurposeDetectsPasswordFromSnakeCaseIdentifier() {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "login_password_field",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(issues.first?.compactDescription.contains("password") == true)
+    }
+
+    func testInputPurposeDetectsPostalAddress() {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "checkout.street",
+                    label: "Street address",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(issues.first?.compactDescription.contains("postal address") == true)
+    }
+
+    func testInputPurposeFlagsNameOnlyWithPersonalQualifier() throws {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "signup.firstName",
+                    label: "First name",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(try XCTUnwrap(issues.first).compactDescription.contains("name"))
+    }
+
+    func testInputPurposeIgnoresGenericNameField() {
+        // "Album name" collects no information about the user; the bare word
+        // "name" without a personal qualifier must not flag.
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "album.title",
+                    label: "Album name",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testInputPurposeIgnoresNonPersonalField() {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "compose.note",
+                    label: "Note",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44)
+                )
+            ]
+        )
+
+        XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testInputPurposeDetectsPurposeFromVisiblePlaceholderText() {
+        // A SwiftUI TextField's prompt often surfaces only as descendant static
+        // text, with no accessible label of its own.
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(
+                    identifier: "field1",
+                    label: "",
+                    frame: CGRect(x: 0, y: 0, width: 320, height: 44),
+                    visibleTextLabels: ["Email address"]
+                )
+            ]
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
 }

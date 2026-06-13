@@ -29,11 +29,12 @@ public struct SupplementalAuditType: OptionSet, Sendable {
     /// screen to evaluate it.
     public static let consistentIdentification = SupplementalAuditType(rawValue: 1 << 7)
     public static let labelHygiene = SupplementalAuditType(rawValue: 1 << 8)
+    public static let inputPurpose = SupplementalAuditType(rawValue: 1 << 9)
 
     public static let all: SupplementalAuditType = [
         .targetSize, .targetSpacing, .screenTitle, .duplicateLabels,
         .labelInName, .genericLabels, .adjustableValue, .consistentIdentification,
-        .labelHygiene
+        .labelHygiene, .inputPurpose
     ]
 }
 
@@ -51,6 +52,13 @@ public enum SupplementalAuditScanner {
     /// they convey state through child buttons, not a value.
     static let adjustableElementTypes: Set<XCUIElement.ElementType> = [
         .slider, .picker, .pickerWheel
+    ]
+
+    /// Text-entry fields whose content may be information about the user, for
+    /// the Input Purpose check (WCAG 1.3.5). Search fields are excluded — their
+    /// content is a query, not personal data.
+    static let textEntryElementTypes: Set<XCUIElement.ElementType> = [
+        .textField, .secureTextField
     ]
 
     public static func issues(
@@ -92,6 +100,11 @@ public enum SupplementalAuditScanner {
         if checks.contains(.adjustableValue) {
             issues += SupplementalAccessibilityChecks.adjustableValueIssues(
                 adjustableElements: adjustableElements(in: snapshot, within: snapshot.frame)
+            )
+        }
+        if checks.contains(.inputPurpose) {
+            issues += SupplementalAccessibilityChecks.inputPurposeIssues(
+                textEntryElements: textEntryElements(in: snapshot, within: snapshot.frame)
             )
         }
 
@@ -143,6 +156,26 @@ public enum SupplementalAuditScanner {
             ]
         }
         return snapshot.children.flatMap { adjustableElements(in: $0, within: bounds) }
+    }
+
+    /// Collects text-entry fields that intersect `bounds`, carrying their
+    /// visible text for the Input Purpose check.
+    private static func textEntryElements(
+        in snapshot: any XCUIElementSnapshot,
+        within bounds: CGRect
+    ) -> [AuditedElement] {
+        if textEntryElementTypes.contains(snapshot.elementType) {
+            guard bounds.intersects(snapshot.frame) else { return [] }
+            return [
+                AuditedElement(
+                    identifier: snapshot.identifier,
+                    label: snapshot.label,
+                    frame: snapshot.frame,
+                    visibleTextLabels: descendantStaticTextLabels(in: snapshot)
+                )
+            ]
+        }
+        return snapshot.children.flatMap { textEntryElements(in: $0, within: bounds) }
     }
 
     private static func descendantStaticTextLabels(in snapshot: any XCUIElementSnapshot) -> [String] {

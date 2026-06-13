@@ -32,4 +32,14 @@ final class CheckSeverityTests: XCTestCase {
         let issue = try XCTUnwrap(issues.first)
         XCTAssertEqual(issue.severity, .error)
     }
+
+    func testInputPurposeIssuesAreWarnings() throws {
+        let issues = SupplementalAccessibilityChecks.inputPurposeIssues(
+            textEntryElements: [
+                AuditedElement(identifier: "login.email", label: "Email", frame: .zero)
+            ]
+        )
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.severity, .warning)
+    }
 }

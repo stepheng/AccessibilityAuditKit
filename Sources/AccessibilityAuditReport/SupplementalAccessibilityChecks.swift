@@ -376,6 +376,104 @@ public enum SupplementalAccessibilityChecks {
             }
     }
 
+    /// Personal-data input purposes (WCAG 1.3.5) recognised from a field's
+    /// label, identifier, or visible text. Evaluated in order, so the first
+    /// match wins — "email address" resolves to email, not postal address.
+    private static func recognisedInputPurpose(in tokens: Set<String>) -> String? {
+        if tokens.contains("email") || tokens.contains("emailaddress") {
+            return "an email address"
+        }
+        if !tokens.isDisjoint(with: ["password", "passcode", "passphrase", "pwd"]) {
+            return "a password or passcode"
+        }
+        if !tokens.isDisjoint(with: ["username", "userid"]) {
+            return "a username"
+        }
+        if !tokens.isDisjoint(with: ["phone", "telephone", "tel", "mobile"]) {
+            return "a phone number"
+        }
+        if !tokens.isDisjoint(with: ["address", "street", "city", "postcode", "postalcode", "zip", "zipcode", "country"]) {
+            return "a postal address"
+        }
+        if tokens.contains("birth") || !tokens.isDisjoint(with: ["birthday", "birthdate", "dob"]) {
+            return "a date of birth"
+        }
+        if !tokens.isDisjoint(with: ["creditcard", "cardnumber", "cvv", "cvc"]) {
+            return "a payment card number"
+        }
+        if tokens.contains("surname") {
+            return "a person's name"
+        }
+        // "name" alone is ambiguous ("Album name"); only flag it with a
+        // personal qualifier so generic title fields do not warn.
+        if tokens.contains("name"),
+           !tokens.isDisjoint(with: ["first", "last", "full", "given", "family", "middle", "nick"]) {
+            return "a person's name"
+        }
+        return nil
+    }
+
+    /// Lower-cased alphanumeric tokens from a string, split on non-alphanumeric
+    /// separators and camelCase boundaries ("signup.emailAddress" →
+    /// ["signup", "email", "address"]).
+    private static func purposeTokens(in string: String) -> [String] {
+        var tokens: [String] = []
+        var current = ""
+        var previous: Character?
+        for character in string {
+            if character.isLetter || character.isNumber {
+                if let previous, previous.isLowercase, character.isUppercase, !current.isEmpty {
+                    tokens.append(current.lowercased())
+                    current = String(character)
+                } else {
+                    current.append(character)
+                }
+                previous = character
+            } else if !current.isEmpty {
+                tokens.append(current.lowercased())
+                current = ""
+                previous = nil
+            }
+        }
+        if !current.isEmpty {
+            tokens.append(current.lowercased())
+        }
+        return tokens
+    }
+
+    /// Flags text-entry fields that appear to collect a recognised personal-data
+    /// input purpose (email, password, phone, postal address, name, …) so a
+    /// reviewer can confirm the field declares a matching `textContentType`
+    /// (WCAG 1.3.5 Identify Input Purpose, Level AA).
+    ///
+    /// This is an advisory **warning**, not a deterministic failure: XCUITest
+    /// snapshots do not expose `textContentType`, so the check cannot tell a
+    /// correctly-configured field from one missing its input purpose — it only
+    /// surfaces the fields where input purpose applies. Search fields are not
+    /// passed here; their content is not information about the user.
+    public static func inputPurposeIssues(textEntryElements: [AuditedElement]) -> [Issue] {
+        textEntryElements.compactMap { element in
+            var tokens: Set<String> = []
+            tokens.formUnion(purposeTokens(in: element.label))
+            tokens.formUnion(purposeTokens(in: element.identifier))
+            for visible in element.visibleTextLabels {
+                tokens.formUnion(purposeTokens(in: visible))
+            }
+
+            guard let purpose = recognisedInputPurpose(in: tokens) else { return nil }
+
+            return Issue(
+                auditType: "Input Purpose",
+                compactDescription: "Verify the field collecting \(purpose) declares a textContentType",
+                detailedDescription: "This field appears to collect \(purpose). WCAG 1.3.5 (Level AA) requires fields that collect information about the user to expose their input purpose so autofill and assistive technologies can identify them — set the matching `textContentType` (for example `.emailAddress`, `.password`, `.telephoneNumber`, or `.fullStreetAddress`). XCUITest cannot read `textContentType`, so this warning cannot confirm whether it is already set; verify in source.",
+                elementIdentifier: element.identifier,
+                elementLabel: element.label,
+                elementFrame: element.frame,
+                severity: .warning
+            )
+        }
+    }
+
     /// Flags elements that share an accessibility identifier but carry
     /// different labels across screens (WCAG 3.2.4 Consistent Identification).
     /// The same control renamed from screen to screen forces screen reader
