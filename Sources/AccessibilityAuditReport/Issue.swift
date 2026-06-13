@@ -7,6 +7,21 @@
 
 import CoreGraphics
 
+public enum Severity: String, Sendable, Codable {
+    case error
+    case warning
+}
+
+public struct Acceptance: Sendable, Equatable {
+    public let reason: String
+    public let isStale: Bool
+
+    public init(reason: String, isStale: Bool) {
+        self.reason = reason
+        self.isStale = isStale
+    }
+}
+
 public struct Issue {
     public let auditType: String
     public let compactDescription: String
@@ -14,6 +29,8 @@ public struct Issue {
     public let elementIdentifier: String
     public let elementLabel: String
     public let elementFrame: CGRect?
+    public let severity: Severity
+    public let acceptance: Acceptance?
 
     public init(
         auditType: String,
@@ -21,7 +38,9 @@ public struct Issue {
         detailedDescription: String,
         elementIdentifier: String,
         elementLabel: String,
-        elementFrame: CGRect?
+        elementFrame: CGRect?,
+        severity: Severity = .error,
+        acceptance: Acceptance? = nil
     ) {
         self.auditType = auditType
         self.compactDescription = compactDescription
@@ -29,5 +48,21 @@ public struct Issue {
         self.elementIdentifier = elementIdentifier
         self.elementLabel = elementLabel
         self.elementFrame = elementFrame
+        self.severity = severity
+        self.acceptance = acceptance
+    }
+
+    /// Returns a copy of this issue with the given acceptance annotation.
+    public func with(acceptance: Acceptance?) -> Issue {
+        Issue(
+            auditType: auditType,
+            compactDescription: compactDescription,
+            detailedDescription: detailedDescription,
+            elementIdentifier: elementIdentifier,
+            elementLabel: elementLabel,
+            elementFrame: elementFrame,
+            severity: severity,
+            acceptance: acceptance
+        )
     }
 }
