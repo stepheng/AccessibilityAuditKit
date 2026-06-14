@@ -70,6 +70,25 @@ final class SupplementalAuditScannerTests: XCTestCase {
         XCTAssertEqual(issue.elementIdentifier, "home.closeButton")
     }
 
+    func testSnapshotIssuesIncludeLocatorHints() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "home.closeButton",
+                    label: "Close",
+                    frame: CGRect(x: 10, y: 10, width: 30, height: 30)
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(SupplementalAuditScanner.issues(in: root, checks: .targetSize).first)
+
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "source.search.identifier" })
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "source.search.label" })
+    }
+
     func testDoesNotDescendIntoInteractiveElements() {
         // The inner button is part of the outer control's composite; only the
         // outermost interactive element counts as a target.

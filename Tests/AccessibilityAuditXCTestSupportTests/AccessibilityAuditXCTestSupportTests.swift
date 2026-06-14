@@ -21,4 +21,16 @@ final class AccessibilityAuditXCTestSupportTests: XCTestCase {
             "Contrast, Hit Region"
         )
     }
+
+    func testAppleAuditLocatorHintHelperUsesElementMetadata() {
+        let hints = AccessibilityAuditIssueHints.locatorHints(
+            auditType: "Hit Region",
+            identifier: "home.closeButton",
+            label: "Close"
+        )
+
+        XCTAssertTrue(hints.contains { $0.automationKey == "source.search.identifier" })
+        XCTAssertTrue(hints.contains { $0.automationKey == "source.search.label" })
+        XCTAssertTrue(hints.contains { $0.automationKey == "audit.remediation.target-size" })
+    }
 }

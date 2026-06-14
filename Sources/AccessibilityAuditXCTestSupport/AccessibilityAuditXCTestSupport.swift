@@ -42,6 +42,20 @@ public enum AccessibilityAuditTypeNameFormatter {
     }
 }
 
+public enum AccessibilityAuditIssueHints {
+    public static func locatorHints(
+        auditType: String,
+        identifier: String,
+        label: String
+    ) -> [IssueReviewerHint] {
+        IssueReviewerHints.elementLocatorHints(
+            identifier: identifier,
+            label: label,
+            auditType: auditType
+        ) + IssueReviewerHints.remediationHints(auditType: auditType)
+    }
+}
+
 public extension XCTestCase {
     @MainActor
     func attachAccessibilityAuditReport(
@@ -119,14 +133,22 @@ public extension XCUIApplication {
 
         try performAccessibilityAudit(for: auditTypes) { issue in
             let element = issue.element
+            let auditTypeName = AccessibilityAuditTypeNameFormatter.name(for: issue.auditType)
+            let identifier = element?.identifier ?? "No element identifier"
+            let label = element?.label ?? "No element label"
             issues.append(
                 Issue(
-                    auditType: AccessibilityAuditTypeNameFormatter.name(for: issue.auditType),
+                    auditType: auditTypeName,
                     compactDescription: issue.compactDescription,
                     detailedDescription: issue.detailedDescription,
-                    elementIdentifier: element?.identifier ?? "No element identifier",
-                    elementLabel: element?.label ?? "No element label",
-                    elementFrame: element?.frame
+                    elementIdentifier: identifier,
+                    elementLabel: label,
+                    elementFrame: element?.frame,
+                    reviewerHints: AccessibilityAuditIssueHints.locatorHints(
+                        auditType: auditTypeName,
+                        identifier: identifier,
+                        label: label
+                    )
                 )
             )
             return true

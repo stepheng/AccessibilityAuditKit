@@ -166,7 +166,8 @@ public enum SupplementalAuditScanner {
         AuditedElement(
             identifier: snapshot.identifier,
             label: snapshot.label,
-            frame: snapshot.frame
+            frame: snapshot.frame,
+            reviewerHints: reviewerHints(for: snapshot, auditType: "Non-text Contrast")
         )
     }
 
@@ -184,7 +185,8 @@ public enum SupplementalAuditScanner {
                     identifier: snapshot.identifier,
                     label: snapshot.label,
                     frame: snapshot.frame,
-                    visibleTextLabels: descendantStaticTextLabels(in: snapshot)
+                    visibleTextLabels: descendantStaticTextLabels(in: snapshot),
+                    reviewerHints: reviewerHints(for: snapshot, auditType: "Interactive Element")
                 )
             ]
         }
@@ -204,7 +206,8 @@ public enum SupplementalAuditScanner {
                     identifier: snapshot.identifier,
                     label: snapshot.label,
                     frame: snapshot.frame,
-                    value: snapshot.value.map { $0 as? String ?? String(describing: $0) }
+                    value: snapshot.value.map { $0 as? String ?? String(describing: $0) },
+                    reviewerHints: reviewerHints(for: snapshot, auditType: "Adjustable Value")
                 )
             ]
         }
@@ -224,11 +227,20 @@ public enum SupplementalAuditScanner {
                     identifier: snapshot.identifier,
                     label: snapshot.label,
                     frame: snapshot.frame,
-                    visibleTextLabels: descendantStaticTextLabels(in: snapshot)
+                    visibleTextLabels: descendantStaticTextLabels(in: snapshot),
+                    reviewerHints: reviewerHints(for: snapshot, auditType: "Input Purpose")
                 )
             ]
         }
         return snapshot.children.flatMap { textEntryElements(in: $0, within: bounds) }
+    }
+
+    private static func reviewerHints(for snapshot: any XCUIElementSnapshot, auditType: String) -> [IssueReviewerHint] {
+        IssueReviewerHints.elementLocatorHints(
+            identifier: snapshot.identifier,
+            label: snapshot.label,
+            auditType: auditType
+        )
     }
 
     private static func descendantStaticTextLabels(in snapshot: any XCUIElementSnapshot) -> [String] {
