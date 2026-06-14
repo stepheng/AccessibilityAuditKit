@@ -31,6 +31,18 @@ public final class AXAudit: NSObject {
         "Contrast, Text Clipped, Element Detection. In Xcode: Open Developer Tool → " +
         "Accessibility Inspector → audit this screen."
 
+    /// Keeps the audit in the host binary so `po AXAudit.run()` resolves from
+    /// LLDB. The app calls this once at launch (under `#if DEBUG`); the module
+    /// is otherwise unreferenced, so the linker dead-strips it — and an empty
+    /// body or a dead-store reference anchors nothing the optimizer can't drop.
+    /// The launch-argument check is a genuine runtime branch the linker cannot
+    /// evaluate, so it must keep `run()` and its whole call graph. A normal
+    /// launch does nothing; pass `-AXAuditAtLaunch` to audit immediately.
+    nonisolated public static func link() {
+        guard ProcessInfo.processInfo.arguments.contains("-AXAuditAtLaunch") else { return }
+        Task { @MainActor in print(run()) }
+    }
+
     /// Audits the current screen and writes a report immediately. Returns the
     /// report file path.
     @discardableResult
