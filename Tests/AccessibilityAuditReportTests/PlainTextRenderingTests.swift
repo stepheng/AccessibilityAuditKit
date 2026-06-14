@@ -132,6 +132,39 @@ final class PlainTextRenderingTests: XCTestCase {
         XCTAssertTrue(text.contains("Use Accessibility Inspector for contrast."))
     }
 
+    func testPlainTextIncludesReviewerHintsWithAutomationKeys() {
+        var report = AccessibilityAuditHTMLReport(title: "T")
+        report.record(
+            screen(name: "Home", issues: [
+                Issue(
+                    auditType: "Target Size",
+                    compactDescription: "c",
+                    detailedDescription: "d",
+                    elementIdentifier: "home.search",
+                    elementLabel: "Search",
+                    elementFrame: nil,
+                    reviewerHints: [
+                        IssueReviewerHint(
+                            title: "Search source by identifier",
+                            detail: "Search for accessibility identifier \"home.search\".",
+                            automationKey: "source.search.identifier"
+                        ),
+                        IssueReviewerHint(
+                            title: "Inspect owning component",
+                            detail: "Inspect the shared button style.",
+                            automationKey: nil
+                        )
+                    ]
+                )
+            ])
+        )
+
+        let text = report.renderPlainText()
+
+        XCTAssertTrue(text.contains("hint[source.search.identifier]: Search source by identifier - Search for accessibility identifier \"home.search\"."))
+        XCTAssertTrue(text.contains("hint: Inspect owning component - Inspect the shared button style."))
+    }
+
     func testErrorsAreListedBeforeWarningsAndAccepted() throws {
         var report = AccessibilityAuditHTMLReport(title: "T")
         report.record(

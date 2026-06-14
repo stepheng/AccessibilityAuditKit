@@ -22,6 +22,18 @@ public struct Acceptance: Sendable, Equatable {
     }
 }
 
+public struct IssueReviewerHint: Sendable, Equatable, Codable {
+    public let title: String
+    public let detail: String
+    public let automationKey: String?
+
+    public init(title: String, detail: String, automationKey: String? = nil) {
+        self.title = title
+        self.detail = detail
+        self.automationKey = automationKey
+    }
+}
+
 public struct Issue {
     public let auditType: String
     public let compactDescription: String
@@ -34,6 +46,7 @@ public struct Issue {
     /// (e.g. Duplicate Labels) so the report can highlight every member, not
     /// just the first. Empty for findings about a single element.
     public let additionalFrames: [CGRect]
+    public let reviewerHints: [IssueReviewerHint]
     public let severity: Severity
     public let acceptance: Acceptance?
 
@@ -45,6 +58,7 @@ public struct Issue {
         elementLabel: String,
         elementFrame: CGRect?,
         additionalFrames: [CGRect] = [],
+        reviewerHints: [IssueReviewerHint] = [],
         severity: Severity = .error,
         acceptance: Acceptance? = nil
     ) {
@@ -55,6 +69,7 @@ public struct Issue {
         self.elementLabel = elementLabel
         self.elementFrame = elementFrame
         self.additionalFrames = additionalFrames
+        self.reviewerHints = reviewerHints
         self.severity = severity
         self.acceptance = acceptance
     }
@@ -69,6 +84,7 @@ public struct Issue {
             elementLabel: elementLabel,
             elementFrame: elementFrame,
             additionalFrames: additionalFrames,
+            reviewerHints: reviewerHints,
             severity: severity,
             acceptance: acceptance
         )

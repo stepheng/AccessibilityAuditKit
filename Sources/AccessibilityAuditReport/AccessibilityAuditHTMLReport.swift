@@ -187,6 +187,9 @@ public struct AccessibilityAuditHTMLReport {
         if issue.detailedDescription.isEmpty == false {
             lines.append("      details: \(issue.detailedDescription)")
         }
+        for hint in issue.reviewerHints {
+            lines.append("      \(plainTextHintLine(hint))")
+        }
         if let acceptance = issue.acceptance {
             let staleNote = acceptance.isStale ? " (acceptance may be outdated — re-review)" : ""
             lines.append("      accepted: \(acceptance.reason)\(staleNote)")
@@ -197,6 +200,16 @@ public struct AccessibilityAuditHTMLReport {
     private static func plainTextMarker(for issue: Issue) -> String {
         if issue.acceptance != nil { return "[ACCEPTED]" }
         return issue.severity == .warning ? "[WARN]" : "[ERROR]"
+    }
+
+    private static func plainTextHintLine(_ hint: IssueReviewerHint) -> String {
+        let prefix: String
+        if let key = hint.automationKey, key.isEmpty == false {
+            prefix = "hint[\(key)]"
+        } else {
+            prefix = "hint"
+        }
+        return "\(prefix): \(hint.title) - \(hint.detail)"
     }
 
     private static func renderVariantSummary(_ screens: [ScreenResult]) -> String {
@@ -345,7 +358,7 @@ public struct AccessibilityAuditHTMLReport {
         <dt>Details</dt><dd>\(htmlEscaped(issue.detailedDescription))</dd>
         <dt>Element identifier</dt><dd>\(htmlEscaped(issue.elementIdentifier))</dd>
         <dt>Element label</dt><dd>\(htmlEscaped(issue.elementLabel))</dd>
-        <dt>Frame</dt><dd>\(htmlEscaped(frameDescription))</dd>\(acceptanceRow(for: issue))
+        <dt>Frame</dt><dd>\(htmlEscaped(frameDescription))</dd>\(reviewerHintsRow(for: issue))\(acceptanceRow(for: issue))
         </dl>
         </li>
         """
@@ -367,6 +380,22 @@ public struct AccessibilityAuditHTMLReport {
             return acceptance.isStale ? "Accepted (re-review)" : "Accepted"
         }
         return issue.severity == .warning ? "Warning" : "Error"
+    }
+
+    private static func reviewerHintsRow(for issue: Issue) -> String {
+        guard issue.reviewerHints.isEmpty == false else { return "" }
+        let items = issue.reviewerHints.map { hint in
+            let key = hint.automationKey.map { " <code>\(htmlEscaped($0))</code>" } ?? ""
+            return """
+            <li><strong>\(htmlEscaped(hint.title))</strong>\(key)<br>\(htmlEscaped(hint.detail))</li>
+            """
+        }.joined(separator: "\n")
+        return """
+
+<dt>Reviewer hints</dt><dd><ul class="reviewer-hints">
+\(items)
+</ul></dd>
+"""
     }
 
     private static func acceptanceRow(for issue: Issue) -> String {

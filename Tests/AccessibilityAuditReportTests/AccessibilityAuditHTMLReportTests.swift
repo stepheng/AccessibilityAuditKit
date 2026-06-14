@@ -156,6 +156,41 @@ final class AccessibilityAuditHTMLReportTests: XCTestCase {
         XCTAssertEqual(boxes, 2)
     }
 
+    func testRenderIncludesEscapedReviewerHintsWhenPresent() {
+        var report = AccessibilityAuditHTMLReport(title: "T")
+        report.record(
+            ScreenResult(
+                name: "Home",
+                screenshotPNGData: Data([0]),
+                screenshotSize: CGSize(width: 10, height: 10),
+                issues: [
+                    Issue(
+                        auditType: "Target Size",
+                        compactDescription: "c",
+                        detailedDescription: "d",
+                        elementIdentifier: "home.search",
+                        elementLabel: "Search",
+                        elementFrame: nil,
+                        reviewerHints: [
+                            IssueReviewerHint(
+                                title: "Search <source>",
+                                detail: "Search for identifier \"home.search\" & inspect the shared control.",
+                                automationKey: "source.search.identifier"
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+
+        let html = report.renderHTML()
+
+        XCTAssertTrue(html.contains("<dt>Reviewer hints</dt>"))
+        XCTAssertTrue(html.contains("Search &lt;source&gt;"))
+        XCTAssertTrue(html.contains("Search for identifier &quot;home.search&quot; &amp; inspect the shared control."))
+        XCTAssertTrue(html.contains("source.search.identifier"))
+    }
+
     func testConsistentIdentificationCheckRecordsIssuesFromInventories() throws {
         var report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
         report.recordElementInventory(
