@@ -109,6 +109,29 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issues.isEmpty)
     }
 
+    func testTargetSizeCarriesLocatorAndRemediationHints() throws {
+        let issues = SupplementalAccessibilityChecks.targetSizeIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.close",
+                    label: "Close",
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20),
+                    reviewerHints: [
+                        IssueReviewerHint(
+                            title: "Search source by identifier",
+                            detail: "Search for accessibility identifier \"toolbar.close\".",
+                            automationKey: "source.search.identifier"
+                        )
+                    ]
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "source.search.identifier" })
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "audit.remediation.target-size" })
+    }
+
     // MARK: - Target Spacing (WCAG 2.5.8)
 
     func testTargetSpacingFlagsUndersizedTargetTouchingNeighbour() throws {
@@ -860,6 +883,22 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         )
 
         XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testLabelInNameCarriesLabelRemediationHint() throws {
+        let issues = SupplementalAccessibilityChecks.labelInNameIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "compose.send",
+                    label: "Submit",
+                    frame: CGRect(x: 0, y: 0, width: 80, height: 44),
+                    visibleTextLabels: ["Send"]
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "audit.remediation.label" })
     }
 
     // MARK: - Adjustable Value (WCAG 4.1.2)

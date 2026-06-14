@@ -4,6 +4,28 @@ import Foundation
 import XCTest
 
 final class ReportRenderingTests: XCTestCase {
+    func testLocatorHintsUseIdentifierAndLabelWhenAvailable() {
+        let hints = IssueReviewerHints.elementLocatorHints(
+            identifier: "home.search",
+            label: "Search",
+            auditType: "Target Size"
+        )
+
+        XCTAssertTrue(hints.contains { $0.automationKey == "source.search.identifier" && $0.detail.contains("home.search") })
+        XCTAssertTrue(hints.contains { $0.automationKey == "source.search.label" && $0.detail.contains("Search") })
+    }
+
+    func testLocatorHintsSkipPlaceholderValues() {
+        let hints = IssueReviewerHints.elementLocatorHints(
+            identifier: "No element identifier",
+            label: "No element label",
+            auditType: "Screen Title"
+        )
+
+        XCTAssertFalse(hints.contains { $0.automationKey == "source.search.identifier" })
+        XCTAssertFalse(hints.contains { $0.automationKey == "source.search.label" })
+    }
+
     func testHeaderShowsSeverityCounts() {
         var report = AccessibilityAuditHTMLReport(title: "T")
         report.record(

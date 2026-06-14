@@ -55,6 +55,7 @@ final class NonTextContrastCheckTests: XCTestCase {
         XCTAssertEqual(issue.severity, .warning)
         XCTAssertEqual(issue.elementFrame, frame)
         XCTAssertEqual(issue.elementIdentifier, "icon.share")
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "audit.remediation.non-text-contrast" })
         XCTAssertTrue(
             issue.compactDescription.hasPrefix("Graphical object contrast is about 1.5:1"),
             "Unexpected message: \(issue.compactDescription)"

@@ -58,6 +58,7 @@ extension SupplementalAccessibilityChecks {
                 elementIdentifier: element.identifier,
                 elementLabel: element.label,
                 elementFrame: element.frame,
+                reviewerHints: issueReviewerHints(for: element, auditType: "Non-text Contrast"),
                 severity: .warning
             )
         }

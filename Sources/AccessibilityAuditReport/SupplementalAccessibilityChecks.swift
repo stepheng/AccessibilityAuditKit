@@ -18,6 +18,7 @@ public struct AuditedElement {
     /// The element's accessibility value, used to verify adjustable controls
     /// announce their current state (WCAG 4.1.2 Name, Role, Value).
     public let value: String?
+    public let reviewerHints: [IssueReviewerHint]
     /// Whether this element must carry an accessible description — an
     /// interactive control or a meaningful image. Used by the in-process
     /// missing-description check, the equivalent of Apple's
@@ -30,6 +31,7 @@ public struct AuditedElement {
         frame: CGRect,
         visibleTextLabels: [String] = [],
         value: String? = nil,
+        reviewerHints: [IssueReviewerHint] = [],
         requiresDescription: Bool = false
     ) {
         self.identifier = identifier
@@ -37,6 +39,7 @@ public struct AuditedElement {
         self.frame = frame
         self.visibleTextLabels = visibleTextLabels
         self.value = value
+        self.reviewerHints = reviewerHints
         self.requiresDescription = requiresDescription
     }
 }
@@ -64,6 +67,10 @@ public enum SupplementalAccessibilityChecks {
     /// neighbouring target (or another undersized target's circle).
     public static let undersizedTargetThreshold: CGFloat = 24
 
+    static func issueReviewerHints(for element: AuditedElement, auditType: String) -> [IssueReviewerHint] {
+        element.reviewerHints + IssueReviewerHints.remediationHints(auditType: auditType)
+    }
+
     /// Flags interactive elements below the WCAG target-size thresholds,
     /// bucketing each element to its worst failing level so it is reported
     /// once. An element smaller than `minimumDimension` in a dimension fails
@@ -87,6 +94,7 @@ public enum SupplementalAccessibilityChecks {
                         elementIdentifier: element.identifier,
                         elementLabel: element.label,
                         elementFrame: frame,
+                        reviewerHints: issueReviewerHints(for: element, auditType: "Target Size (Minimum)"),
                         severity: .error
                     )
                 }
@@ -98,6 +106,7 @@ public enum SupplementalAccessibilityChecks {
                         elementIdentifier: element.identifier,
                         elementLabel: element.label,
                         elementFrame: frame,
+                        reviewerHints: issueReviewerHints(for: element, auditType: "Target Size (Enhanced)"),
                         severity: .warning
                     )
                 }
@@ -144,7 +153,10 @@ public enum SupplementalAccessibilityChecks {
                         detailedDescription: "This target and \"\(second.identifier)\" (\(second.label)) are positioned so that a \(format(threshold))pt target-spacing circle on an undersized target overlaps the other. WCAG 2.5.8 requires undersized targets (smaller than \(format(threshold))×\(format(threshold))pt) to be spaced so their \(format(threshold))pt-diameter circles do not overlap neighbouring targets.",
                         elementIdentifier: first.identifier,
                         elementLabel: first.label,
-                        elementFrame: first.frame
+                        elementFrame: first.frame,
+                        reviewerHints: first.reviewerHints
+                            + second.reviewerHints
+                            + IssueReviewerHints.remediationHints(auditType: "Target Spacing")
                     )
                 )
             }
@@ -199,7 +211,9 @@ public enum SupplementalAccessibilityChecks {
                     elementIdentifier: distinct[0].identifier,
                     elementLabel: distinct[0].label,
                     elementFrame: distinct[0].frame,
-                    additionalFrames: distinct.dropFirst().map(\.frame)
+                    additionalFrames: distinct.dropFirst().map(\.frame),
+                    reviewerHints: distinct.flatMap(\.reviewerHints)
+                        + IssueReviewerHints.remediationHints(auditType: "Duplicate Labels")
                 )
             }
             .sorted { $0.elementLabel < $1.elementLabel }
@@ -275,6 +289,7 @@ public enum SupplementalAccessibilityChecks {
                 elementIdentifier: element.identifier,
                 elementLabel: element.label,
                 elementFrame: element.frame,
+                reviewerHints: issueReviewerHints(for: element, auditType: "Generic Label"),
                 severity: .warning
             )
         }
@@ -335,6 +350,7 @@ public enum SupplementalAccessibilityChecks {
                         elementIdentifier: element.identifier,
                         elementLabel: element.label,
                         elementFrame: element.frame,
+                        reviewerHints: issueReviewerHints(for: element, auditType: "Label Hygiene"),
                         severity: .warning
                     )
                 )
@@ -395,7 +411,8 @@ public enum SupplementalAccessibilityChecks {
                 detailedDescription: "The element displays \(quotedTexts) but its accessible label is \"\(element.label)\". Voice Control users speak the visible text to activate controls, so WCAG 2.5.3 requires the accessible name to contain it.",
                 elementIdentifier: element.identifier,
                 elementLabel: element.label,
-                elementFrame: element.frame
+                elementFrame: element.frame,
+                reviewerHints: issueReviewerHints(for: element, auditType: "Label in Name")
             )
         }
     }
@@ -416,7 +433,8 @@ public enum SupplementalAccessibilityChecks {
                     detailedDescription: "The control has no accessibility value, so VoiceOver users cannot hear its current state or confirm that adjusting it had an effect. WCAG 4.1.2 requires controls to expose their name, role, and value.",
                     elementIdentifier: element.identifier,
                     elementLabel: element.label,
-                    elementFrame: element.frame
+                    elementFrame: element.frame,
+                    reviewerHints: issueReviewerHints(for: element, auditType: "Adjustable Value")
                 )
             }
     }
@@ -514,6 +532,7 @@ public enum SupplementalAccessibilityChecks {
                 elementIdentifier: element.identifier,
                 elementLabel: element.label,
                 elementFrame: element.frame,
+                reviewerHints: issueReviewerHints(for: element, auditType: "Input Purpose"),
                 severity: .warning
             )
         }
@@ -537,6 +556,7 @@ public enum SupplementalAccessibilityChecks {
                     elementIdentifier: element.identifier,
                     elementLabel: element.label,
                     elementFrame: element.frame,
+                    reviewerHints: issueReviewerHints(for: element, auditType: "Element Description"),
                     severity: .error
                 )
             }
@@ -576,7 +596,9 @@ public enum SupplementalAccessibilityChecks {
                     detailedDescription: "The element appears as \(labelsByScreen). WCAG 3.2.4 requires components with the same function to be identified consistently, so screen reader users can recognise the control wherever it appears.",
                     elementIdentifier: identifier,
                     elementLabel: group[0].element.label,
-                    elementFrame: nil
+                    elementFrame: nil,
+                    reviewerHints: group.flatMap { $0.element.reviewerHints }
+                        + IssueReviewerHints.remediationHints(auditType: "Duplicate Labels")
                 )
             }
     }
