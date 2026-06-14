@@ -30,7 +30,7 @@ enum UIAccessibilityTreeWalker {
             node(for: $0, window: window, ownerIsScrollView: objectIsScrollView, ownerObject: object)
         }
         return AccessibilityNode(
-            identifier: (object as? UIAccessibilityIdentification)?.accessibilityIdentifier ?? "",
+            identifier: accessibilityIdentifier(of: object),
             label: object.accessibilityLabel ?? "",
             value: object.accessibilityValue,
             traits: object.accessibilityTraits,
@@ -45,21 +45,36 @@ enum UIAccessibilityTreeWalker {
         )
     }
 
+    @MainActor
+    private static func accessibilityIdentifier(of object: NSObject) -> String {
+        if let identifier = (object as? UIAccessibilityIdentification)?.accessibilityIdentifier {
+            return identifier
+        }
+        if let view = object as? UIView {
+            return view.accessibilityIdentifier ?? ""
+        }
+        return ""
+    }
+
     private static func className(of object: NSObject) -> String {
         String(describing: type(of: object))
     }
 
     private static func moduleName(of object: NSObject) -> String? {
         let qualified = NSStringFromClass(type(of: object))
-        guard let separator = qualified.firstIndex(of: ".") else { return nil }
-        return String(qualified[..<separator])
+        if let separator = qualified.firstIndex(of: ".") {
+            return String(qualified[..<separator])
+        }
+        let reflected = String(reflecting: type(of: object))
+        guard let separator = reflected.firstIndex(of: ".") else { return nil }
+        return String(reflected[..<separator])
     }
 
     /// An element's accessibility children: explicit `accessibilityElements`
     /// when present, otherwise the view's subviews.
     @MainActor
     private static func accessibilityChildren(of object: NSObject) -> [NSObject] {
-        if let elements = object.accessibilityElements {
+        if let elements = object.accessibilityElements, elements.isEmpty == false {
             return elements.compactMap { $0 as? NSObject }
         }
         if let view = object as? UIView {

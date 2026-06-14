@@ -11,6 +11,9 @@ import UIKit
 import XCTest
 @testable import AccessibilityAuditLiveSupport
 
+private final class RuntimeBreadcrumbOwnerView: UIView {}
+private final class RuntimeBreadcrumbActionView: UIView {}
+
 final class LiveScreenScanTests: XCTestCase {
     private func button(_ id: String, _ label: String, _ frame: CGRect) -> AccessibilityNode {
         AccessibilityNode(identifier: id, label: label, traits: .button, frame: frame, isAccessibilityElement: true)
@@ -152,6 +155,27 @@ final class LiveScreenScanTests: XCTestCase {
         XCTAssertEqual(elements.first?.identifier, "real.child")
     }
 
+    @MainActor
+    func testWalkerCapturesRuntimeClassAndOwnerBreadcrumbs() throws {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        let owner = RuntimeBreadcrumbOwnerView(frame: window.bounds)
+        let action = RuntimeBreadcrumbActionView(frame: CGRect(x: 10, y: 20, width: 44, height: 44))
+        action.isAccessibilityElement = true
+        action.accessibilityIdentifier = "shared.close"
+        action.accessibilityLabel = "Close"
+        owner.addSubview(action)
+        window.addSubview(owner)
+        window.layoutIfNeeded()
+
+        let root = UIAccessibilityTreeWalker.node(for: window)
+        let node = try XCTUnwrap(firstNode(withIdentifier: "shared.close", in: root), treeDescription(root))
+
+        XCTAssertEqual(node.objectClassName, "RuntimeBreadcrumbActionView")
+        XCTAssertEqual(node.ownerClassName, "RuntimeBreadcrumbOwnerView")
+        XCTAssertEqual(node.objectModuleName, "AccessibilityAuditLiveSupportTests")
+        XCTAssertEqual(node.ownerModuleName, "AccessibilityAuditLiveSupportTests")
+    }
+
     func testNonInteractiveContainerRecursesIntoInteractiveChildren() {
         let root = AccessibilityNode(
             frame: CGRect(x: 0, y: 0, width: 400, height: 800),
@@ -255,6 +279,23 @@ final class LiveScreenScanTests: XCTestCase {
 
     private func anyScrollOwned(_ node: AccessibilityNode) -> Bool {
         node.ownerIsScrollView || node.children.contains(where: anyScrollOwned)
+    }
+
+    private func firstNode(withIdentifier identifier: String, in node: AccessibilityNode) -> AccessibilityNode? {
+        if node.identifier == identifier { return node }
+        for child in node.children {
+            if let match = firstNode(withIdentifier: identifier, in: child) {
+                return match
+            }
+        }
+        return nil
+    }
+
+    private func treeDescription(_ node: AccessibilityNode, depth: Int = 0) -> String {
+        let indent = String(repeating: "  ", count: depth)
+        let current = "\(indent)\(node.objectClassName) id=\(node.identifier) label=\(node.label)"
+        return ([current] + node.children.map { treeDescription($0, depth: depth + 1) })
+            .joined(separator: "\n")
     }
 
     func testUndersizedRealAdjustableIsStillFlagged() {
