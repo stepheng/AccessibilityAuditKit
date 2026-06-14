@@ -143,6 +143,62 @@ public struct AccessibilityAuditHTMLReport {
         """
     }
 
+    /// Renders a plain-text summary of the audit, mirroring `renderHTML()`'s
+    /// resolved-acceptance state and issue ordering. Intended for console output
+    /// (e.g. the in-process LLDB audit) so a person or an LLM can act on the
+    /// findings without opening the HTML report.
+    public func renderPlainText() -> String {
+        let resolved = resolvedScreens
+        var lines: [String] = [
+            title,
+            String(repeating: "=", count: max(title.count, 1)),
+            "Screens audited: \(resolved.count)  |  Issues: \(issueCount)  |  " +
+                "Blocking errors: \(blockingIssueCount)  |  Warnings: \(warningCount)  |  " +
+                "Accepted: \(acceptedCount)"
+        ]
+
+        for screen in resolved {
+            lines.append("")
+            lines.append("── [\(screen.variant)] \(screen.name) ──")
+            let ordered = Self.orderedIssues(screen.issues)
+            if ordered.isEmpty {
+                lines.append("  No issues found for this screen.")
+                continue
+            }
+            for issue in ordered {
+                lines += Self.plainTextIssueLines(issue, screenshotSize: screen.screenshotSize)
+            }
+        }
+
+        lines.append("")
+        lines.append("Manual follow-up checks:")
+        lines += Self.manualChecklistItems(additionalManualChecks).map { "  - \($0)" }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private static func plainTextIssueLines(_ issue: Issue, screenshotSize: CGSize) -> [String] {
+        var lines = [
+            "  \(plainTextMarker(for: issue)) \(issue.auditType): \(issue.compactDescription)",
+            "      severity: \(severityLabel(for: issue))",
+            "      element: \(issue.elementIdentifier)  label: \"\(issue.elementLabel)\"",
+            "      frame: \(frameDescription(for: issue.elementFrame, screenshotSize: screenshotSize))"
+        ]
+        if issue.detailedDescription.isEmpty == false {
+            lines.append("      details: \(issue.detailedDescription)")
+        }
+        if let acceptance = issue.acceptance {
+            let staleNote = acceptance.isStale ? " (acceptance may be outdated — re-review)" : ""
+            lines.append("      accepted: \(acceptance.reason)\(staleNote)")
+        }
+        return lines
+    }
+
+    private static func plainTextMarker(for issue: Issue) -> String {
+        if issue.acceptance != nil { return "[ACCEPTED]" }
+        return issue.severity == .warning ? "[WARN]" : "[ERROR]"
+    }
+
     private static func renderVariantSummary(_ screens: [ScreenResult]) -> String {
         let summaries = Dictionary(grouping: screens, by: \.variant)
             .map { variant, screens in
@@ -165,15 +221,21 @@ public struct AccessibilityAuditHTMLReport {
         .joined(separator: "\n")
     }
 
-    private static func renderManualChecklist(_ additionalChecks: [String]) -> String {
-        let baseItems = [
+    /// The manual follow-up checklist items: a fixed base set plus any
+    /// `additionalManualChecks`. Shared by the HTML and plain-text renderers so
+    /// both surface the same follow-ups.
+    private static func manualChecklistItems(_ additionalChecks: [String]) -> [String] {
+        [
             "VoiceOver focus order follows the visual and task flow.",
             "Full Keyboard Access can reach and activate core controls.",
             "Switch Control can reach and activate core controls.",
             "Voice Control names are unique enough for primary actions.",
             "Custom grouped content exposes the right accessibility children."
-        ]
-        let items = (baseItems + additionalChecks)
+        ] + additionalChecks
+    }
+
+    private static func renderManualChecklist(_ additionalChecks: [String]) -> String {
+        let items = manualChecklistItems(additionalChecks)
             .map { "<li>\(htmlEscaped($0))</li>" }
             .joined(separator: "\n")
         return """

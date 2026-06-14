@@ -97,12 +97,16 @@ public final class AXAudit: NSObject {
         }
         report.additionalManualChecks = [inspectorPointer]
 
+        // Print the findings to the console so a person — or an LLM reading the
+        // LLDB session — can act on them without opening the HTML report.
+        print(report.renderPlainText())
+
         dumpCounter += 1
         let path = (NSTemporaryDirectory() as NSString)
             .appendingPathComponent("accessibility-audit-\(dumpCounter).html")
         do {
             try report.renderHTML().write(toFile: path, atomically: true, encoding: .utf8)
-            print("AXAudit — report written. Open with:\n  open \(path)")
+            print("\nAXAudit — full HTML report (with screenshots) written. Open with:\n  open \(path)")
         } catch {
             print("AXAudit — failed to write report: \(error)")
         }

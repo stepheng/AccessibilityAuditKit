@@ -133,7 +133,7 @@ Setup (one-time):
 Then call it from LLDB at a paused breakpoint:
 
 ```
-(lldb) po AXAudit.run()              // audit current screen, write HTML, print path
+(lldb) po AXAudit.run()              // audit current screen, print findings + write HTML
 (lldb) po AXAudit.record("Memories") // accumulate multiple screens…
 (lldb) po AXAudit.record("Photos")
 (lldb) po AXAudit.dump()             // …then one combined report (+ consistent identification)
@@ -144,8 +144,13 @@ Objective-C/system frame it falls back to Objective-C — use `po [AXAudit run]`
 there, or pause in a Swift frame. Launching the app with the `-AXAuditAtLaunch`
 argument runs an audit automatically at startup.
 
-`run()`/`dump()` write a self-contained HTML report to `NSTemporaryDirectory()`
-and print the path; on the simulator, `open <path>` shows it.
+`run()`/`dump()` print a plain-text summary of the findings straight to the
+LLDB/Xcode console — counts, then each screen's issues (errors, then warnings,
+then accepted) with element identifier, label, frame, and details — so you (or
+an LLM reading the session) can act on them without opening the report. They
+also write a self-contained HTML report (with screenshots and issue overlays)
+to `NSTemporaryDirectory()` and print its path; on the simulator, `open <path>`
+shows it.
 
 **Coverage.** The in-process path runs the supplemental frame/label checks plus
 a missing-element-description check. It cannot run Apple's pixel-based audits
