@@ -183,16 +183,47 @@ public enum SupplementalAccessibilityChecks {
             .filter { $0.count > 1 }
             .sorted { $0[0].label < $1[0].label }
             .map { group in
-                let identifiers = group.map { "\"\($0.identifier)\"" }.joined(separator: ", ")
+                let members = group
+                    .map { "\"\($0.identifier)\" (\(describe($0.frame)))" }
+                    .joined(separator: ", ")
+                let sharedFrameNote = framesCoincide(group)
+                    ? " All instances occupy the same frame, so this is most likely one control exposed more than once by the framework (for example a system tab bar item) rather than \(group.count) distinct controls."
+                    : ""
                 return Issue(
                     auditType: "Duplicate Labels",
                     compactDescription: "\(group.count) interactive elements share the label \"\(group[0].label)\"",
-                    detailedDescription: "Elements \(identifiers) share the same accessible label, which is ambiguous for Voice Control and screen reader users. WCAG 2.4.6 requires labels that distinguish controls.",
+                    detailedDescription: "Elements \(members) share the same accessible label, which is ambiguous for Voice Control and screen reader users. WCAG 2.4.6 requires labels that distinguish controls.\(sharedFrameNote)",
                     elementIdentifier: group[0].identifier,
                     elementLabel: group[0].label,
-                    elementFrame: group[0].frame
+                    elementFrame: group[0].frame,
+                    additionalFrames: group.dropFirst().map(\.frame)
                 )
             }
+    }
+
+    /// Whether every element in the group occupies the same frame (within
+    /// half a point on each edge). When they do, the duplicate label is almost
+    /// certainly one control surfaced more than once in the accessibility tree
+    /// rather than genuinely distinct controls.
+    private static func framesCoincide(_ elements: [AuditedElement]) -> Bool {
+        guard let first = elements.first?.frame else { return false }
+        return elements.dropFirst().allSatisfy { framesApproximatelyEqual($0.frame, first) }
+    }
+
+    private static func framesApproximatelyEqual(
+        _ lhs: CGRect,
+        _ rhs: CGRect,
+        tolerance: CGFloat = 0.5
+    ) -> Bool {
+        abs(lhs.minX - rhs.minX) <= tolerance
+            && abs(lhs.minY - rhs.minY) <= tolerance
+            && abs(lhs.width - rhs.width) <= tolerance
+            && abs(lhs.height - rhs.height) <= tolerance
+    }
+
+    /// A compact "x, y, w×h" summary of a frame for finding detail text.
+    private static func describe(_ frame: CGRect) -> String {
+        "x: \(format(frame.minX)), y: \(format(frame.minY)), \(format(frame.width))×\(format(frame.height))"
     }
 
     /// Labels that describe the control's role or prompt rather than its

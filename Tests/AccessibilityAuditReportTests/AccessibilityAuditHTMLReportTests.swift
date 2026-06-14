@@ -125,6 +125,37 @@ final class AccessibilityAuditHTMLReportTests: XCTestCase {
         XCTAssertFalse(html.contains(".screenshot {\n  display: block;"))
     }
 
+    func testIssueWithAdditionalFramesHighlightsEveryMember() {
+        var report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
+        report.record(
+            ScreenResult(
+                name: "Files",
+                screenshotPNGData: Data([0, 1, 2, 3]),
+                screenshotSize: CGSize(width: 200, height: 100),
+                issues: [
+                    Issue(
+                        auditType: "Duplicate Labels",
+                        compactDescription: "2 interactive elements share the label \"Files\"",
+                        detailedDescription: "d",
+                        elementIdentifier: "",
+                        elementLabel: "Files",
+                        elementFrame: CGRect(x: 10, y: 10, width: 40, height: 30),
+                        additionalFrames: [CGRect(x: 100, y: 10, width: 40, height: 30)]
+                    )
+                ]
+            )
+        )
+
+        let html = report.renderHTML()
+
+        // One overlay box per member element, all sharing the issue id so a
+        // single hover lights them up together.
+        let boxes = html.components(
+            separatedBy: "class=\"issue-frame\" data-issue-id=\"screen-0-issue-0\""
+        ).count - 1
+        XCTAssertEqual(boxes, 2)
+    }
+
     func testConsistentIdentificationCheckRecordsIssuesFromInventories() throws {
         var report = AccessibilityAuditHTMLReport(title: "Capsyl Accessibility Audit")
         report.recordElementInventory(

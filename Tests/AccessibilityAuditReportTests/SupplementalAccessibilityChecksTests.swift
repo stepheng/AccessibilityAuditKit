@@ -310,6 +310,39 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issue.detailedDescription.contains("row1.edit"))
         XCTAssertTrue(issue.detailedDescription.contains("row2.edit"))
         XCTAssertTrue(issue.detailedDescription.contains("2.4.6"))
+        // The finding carries every member's frame, not just the first, so the
+        // report can highlight each one.
+        XCTAssertEqual(issue.elementFrame, CGRect(x: 0, y: 0, width: 44, height: 44))
+        XCTAssertEqual(issue.additionalFrames, [CGRect(x: 0, y: 100, width: 44, height: 44)])
+    }
+
+    func testDuplicateLabelsNotesWhenMembersShareAFrame() throws {
+        // Two elements with the same label and the *same* frame are almost
+        // certainly one control exposed twice by the framework (e.g. a system
+        // tab bar item), not two distinct controls — the finding says so.
+        let sharedFrame = CGRect(x: 282, y: 795, width: 95, height: 54)
+        let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
+            interactiveElements: [
+                AuditedElement(identifier: "", label: "Files", frame: sharedFrame),
+                AuditedElement(identifier: "", label: "Files", frame: sharedFrame)
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.additionalFrames, [sharedFrame])
+        XCTAssertTrue(issue.detailedDescription.contains("exposed more than once"))
+    }
+
+    func testDuplicateLabelsDoesNotNoteSharedFrameForDistinctElements() throws {
+        let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
+            interactiveElements: [
+                AuditedElement(identifier: "a", label: "Open", frame: CGRect(x: 0, y: 0, width: 44, height: 44)),
+                AuditedElement(identifier: "b", label: "Open", frame: CGRect(x: 0, y: 100, width: 44, height: 44))
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertFalse(issue.detailedDescription.contains("exposed more than once"))
     }
 
     func testDuplicateLabelsPassesUniqueLabels() {

@@ -319,13 +319,20 @@ public struct AccessibilityAuditHTMLReport {
         return issue.severity == .warning ? 1 : 0
     }
 
+    /// Draws one overlay box per element the finding covers — the primary
+    /// `elementFrame` plus any `additionalFrames` (e.g. each member of a
+    /// duplicate-label group). All boxes share the issue id, so a single
+    /// hover/focus on the card lights up every member together.
     private static func renderOverlay(_ issue: Issue, issueID: String, screenshotSize: CGSize) -> String {
-        guard let style = overlayStyle(for: issue.elementFrame, screenshotSize: screenshotSize) else {
-            return ""
-        }
-        return """
-        <span aria-hidden="true" class="issue-frame" data-issue-id="\(issueID)" style="\(style)"></span>
-        """
+        let frames = ([issue.elementFrame].compactMap { $0 }) + issue.additionalFrames
+        return frames
+            .compactMap { overlayStyle(for: $0, screenshotSize: screenshotSize) }
+            .map { style in
+                """
+                <span aria-hidden="true" class="issue-frame" data-issue-id="\(issueID)" style="\(style)"></span>
+                """
+            }
+            .joined(separator: "\n")
     }
 
     private static func renderIssue(_ issue: Issue, issueID: String, screenshotSize: CGSize) -> String {

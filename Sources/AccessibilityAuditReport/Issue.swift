@@ -29,6 +29,11 @@ public struct Issue {
     public let elementIdentifier: String
     public let elementLabel: String
     public let elementFrame: CGRect?
+    /// Frames of any further elements this single finding covers, beyond the
+    /// primary `elementFrame`. Used by checks that flag a *group* of elements
+    /// (e.g. Duplicate Labels) so the report can highlight every member, not
+    /// just the first. Empty for findings about a single element.
+    public let additionalFrames: [CGRect]
     public let severity: Severity
     public let acceptance: Acceptance?
 
@@ -39,6 +44,7 @@ public struct Issue {
         elementIdentifier: String,
         elementLabel: String,
         elementFrame: CGRect?,
+        additionalFrames: [CGRect] = [],
         severity: Severity = .error,
         acceptance: Acceptance? = nil
     ) {
@@ -48,6 +54,7 @@ public struct Issue {
         self.elementIdentifier = elementIdentifier
         self.elementLabel = elementLabel
         self.elementFrame = elementFrame
+        self.additionalFrames = additionalFrames
         self.severity = severity
         self.acceptance = acceptance
     }
@@ -61,6 +68,7 @@ public struct Issue {
             elementIdentifier: elementIdentifier,
             elementLabel: elementLabel,
             elementFrame: elementFrame,
+            additionalFrames: additionalFrames,
             severity: severity,
             acceptance: acceptance
         )
