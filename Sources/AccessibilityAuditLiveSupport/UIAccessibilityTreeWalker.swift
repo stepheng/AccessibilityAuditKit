@@ -22,11 +22,12 @@ enum UIAccessibilityTreeWalker {
     private static func node(
         for object: NSObject,
         window: UIWindow,
-        ownerIsScrollView: Bool = false
+        ownerIsScrollView: Bool = false,
+        ownerObject: NSObject? = nil
     ) -> AccessibilityNode {
         let objectIsScrollView = object is UIScrollView
         let children = accessibilityChildren(of: object).map {
-            node(for: $0, window: window, ownerIsScrollView: objectIsScrollView)
+            node(for: $0, window: window, ownerIsScrollView: objectIsScrollView, ownerObject: object)
         }
         return AccessibilityNode(
             identifier: (object as? UIAccessibilityIdentification)?.accessibilityIdentifier ?? "",
@@ -35,9 +36,23 @@ enum UIAccessibilityTreeWalker {
             traits: object.accessibilityTraits,
             frame: windowFrame(forScreenFrame: object.accessibilityFrame, window: window),
             isAccessibilityElement: object.isAccessibilityElement,
+            objectClassName: className(of: object),
+            objectModuleName: moduleName(of: object),
+            ownerClassName: ownerObject.map { className(of: $0) },
+            ownerModuleName: ownerObject.flatMap { moduleName(of: $0) },
             ownerIsScrollView: ownerIsScrollView,
             children: children
         )
+    }
+
+    private static func className(of object: NSObject) -> String {
+        String(describing: type(of: object))
+    }
+
+    private static func moduleName(of object: NSObject) -> String? {
+        let qualified = NSStringFromClass(type(of: object))
+        guard let separator = qualified.firstIndex(of: ".") else { return nil }
+        return String(qualified[..<separator])
     }
 
     /// An element's accessibility children: explicit `accessibilityElements`

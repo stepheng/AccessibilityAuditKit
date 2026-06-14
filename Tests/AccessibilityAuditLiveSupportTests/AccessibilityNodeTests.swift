@@ -17,6 +17,10 @@ final class AccessibilityNodeTests: XCTestCase {
         XCTAssertEqual(node.label, "")
         XCTAssertTrue(node.children.isEmpty)
         XCTAssertFalse(node.isAccessibilityElement)
+        XCTAssertEqual(node.objectClassName, "")
+        XCTAssertNil(node.objectModuleName)
+        XCTAssertNil(node.ownerClassName)
+        XCTAssertNil(node.ownerModuleName)
     }
 }
 #endif

@@ -19,6 +19,10 @@ struct AccessibilityNode {
     var traits: UIAccessibilityTraits
     var frame: CGRect
     var isAccessibilityElement: Bool
+    var objectClassName: String
+    var objectModuleName: String?
+    var ownerClassName: String?
+    var ownerModuleName: String?
     /// Whether the source object is a direct child of a `UIScrollView`. iOS
     /// exposes the system scroll indicator this way, so the scan can identify
     /// it structurally rather than by its localized "scroll bar" label.
@@ -32,6 +36,10 @@ struct AccessibilityNode {
         traits: UIAccessibilityTraits = .none,
         frame: CGRect = .zero,
         isAccessibilityElement: Bool = false,
+        objectClassName: String = "",
+        objectModuleName: String? = nil,
+        ownerClassName: String? = nil,
+        ownerModuleName: String? = nil,
         ownerIsScrollView: Bool = false,
         children: [AccessibilityNode] = []
     ) {
@@ -41,6 +49,10 @@ struct AccessibilityNode {
         self.traits = traits
         self.frame = frame
         self.isAccessibilityElement = isAccessibilityElement
+        self.objectClassName = objectClassName
+        self.objectModuleName = objectModuleName
+        self.ownerClassName = ownerClassName
+        self.ownerModuleName = ownerModuleName
         self.ownerIsScrollView = ownerIsScrollView
         self.children = children
     }

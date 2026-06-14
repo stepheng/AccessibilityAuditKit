@@ -69,6 +69,58 @@ final class LiveScreenScanTests: XCTestCase {
         XCTAssertEqual(elements.first?.value, "30%")
     }
 
+    func testLiveInteractiveElementsCarryRuntimeHints() throws {
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 400, height: 800),
+            children: [
+                AccessibilityNode(
+                    identifier: "shared.close",
+                    label: "Close",
+                    traits: .button,
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20),
+                    isAccessibilityElement: true,
+                    objectClassName: "CapsuleButton",
+                    objectModuleName: "CommonUx",
+                    ownerClassName: "BannerView",
+                    ownerModuleName: "CommonUx"
+                )
+            ]
+        )
+
+        let element = try XCTUnwrap(LiveScreenScan.interactiveElements(in: root, within: root.frame).first)
+
+        XCTAssertTrue(element.reviewerHints.contains {
+            $0.automationKey == "runtime.class" && $0.detail.contains("CommonUx.CapsuleButton")
+        })
+        XCTAssertTrue(element.reviewerHints.contains {
+            $0.automationKey == "runtime.ownerClass" && $0.detail.contains("CommonUx.BannerView")
+        })
+    }
+
+    func testLiveIssuesIncludeRuntimeBreadcrumbHints() throws {
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 400, height: 800),
+            children: [
+                AccessibilityNode(
+                    identifier: "shared.close",
+                    label: "Close",
+                    traits: .button,
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20),
+                    isAccessibilityElement: true,
+                    objectClassName: "CapsuleButton",
+                    objectModuleName: "CommonUx"
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(
+            LiveScreenScan.issues(in: root, navigationBarTitles: [])
+                .first { $0.auditType.hasPrefix("Target Size") }
+        )
+
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "runtime.class" })
+    }
+
     func testIssuesRunsMissingDescriptionForUnlabelledControl() {
         let root = AccessibilityNode(
             frame: CGRect(x: 0, y: 0, width: 400, height: 800),

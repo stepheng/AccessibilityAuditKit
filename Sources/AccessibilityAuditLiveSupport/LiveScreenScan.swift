@@ -51,6 +51,7 @@ enum LiveScreenScan {
                 label: node.label,
                 frame: node.frame,
                 visibleTextLabels: descendantStaticTexts(of: node),
+                reviewerHints: reviewerHints(for: node, auditType: "Interactive Element"),
                 requiresDescription: true
             )
         }
@@ -64,6 +65,7 @@ enum LiveScreenScan {
                 identifier: node.identifier,
                 label: node.label,
                 frame: node.frame,
+                reviewerHints: reviewerHints(for: node, auditType: "Element Description"),
                 requiresDescription: true
             )
         }
@@ -77,6 +79,7 @@ enum LiveScreenScan {
                 label: node.label,
                 frame: node.frame,
                 value: node.value,
+                reviewerHints: reviewerHints(for: node, auditType: "Adjustable Value"),
                 requiresDescription: true
             )
         }
@@ -124,6 +127,19 @@ enum LiveScreenScan {
     private static func isSystemScrollBar(_ node: AccessibilityNode) -> Bool {
         guard node.traits.contains(.adjustable) else { return false }
         return node.ownerIsScrollView || node.label.lowercased().contains("scroll bar")
+    }
+
+    private static func reviewerHints(for node: AccessibilityNode, auditType: String) -> [IssueReviewerHint] {
+        IssueReviewerHints.elementLocatorHints(
+            identifier: node.identifier,
+            label: node.label,
+            auditType: auditType
+        ) + IssueReviewerHints.runtimeHints(
+            objectClassName: node.objectClassName,
+            objectModuleName: node.objectModuleName,
+            ownerClassName: node.ownerClassName,
+            ownerModuleName: node.ownerModuleName
+        )
     }
 
     /// Visible static-text labels nested under an element (for Label in Name).
