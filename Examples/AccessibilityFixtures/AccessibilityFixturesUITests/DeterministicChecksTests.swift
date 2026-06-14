@@ -5,13 +5,20 @@ import XCTest
 @MainActor
 final class DeterministicChecksTests: FixturesUITestCase {
 
+    // Report every check's outcome in one run rather than stopping at the first.
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = true
+    }
+
     func testDeterministicSupplementalChecks() throws {
         guard #available(iOS 17.0, *) else { throw XCTSkip("Requires iOS 17+") }
 
         let checks = FixtureCatalog.all.filter {
-            $0.category == .supplemental && $0.tier == .exact
-                && $0.id != "consistentIdentification"   // cross-screen, tested separately
-                && $0.screenId != nil                    // single-screen only
+            // Cross-screen checks (Consistent Identification) have no single
+            // screenId, so the screenId != nil guard excludes them here; they
+            // are covered by their own test class.
+            $0.category == .supplemental && $0.tier == .exact && $0.screenId != nil
         }
         XCTAssertFalse(checks.isEmpty, "Catalog should yield deterministic single-screen checks")
 

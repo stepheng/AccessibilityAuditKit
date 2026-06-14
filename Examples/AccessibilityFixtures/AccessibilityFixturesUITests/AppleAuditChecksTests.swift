@@ -28,6 +28,7 @@ final class AppleAuditChecksTests: FixturesUITestCase {
 
         // tier == .lenient keeps any downgraded (tier == .manual) check out of this gate.
         let checks = FixtureCatalog.all.filter { $0.category == .appleAudit && $0.tier == .lenient }
+        XCTAssertFalse(checks.isEmpty, "Catalog should yield lenient Apple-audit checks to assert")
         for check in checks {
             guard let kind = check.appleKind,
                   let failScreen = check.failScreenId,

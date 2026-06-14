@@ -4,7 +4,6 @@ import SwiftUI
 struct ConsistentIdentificationFixtureView: View {
     enum Screen { case a, b }
     let screen: Screen
-    let check = FixtureCatalog.first(id: "consistentIdentification")!
 
     var body: some View {
         VStack(spacing: 24) {
