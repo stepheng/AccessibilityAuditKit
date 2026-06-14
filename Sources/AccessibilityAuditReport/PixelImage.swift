@@ -30,8 +30,8 @@ public struct PixelImage {
     }
 
     /// Decodes PNG data into an RGBA8 buffer. Returns nil when the data is not a
-    /// decodable image. Screenshots are opaque, so alpha is preserved but
-    /// ignored by the contrast math.
+    /// decodable image. Alpha is ignored — the image is treated as opaque (RGBX):
+    /// bytes at offsets 0, 1, 2 are R, G, B; the 4th byte is unused.
     public init?(pngData: Data) {
         guard let source = CGImageSourceCreateWithData(pngData as CFData, nil),
               let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
@@ -50,7 +50,7 @@ public struct PixelImage {
             bitsPerComponent: 8,
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
         ) else {
             return nil
         }
@@ -62,7 +62,9 @@ public struct PixelImage {
     }
 
     /// WCAG relative luminance (0…1) of the pixel at (x, y), top-left origin.
+    /// x must be in 0..<width and y must be in 0..<height.
     public func relativeLuminance(x: Int, y: Int) -> Double {
+        precondition(x >= 0 && x < width && y >= 0 && y < height, "pixel coordinate out of bounds")
         let offset = (y * width + x) * 4
         let r = Self.linearised(pixels[offset])
         let g = Self.linearised(pixels[offset + 1])
@@ -80,6 +82,6 @@ public struct PixelImage {
     /// Linearises an 8-bit sRGB channel to its 0…1 light value.
     private static func linearised(_ channel: UInt8) -> Double {
         let c = Double(channel) / 255.0
-        return c <= 0.03928 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4)
+        return c <= 0.03928 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) // 0.03928: WCAG 2.1 sRGB threshold (intentional; do not change to WCAG 2.2's 0.04045)
     }
 }

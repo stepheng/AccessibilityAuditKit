@@ -73,6 +73,10 @@ final class PixelImageTests: XCTestCase {
         XCTAssertEqual(image.pixels[4], 0)   // right R
         XCTAssertEqual(image.pixels[5], 0)   // right G
         XCTAssertEqual(image.pixels[6], 255) // right B
+        // Close the decode→luminance loop: verify the public API sees the right
+        // colour values after decoding through CGContext.
+        XCTAssertEqual(image.relativeLuminance(x: 0, y: 0), 0.2126, accuracy: 0.001) // red
+        XCTAssertEqual(image.relativeLuminance(x: 1, y: 0), 0.0722, accuracy: 0.001) // blue
     }
 
     func testInitFromInvalidPNGDataReturnsNil() {
