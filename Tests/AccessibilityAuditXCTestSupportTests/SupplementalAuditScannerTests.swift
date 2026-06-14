@@ -570,6 +570,27 @@ final class SupplementalAuditScannerTests: XCTestCase {
         XCTAssertTrue(elements.isEmpty)
     }
 
+    func testGraphicalInventoryExcludesDisabledIconButton() {
+        // Exercises the enabled guard on the icon-control branch (the disabled
+        // case above only covers the .image branch).
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "toolbar.share",
+                    label: "Share",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    isEnabled: false
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertTrue(elements.isEmpty)
+    }
+
     func testGraphicalInventoryIgnoresElementsOutsideRootFrame() {
         let root = FakeSnapshot(
             frame: screen,

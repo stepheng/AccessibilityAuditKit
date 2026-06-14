@@ -65,6 +65,11 @@ public enum SupplementalAuditScanner {
         .textField, .secureTextField
     ]
 
+    /// Interactive element types treated as icon-style controls: when they carry
+    /// no visible text they render as a glyph, so Non-text Contrast (1.4.11)
+    /// applies to them.
+    static let iconControlTypes: Set<XCUIElement.ElementType> = [.button, .menuItem, .link]
+
     public static func issues(
         in snapshot: any XCUIElementSnapshot,
         checks: SupplementalAuditType
@@ -115,11 +120,6 @@ public enum SupplementalAuditScanner {
         return issues
     }
 
-    /// Interactive element types treated as icon-style controls: when they carry
-    /// no visible text they render as a glyph, so Non-text Contrast (1.4.11)
-    /// applies to them.
-    static let iconControlTypes: Set<XCUIElement.ElementType> = [.button, .menuItem, .link]
-
     /// The outermost interactive elements on screen, for recording into a
     /// report's element inventory for cross-screen checks.
     public static func interactiveElementInventory(in snapshot: any XCUIElementSnapshot) -> [AuditedElement] {
@@ -139,6 +139,8 @@ public enum SupplementalAuditScanner {
         in snapshot: any XCUIElementSnapshot,
         within bounds: CGRect
     ) -> [AuditedElement] {
+        // Unlike the other inventories, graphical objects also skip empty frames:
+        // a zero-size element has no renderable pixels to measure contrast in.
         if snapshot.elementType == .image {
             guard snapshot.isEnabled, !snapshot.frame.isEmpty,
                   bounds.intersects(snapshot.frame) else {
