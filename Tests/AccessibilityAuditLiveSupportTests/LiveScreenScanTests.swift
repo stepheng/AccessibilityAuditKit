@@ -129,5 +129,51 @@ final class LiveScreenScanTests: XCTestCase {
         let issues = LiveScreenScan.issues(in: root, navigationBarTitles: [])
         XCTAssertTrue(issues.contains { $0.auditType == "Duplicate Labels" })
     }
+
+    /// A system scroll indicator carries the `.adjustable` trait, so the
+    /// trait-driven live scanner would otherwise collect it as an interactive
+    /// target — but its size is user-agent controlled, so it is not an authored
+    /// target and must not be audited (matches the XCTest path, which never
+    /// collects `.scrollBar`).
+    private func scrollBar(_ label: String, _ frame: CGRect) -> AccessibilityNode {
+        AccessibilityNode(
+            identifier: "", label: label, value: "29 pages", traits: .adjustable,
+            frame: frame, isAccessibilityElement: true
+        )
+    }
+
+    func testIgnoresSystemScrollBarAsInteractiveTarget() {
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 402, height: 874),
+            children: [scrollBar("Vertical scroll bar", CGRect(x: 369, y: 116, width: 30, height: 675))]
+        )
+        XCTAssertTrue(LiveScreenScan.interactiveElements(in: root, within: root.frame).isEmpty)
+    }
+
+    func testIssuesDoesNotFlagScrollBarTargetSize() {
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 402, height: 874),
+            children: [
+                scrollBar("Vertical scroll bar", CGRect(x: 369, y: 116, width: 30, height: 675)),
+                scrollBar("Horizontal scroll bar", CGRect(x: 62, y: 758, width: 278, height: 30))
+            ]
+        )
+        let issues = LiveScreenScan.issues(in: root, navigationBarTitles: [])
+        XCTAssertFalse(issues.contains { $0.auditType.hasPrefix("Target Size") })
+    }
+
+    func testUndersizedRealAdjustableIsStillFlagged() {
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 402, height: 874),
+            children: [
+                AccessibilityNode(
+                    identifier: "vol", label: "Volume", value: "30%", traits: .adjustable,
+                    frame: CGRect(x: 0, y: 0, width: 200, height: 30), isAccessibilityElement: true
+                )
+            ]
+        )
+        let issues = LiveScreenScan.issues(in: root, navigationBarTitles: [])
+        XCTAssertTrue(issues.contains { $0.auditType == "Target Size (Enhanced)" })
+    }
 }
 #endif

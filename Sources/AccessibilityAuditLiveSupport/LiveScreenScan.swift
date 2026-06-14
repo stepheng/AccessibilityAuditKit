@@ -90,6 +90,18 @@ enum LiveScreenScan {
         matching traits: UIAccessibilityTraits,
         _ make: (AccessibilityNode) -> AuditedElement
     ) -> [AuditedElement] {
+        if isSystemScrollBar(node) {
+            // A UIScrollView scroll indicator is exposed as an `.adjustable`
+            // element, so the trait-driven scan would otherwise treat it as an
+            // interactive target. Its size and position are user-agent
+            // controlled, not authored, so it is exempt from the target-size
+            // criteria (WCAG 2.5.5/2.5.8 user-agent-control exception) and is
+            // not an audit target at all. The XCTest path skips it implicitly
+            // (`.scrollBar` is absent from its interactive set); this coarser
+            // path must skip it explicitly. Its subtree holds nothing
+            // auditable, so we do not recurse into it.
+            return []
+        }
         if !node.traits.isDisjoint(with: traits) {
             if node.frame.isEmpty {
                 // A zero-frame match (e.g. an unlaid-out container) is not itself a
@@ -101,6 +113,15 @@ enum LiveScreenScan {
             return [make(node)]
         }
         return node.children.flatMap { collectOutermost($0, within: bounds, matching: traits, make) }
+    }
+
+    /// Whether the node is a system scroll indicator: an `.adjustable` element
+    /// whose system-generated label names it a scroll bar. iOS renders and
+    /// sizes these, so they are not authored targets. Matches the English
+    /// system label only — a localized scroll bar may still slip through.
+    private static func isSystemScrollBar(_ node: AccessibilityNode) -> Bool {
+        node.traits.contains(.adjustable)
+            && node.label.lowercased().contains("scroll bar")
     }
 
     /// Visible static-text labels nested under an element (for Label in Name).
