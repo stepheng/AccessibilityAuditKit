@@ -55,6 +55,10 @@ final class NonTextContrastCheckTests: XCTestCase {
         XCTAssertEqual(issue.severity, .warning)
         XCTAssertEqual(issue.elementFrame, frame)
         XCTAssertEqual(issue.elementIdentifier, "icon.share")
+        XCTAssertTrue(
+            issue.compactDescription.hasPrefix("Graphical object contrast is about 1.5:1"),
+            "Unexpected message: \(issue.compactDescription)"
+        )
     }
 
     func testPassesHighContrastIcon() {
@@ -96,6 +100,38 @@ final class NonTextContrastCheckTests: XCTestCase {
             image: image
         )
         XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testSeparabilityGateIsLoadBearingForLowContrastMultitoneRegion() {
+        // A narrow-band multitone ramp (greys 118…154): every Otsu split is low
+        // contrast (< 3:1), so the contrast test alone would flag it. But it is
+        // not two-toned (separability η < 0.8), so the gate must skip it. To
+        // prove the gate — not incidental high contrast — is what skips it,
+        // re-run the same pixels with the gate disabled and confirm it flags.
+        let width = 37, height = 12
+        var pixels = [UInt8]()
+        for _ in 0..<height {
+            for x in 0..<width {
+                let v = UInt8(118 + x) // 118…154
+                pixels += [v, v, v, 255]
+            }
+        }
+        let image = PixelImage(width: width, height: height, pixels: pixels)
+        let region = CGRect(x: 0, y: 0, width: width, height: height)
+
+        // Default gate (0.8): skipped because the region is not two-toned.
+        XCTAssertTrue(
+            SupplementalAccessibilityChecks.nonTextContrastIssues(
+                graphicalElements: [element(region)], image: image
+            ).isEmpty
+        )
+
+        // Same pixels, gate disabled: the < 3:1 contrast is now flagged,
+        // proving the separability gate is what suppressed it above.
+        let withoutGate = SupplementalAccessibilityChecks.nonTextContrastIssues(
+            graphicalElements: [element(region)], image: image, minSeparability: 0
+        )
+        XCTAssertEqual(withoutGate.count, 1)
     }
 
     func testSkipsSpeckBelowClassFraction() {
