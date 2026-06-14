@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2F1EFBD296FCD4AA00B6212A"
+               BlueprintIdentifier = "AB17976ECA8B2F99CF29EDAD"
                BuildableName = "AccessibilityFixtures.app"
                BlueprintName = "AccessibilityFixtures"
                ReferencedContainer = "container:AccessibilityFixtures.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2F1EFBD296FCD4AA00B6212A"
+            BlueprintIdentifier = "AB17976ECA8B2F99CF29EDAD"
             BuildableName = "AccessibilityFixtures.app"
             BlueprintName = "AccessibilityFixtures"
             ReferencedContainer = "container:AccessibilityFixtures.xcodeproj">
@@ -41,7 +41,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "33C519120FC270B3C3958CDA"
+               BlueprintIdentifier = "4D9282568AE52E1710115DC9"
                BuildableName = "AccessibilityFixturesUITests.xctest"
                BlueprintName = "AccessibilityFixturesUITests"
                ReferencedContainer = "container:AccessibilityFixtures.xcodeproj">
@@ -63,7 +63,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2F1EFBD296FCD4AA00B6212A"
+            BlueprintIdentifier = "AB17976ECA8B2F99CF29EDAD"
             BuildableName = "AccessibilityFixtures.app"
             BlueprintName = "AccessibilityFixtures"
             ReferencedContainer = "container:AccessibilityFixtures.xcodeproj">
@@ -80,7 +80,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2F1EFBD296FCD4AA00B6212A"
+            BlueprintIdentifier = "AB17976ECA8B2F99CF29EDAD"
             BuildableName = "AccessibilityFixtures.app"
             BlueprintName = "AccessibilityFixtures"
             ReferencedContainer = "container:AccessibilityFixtures.xcodeproj">

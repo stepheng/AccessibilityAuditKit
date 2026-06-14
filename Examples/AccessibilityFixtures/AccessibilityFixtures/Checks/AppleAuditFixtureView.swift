@@ -27,9 +27,11 @@ struct AppleAuditFixtureView: View {
     @ViewBuilder var content: some View {
         switch kind {
         case .contrast:
-            Text("Contrast sample")
-                .foregroundColor(mode == .fail ? Color(white: 0.72) : .black)
-                .padding().background(Color.white)
+            ZStack {
+                Color.white
+                Text("Low contrast text")
+                    .foregroundColor(mode == .fail ? Color(white: 0.82) : .black)
+            }
         case .hitRegion:
             Button("Tap") {}
                 .frame(width: mode == .fail ? 12 : 44, height: mode == .fail ? 12 : 44)
