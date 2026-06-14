@@ -420,6 +420,9 @@ final class SupplementalAuditScannerTests: XCTestCase {
 
         let issues = SupplementalAuditScanner.issues(in: root, checks: .all)
 
+        // .nonTextContrast is pixel-based and a no-op in issues(in:checks:) — it
+        // runs from recordAccessibilityAuditScreen — so .all yields no Non-text
+        // Contrast issue here.
         XCTAssertEqual(
             Set(issues.map(\.auditType)),
             ["Target Size (Enhanced)", "Screen Title"]
