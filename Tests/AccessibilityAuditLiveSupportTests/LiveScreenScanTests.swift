@@ -176,6 +176,25 @@ final class LiveScreenScanTests: XCTestCase {
         XCTAssertEqual(node.ownerModuleName, "AccessibilityAuditLiveSupportTests")
     }
 
+    @MainActor
+    func testWalkerRespectsEmptyCustomAccessibilityElements() {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        let owner = UIView(frame: window.bounds)
+        owner.accessibilityElements = []
+        let hiddenAction = UIView(frame: CGRect(x: 10, y: 20, width: 44, height: 44))
+        hiddenAction.isAccessibilityElement = true
+        hiddenAction.accessibilityIdentifier = "hidden.action"
+        hiddenAction.accessibilityLabel = "Hidden"
+        hiddenAction.accessibilityTraits = .button
+        owner.addSubview(hiddenAction)
+        window.addSubview(owner)
+        window.layoutIfNeeded()
+
+        let root = UIAccessibilityTreeWalker.node(for: window)
+
+        XCTAssertNil(firstNode(withIdentifier: "hidden.action", in: root), treeDescription(root))
+    }
+
     func testNonInteractiveContainerRecursesIntoInteractiveChildren() {
         let root = AccessibilityNode(
             frame: CGRect(x: 0, y: 0, width: 400, height: 800),

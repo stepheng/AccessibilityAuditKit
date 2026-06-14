@@ -74,7 +74,7 @@ enum UIAccessibilityTreeWalker {
     /// when present, otherwise the view's subviews.
     @MainActor
     private static func accessibilityChildren(of object: NSObject) -> [NSObject] {
-        if let elements = object.accessibilityElements, elements.isEmpty == false {
+        if let elements = object.accessibilityElements {
             return elements.compactMap { $0 as? NSObject }
         }
         if let view = object as? UIView {
