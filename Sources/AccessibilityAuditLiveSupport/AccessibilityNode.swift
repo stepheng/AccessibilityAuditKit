@@ -19,6 +19,10 @@ struct AccessibilityNode {
     var traits: UIAccessibilityTraits
     var frame: CGRect
     var isAccessibilityElement: Bool
+    /// Whether the source object is a direct child of a `UIScrollView`. iOS
+    /// exposes the system scroll indicator this way, so the scan can identify
+    /// it structurally rather than by its localized "scroll bar" label.
+    var ownerIsScrollView: Bool
     var children: [AccessibilityNode]
 
     init(
@@ -28,6 +32,7 @@ struct AccessibilityNode {
         traits: UIAccessibilityTraits = .none,
         frame: CGRect = .zero,
         isAccessibilityElement: Bool = false,
+        ownerIsScrollView: Bool = false,
         children: [AccessibilityNode] = []
     ) {
         self.identifier = identifier
@@ -36,6 +41,7 @@ struct AccessibilityNode {
         self.traits = traits
         self.frame = frame
         self.isAccessibilityElement = isAccessibilityElement
+        self.ownerIsScrollView = ownerIsScrollView
         self.children = children
     }
 }

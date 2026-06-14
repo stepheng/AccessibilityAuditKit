@@ -115,13 +115,15 @@ enum LiveScreenScan {
         return node.children.flatMap { collectOutermost($0, within: bounds, matching: traits, make) }
     }
 
-    /// Whether the node is a system scroll indicator: an `.adjustable` element
-    /// whose system-generated label names it a scroll bar. iOS renders and
-    /// sizes these, so they are not authored targets. Matches the English
-    /// system label only — a localized scroll bar may still slip through.
+    /// Whether the node is a system scroll indicator: iOS exposes it as an
+    /// `.adjustable` element that is a direct child of a `UIScrollView`. The
+    /// owner check is the primary, locale-independent signal; the English
+    /// "scroll bar" label is kept only as a fallback for any case the owner
+    /// relationship does not capture. iOS renders and sizes these, so they are
+    /// not authored targets.
     private static func isSystemScrollBar(_ node: AccessibilityNode) -> Bool {
-        node.traits.contains(.adjustable)
-            && node.label.lowercased().contains("scroll bar")
+        guard node.traits.contains(.adjustable) else { return false }
+        return node.ownerIsScrollView || node.label.lowercased().contains("scroll bar")
     }
 
     /// Visible static-text labels nested under an element (for Label in Name).

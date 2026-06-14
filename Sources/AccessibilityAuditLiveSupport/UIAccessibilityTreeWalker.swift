@@ -19,8 +19,15 @@ enum UIAccessibilityTreeWalker {
     }
 
     @MainActor
-    private static func node(for object: NSObject, window: UIWindow) -> AccessibilityNode {
-        let children = accessibilityChildren(of: object).map { node(for: $0, window: window) }
+    private static func node(
+        for object: NSObject,
+        window: UIWindow,
+        ownerIsScrollView: Bool = false
+    ) -> AccessibilityNode {
+        let objectIsScrollView = object is UIScrollView
+        let children = accessibilityChildren(of: object).map {
+            node(for: $0, window: window, ownerIsScrollView: objectIsScrollView)
+        }
         return AccessibilityNode(
             identifier: (object as? UIAccessibilityIdentification)?.accessibilityIdentifier ?? "",
             label: object.accessibilityLabel ?? "",
@@ -28,6 +35,7 @@ enum UIAccessibilityTreeWalker {
             traits: object.accessibilityTraits,
             frame: windowFrame(forScreenFrame: object.accessibilityFrame, window: window),
             isAccessibilityElement: object.isAccessibilityElement,
+            ownerIsScrollView: ownerIsScrollView,
             children: children
         )
     }

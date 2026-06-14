@@ -162,6 +162,49 @@ final class LiveScreenScanTests: XCTestCase {
         XCTAssertFalse(issues.contains { $0.auditType.hasPrefix("Target Size") })
     }
 
+    func testIgnoresScrollBarIdentifiedByScrollViewOwnerWithoutLabel() {
+        // No "scroll bar" label — identified purely by being an adjustable
+        // direct child of a UIScrollView, the locale-independent signal.
+        let root = AccessibilityNode(
+            frame: CGRect(x: 0, y: 0, width: 402, height: 874),
+            children: [
+                AccessibilityNode(
+                    identifier: "", label: "", value: "29 pages", traits: .adjustable,
+                    frame: CGRect(x: 369, y: 116, width: 30, height: 675),
+                    isAccessibilityElement: true, ownerIsScrollView: true
+                )
+            ]
+        )
+        XCTAssertTrue(LiveScreenScan.interactiveElements(in: root, within: root.frame).isEmpty)
+    }
+
+    @MainActor
+    func testWalkerMarksOnlyScrollViewChildrenAsScrollOwned() {
+        func walk(rootContainer: UIView) -> AccessibilityNode {
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 874))
+            rootContainer.frame = window.bounds
+            let child = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+            child.isAccessibilityElement = true
+            rootContainer.addSubview(child)
+            window.addSubview(rootContainer)
+            window.layoutIfNeeded()
+            return UIAccessibilityTreeWalker.node(for: window)
+        }
+
+        XCTAssertFalse(
+            anyScrollOwned(walk(rootContainer: UIView())),
+            "A plain container must not mark its children as scroll-owned"
+        )
+        XCTAssertTrue(
+            anyScrollOwned(walk(rootContainer: UIScrollView())),
+            "A UIScrollView must mark its direct children as scroll-owned"
+        )
+    }
+
+    private func anyScrollOwned(_ node: AccessibilityNode) -> Bool {
+        node.ownerIsScrollView || node.children.contains(where: anyScrollOwned)
+    }
+
     func testUndersizedRealAdjustableIsStillFlagged() {
         let root = AccessibilityNode(
             frame: CGRect(x: 0, y: 0, width: 402, height: 874),
