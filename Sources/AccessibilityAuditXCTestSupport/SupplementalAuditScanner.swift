@@ -30,11 +30,15 @@ public struct SupplementalAuditType: OptionSet, Sendable {
     public static let consistentIdentification = SupplementalAuditType(rawValue: 1 << 7)
     public static let labelHygiene = SupplementalAuditType(rawValue: 1 << 8)
     public static let inputPurpose = SupplementalAuditType(rawValue: 1 << 9)
+    /// Pixel-based check: needs the screenshot, so `issues(in:checks:)` treats it
+    /// as a no-op. `recordAccessibilityAuditScreen` runs it via
+    /// `graphicalElementInventory` + `SupplementalAccessibilityChecks.nonTextContrastIssues`.
+    public static let nonTextContrast = SupplementalAuditType(rawValue: 1 << 10)
 
     public static let all: SupplementalAuditType = [
         .targetSize, .targetSpacing, .screenTitle, .duplicateLabels,
         .labelInName, .genericLabels, .adjustableValue, .consistentIdentification,
-        .labelHygiene, .inputPurpose
+        .labelHygiene, .inputPurpose, .nonTextContrast
     ]
 }
 
@@ -111,10 +115,57 @@ public enum SupplementalAuditScanner {
         return issues
     }
 
+    /// Interactive element types treated as icon-style controls: when they carry
+    /// no visible text they render as a glyph, so Non-text Contrast (1.4.11)
+    /// applies to them.
+    static let iconControlTypes: Set<XCUIElement.ElementType> = [.button, .menuItem, .link]
+
     /// The outermost interactive elements on screen, for recording into a
     /// report's element inventory for cross-screen checks.
     public static func interactiveElementInventory(in snapshot: any XCUIElementSnapshot) -> [AuditedElement] {
         interactiveElements(in: snapshot, within: snapshot.frame)
+    }
+
+    /// The graphical objects on screen for the Non-text Contrast check (WCAG
+    /// 1.4.11): image elements, and icon-only interactive controls that carry no
+    /// visible text. Disabled and offscreen elements are excluded.
+    public static func graphicalElementInventory(
+        in snapshot: any XCUIElementSnapshot
+    ) -> [AuditedElement] {
+        graphicalElements(in: snapshot, within: snapshot.frame)
+    }
+
+    private static func graphicalElements(
+        in snapshot: any XCUIElementSnapshot,
+        within bounds: CGRect
+    ) -> [AuditedElement] {
+        if snapshot.elementType == .image {
+            guard snapshot.isEnabled, !snapshot.frame.isEmpty,
+                  bounds.intersects(snapshot.frame) else {
+                return []
+            }
+            return [graphicalElement(from: snapshot)]
+        }
+        if iconControlTypes.contains(snapshot.elementType) {
+            // Only icon-only controls (no visible text) are graphical objects.
+            // Either way we do not descend into an interactive element's
+            // composite, so nested glyphs are not double-counted.
+            guard snapshot.isEnabled, !snapshot.frame.isEmpty,
+                  bounds.intersects(snapshot.frame),
+                  descendantStaticTextLabels(in: snapshot).isEmpty else {
+                return []
+            }
+            return [graphicalElement(from: snapshot)]
+        }
+        return snapshot.children.flatMap { graphicalElements(in: $0, within: bounds) }
+    }
+
+    private static func graphicalElement(from snapshot: any XCUIElementSnapshot) -> AuditedElement {
+        AuditedElement(
+            identifier: snapshot.identifier,
+            label: snapshot.label,
+            frame: snapshot.frame
+        )
     }
 
     /// Collects the outermost interactive elements that intersect `bounds`.
