@@ -114,8 +114,8 @@ Setup (one-time):
    so nothing ships in Release).
 2. Call `AXAudit.link()` once at launch under `#if DEBUG`. This is required:
    nothing else references the module, so without a reachable reference the
-   linker dead-strips it and `AXAudit` is absent at runtime (`po AXAudit.run()`
-   reports "cannot find 'AXAudit' in scope"). For example, in your `App.init()`:
+   linker dead-strips it and `AXAudit` is absent at runtime (`po [AXAudit
+   runDeferred]` then fails to resolve the class). For example, in your `App.init()`:
 
    ```swift
    #if DEBUG
@@ -130,19 +130,31 @@ Setup (one-time):
    }
    ```
 
-Then call it from LLDB at a paused breakpoint:
+Then call it from LLDB at a paused breakpoint — via `runDeferred` + `continue`:
 
 ```
-(lldb) po AXAudit.run()              // audit current screen, print findings + write HTML
-(lldb) po AXAudit.record("Memories") // accumulate multiple screens…
-(lldb) po AXAudit.record("Photos")
-(lldb) po AXAudit.dump()             // …then one combined report (+ consistent identification)
+(lldb) po [AXAudit runDeferred]      // audit current screen on the runloop…
+(lldb) continue                      // …prints findings + writes HTML
 ```
 
-`po AXAudit.run()` evaluates in a Swift frame; if LLDB is stopped in an
-Objective-C/system frame it falls back to Objective-C — use `po [AXAudit run]`
-there, or pause in a Swift frame. Launching the app with the `-AXAuditAtLaunch`
-argument runs an audit automatically at startup.
+Do **not** `po AXAudit.run()` directly. A direct `po` evaluates `run()` in
+LLDB's expression sandbox, whose exception guard breaks on a benign
+`NSException` UIKit throws (and catches itself) while rendering and traversing
+the screen, aborting with "internal ObjC exception breakpoint(-8)" and rolling
+the call back. `runDeferred` schedules the audit on the real runloop, where
+UIKit swallows that exception and the audit completes. Launching the app with
+the `-AXAuditAtLaunch` argument runs an audit automatically at startup.
+
+For a multi-screen report, defer each call the same way, navigating between:
+
+```
+(lldb) e -- (void)dispatch_async(dispatch_get_main_queue(), ^{ (void)[AXAudit recordScreen:@"Memories"]; })
+(lldb) continue                      // navigate to the next screen, then repeat…
+(lldb) e -- (void)dispatch_async(dispatch_get_main_queue(), ^{ (void)[AXAudit recordScreen:@"Photos"]; })
+(lldb) continue
+(lldb) e -- (void)dispatch_async(dispatch_get_main_queue(), ^{ (void)[AXAudit dump]; })
+(lldb) continue                      // …then one combined report (+ consistent identification)
+```
 
 `run()`/`dump()` print a plain-text summary of the findings straight to the
 LLDB/Xcode console — counts, then each screen's issues (errors, then warnings,

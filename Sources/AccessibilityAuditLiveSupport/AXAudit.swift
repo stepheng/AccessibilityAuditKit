@@ -12,11 +12,24 @@ import UIKit
 
 /// LLDB-callable accessibility audit for the manually-running app.
 ///
+/// Invoke from LLDB via `runDeferred`, **not** a direct `po AXAudit.run()`. A
+/// direct `po` evaluates `run()` inside LLDB's expression sandbox, whose
+/// exception guard breaks on the benign `NSException` UIKit throws (and catches
+/// itself) while rendering and traversing the screen, aborting with "internal
+/// ObjC exception breakpoint(-8)". `runDeferred` schedules the audit on the real
+/// runloop, where UIKit swallows that exception and the audit completes.
+///
 /// Examples (at a paused breakpoint, or after `process interrupt`):
 /// ```
-/// (lldb) po AXAudit.run()              // audit current screen, write report, print path
-/// (lldb) po AXAudit.record("Memories") // accumulate screens…
-/// (lldb) po AXAudit.dump()             // …then one combined report
+/// (lldb) po [AXAudit runDeferred]      // audit current screen on the runloop…
+/// (lldb) continue                      // …then let it run: prints findings + writes HTML
+/// ```
+/// For a multi-screen report, defer each call the same way, navigating between:
+/// ```
+/// (lldb) e -- (void)dispatch_async(dispatch_get_main_queue(), ^{ (void)[AXAudit recordScreen:@"Memories"]; })
+/// (lldb) continue                      // navigate to the next screen, then repeat…
+/// (lldb) e -- (void)dispatch_async(dispatch_get_main_queue(), ^{ (void)[AXAudit dump]; })
+/// (lldb) continue                      // …then one combined report
 /// ```
 @MainActor
 @objc(AXAudit)
@@ -49,6 +62,16 @@ public final class AXAudit: NSObject {
     @objc public static func run() -> String {
         record()
         return dump()
+    }
+
+    /// Schedules `run()` on the next main-loop turn and prints its output. This
+    /// is the LLDB entry point: `po [AXAudit runDeferred]` then `continue`.
+    /// Unlike a direct `po AXAudit.run()`, deferring to the runloop keeps the
+    /// scan out of LLDB's expression sandbox, so the benign `NSException` UIKit
+    /// throws and catches during the scan does not abort the call. Mirrors how
+    /// `link()` runs the launch-time audit.
+    @objc nonisolated public static func runDeferred() {
+        Task { @MainActor in print(run()) }
     }
 
     /// Audits the current screen under an explicit name, recording it into the
