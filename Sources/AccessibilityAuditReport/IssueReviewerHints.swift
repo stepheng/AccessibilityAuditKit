@@ -32,7 +32,7 @@ public enum IssueReviewerHints {
                 )
             )
         }
-        hints += remediationHints(auditType: auditType)
+        _ = auditType
         return hints
     }
 
@@ -52,6 +52,14 @@ public enum IssueReviewerHints {
                     title: "Inspect label construction",
                     detail: "Check visible text, localization keys, accessibility label construction, and reused cell or row components.",
                     automationKey: "audit.remediation.label"
+                )
+            ]
+        case "Consistent Identification":
+            return [
+                IssueReviewerHint(
+                    title: "Inspect shared component labels",
+                    detail: "Check shared tab, toolbar, row, and localized label construction so the same control is named consistently across screens.",
+                    automationKey: "audit.remediation.consistent-identification"
                 )
             ]
         case "Adjustable Value", "Trait":

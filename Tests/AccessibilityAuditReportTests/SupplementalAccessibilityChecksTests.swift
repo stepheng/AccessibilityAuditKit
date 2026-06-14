@@ -132,6 +132,27 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "audit.remediation.target-size" })
     }
 
+    func testTargetSizeDoesNotDuplicateRemediationWhenElementHasLocatorHints() throws {
+        let issues = SupplementalAccessibilityChecks.targetSizeIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "toolbar.close",
+                    label: "Close",
+                    frame: CGRect(x: 0, y: 0, width: 20, height: 20),
+                    reviewerHints: IssueReviewerHints.elementLocatorHints(
+                        identifier: "toolbar.close",
+                        label: "Close",
+                        auditType: "Target Size (Minimum)"
+                    )
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        let remediationCount = issue.reviewerHints.filter { $0.automationKey == "audit.remediation.target-size" }.count
+        XCTAssertEqual(remediationCount, 1)
+    }
+
     // MARK: - Target Spacing (WCAG 2.5.8)
 
     func testTargetSpacingFlagsUndersizedTargetTouchingNeighbour() throws {
@@ -415,6 +436,33 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         )
 
         XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testDuplicateLabelsDeduplicatesRepeatedReviewerHints() throws {
+        let repeatedHint = IssueReviewerHint(
+            title: "Search source by label",
+            detail: "Search for visible text, localized string keys, and accessibility labels matching \"Edit\".",
+            automationKey: "source.search.label"
+        )
+        let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
+            interactiveElements: [
+                AuditedElement(
+                    identifier: "row1.edit",
+                    label: "Edit",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    reviewerHints: [repeatedHint]
+                ),
+                AuditedElement(
+                    identifier: "row2.edit",
+                    label: "Edit",
+                    frame: CGRect(x: 0, y: 100, width: 44, height: 44),
+                    reviewerHints: [repeatedHint]
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.reviewerHints.filter { $0 == repeatedHint }.count, 1)
     }
 
     // MARK: - Generic Labels (WCAG 2.4.4)
@@ -988,6 +1036,28 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertTrue(issue.detailedDescription.contains("Home"))
         XCTAssertTrue(issue.detailedDescription.contains("Files"))
         XCTAssertTrue(issue.detailedDescription.contains("3.2.4"))
+    }
+
+    func testConsistentIdentificationCarriesOwnRemediationHint() throws {
+        let issues = SupplementalAccessibilityChecks.consistentIdentificationIssues(
+            screens: [
+                AuditedScreenElements(
+                    screenName: "Home",
+                    elements: [
+                        AuditedElement(identifier: "tab.photos", label: "Photos", frame: .zero)
+                    ]
+                ),
+                AuditedScreenElements(
+                    screenName: "Files",
+                    elements: [
+                        AuditedElement(identifier: "tab.photos", label: "Pictures", frame: .zero)
+                    ]
+                )
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertTrue(issue.reviewerHints.contains { $0.automationKey == "audit.remediation.consistent-identification" })
     }
 
     func testConsistentIdentificationPassesMatchingLabels() {

@@ -68,7 +68,21 @@ public enum SupplementalAccessibilityChecks {
     public static let undersizedTargetThreshold: CGFloat = 24
 
     static func issueReviewerHints(for element: AuditedElement, auditType: String) -> [IssueReviewerHint] {
-        element.reviewerHints + IssueReviewerHints.remediationHints(auditType: auditType)
+        deduplicatedReviewerHints(
+            element.reviewerHints + IssueReviewerHints.remediationHints(auditType: auditType)
+        )
+    }
+
+    static func deduplicatedReviewerHints(_ hints: [IssueReviewerHint]) -> [IssueReviewerHint] {
+        var seen: Set<String> = []
+        var result: [IssueReviewerHint] = []
+        for hint in hints {
+            let key = "\(hint.automationKey ?? "")|\(hint.title)|\(hint.detail)"
+            if seen.insert(key).inserted {
+                result.append(hint)
+            }
+        }
+        return result
     }
 
     /// Flags interactive elements below the WCAG target-size thresholds,
@@ -154,9 +168,11 @@ public enum SupplementalAccessibilityChecks {
                         elementIdentifier: first.identifier,
                         elementLabel: first.label,
                         elementFrame: first.frame,
-                        reviewerHints: first.reviewerHints
-                            + second.reviewerHints
-                            + IssueReviewerHints.remediationHints(auditType: "Target Spacing")
+                        reviewerHints: deduplicatedReviewerHints(
+                            first.reviewerHints
+                                + second.reviewerHints
+                                + IssueReviewerHints.remediationHints(auditType: "Target Spacing")
+                        )
                     )
                 )
             }
@@ -212,8 +228,10 @@ public enum SupplementalAccessibilityChecks {
                     elementLabel: distinct[0].label,
                     elementFrame: distinct[0].frame,
                     additionalFrames: distinct.dropFirst().map(\.frame),
-                    reviewerHints: distinct.flatMap(\.reviewerHints)
-                        + IssueReviewerHints.remediationHints(auditType: "Duplicate Labels")
+                    reviewerHints: deduplicatedReviewerHints(
+                        distinct.flatMap(\.reviewerHints)
+                            + IssueReviewerHints.remediationHints(auditType: "Duplicate Labels")
+                    )
                 )
             }
             .sorted { $0.elementLabel < $1.elementLabel }
@@ -597,8 +615,10 @@ public enum SupplementalAccessibilityChecks {
                     elementIdentifier: identifier,
                     elementLabel: group[0].element.label,
                     elementFrame: nil,
-                    reviewerHints: group.flatMap { $0.element.reviewerHints }
-                        + IssueReviewerHints.remediationHints(auditType: "Duplicate Labels")
+                    reviewerHints: deduplicatedReviewerHints(
+                        group.flatMap { $0.element.reviewerHints }
+                            + IssueReviewerHints.remediationHints(auditType: "Consistent Identification")
+                    )
                 )
             }
     }
