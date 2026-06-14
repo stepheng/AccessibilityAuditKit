@@ -143,6 +143,8 @@ public extension XCUIApplication {
                     elements: SupplementalAuditScanner.interactiveElementInventory(in: snapshot)
                 )
             }
+            // A failed PNG decode skips the check silently — it is an advisory
+            // warning, so a decode failure must not fail the test run.
             if supplementalChecks.contains(.nonTextContrast),
                let image = PixelImage(pngData: capturedScreenshot.pngRepresentation) {
                 let pointSize = capturedScreenshot.image.size
