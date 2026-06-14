@@ -316,10 +316,10 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         XCTAssertEqual(issue.additionalFrames, [CGRect(x: 0, y: 100, width: 44, height: 44)])
     }
 
-    func testDuplicateLabelsNotesWhenMembersShareAFrame() throws {
-        // Two elements with the same label and the *same* frame are almost
-        // certainly one control exposed twice by the framework (e.g. a system
-        // tab bar item), not two distinct controls — the finding says so.
+    func testDuplicateLabelsSuppressesCoincidentDuplicates() {
+        // Two elements with the same label and the *same* frame are one control
+        // surfaced twice by the framework (e.g. a system tab bar item), not two
+        // distinct controls — so nothing is flagged.
         let sharedFrame = CGRect(x: 282, y: 795, width: 95, height: 54)
         let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
             interactiveElements: [
@@ -328,12 +328,10 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
             ]
         )
 
-        let issue = try XCTUnwrap(issues.first)
-        XCTAssertEqual(issue.additionalFrames, [sharedFrame])
-        XCTAssertTrue(issue.detailedDescription.contains("exposed more than once"))
+        XCTAssertTrue(issues.isEmpty)
     }
 
-    func testDuplicateLabelsDoesNotNoteSharedFrameForDistinctElements() throws {
+    func testDuplicateLabelsFlagsDistinctElementsSharingALabel() throws {
         let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
             interactiveElements: [
                 AuditedElement(identifier: "a", label: "Open", frame: CGRect(x: 0, y: 0, width: 44, height: 44)),
@@ -342,7 +340,28 @@ final class SupplementalAccessibilityChecksTests: XCTestCase {
         )
 
         let issue = try XCTUnwrap(issues.first)
-        XCTAssertFalse(issue.detailedDescription.contains("exposed more than once"))
+        XCTAssertEqual(issue.elementFrame, CGRect(x: 0, y: 0, width: 44, height: 44))
+        XCTAssertEqual(issue.additionalFrames, [CGRect(x: 0, y: 100, width: 44, height: 44)])
+    }
+
+    func testDuplicateLabelsCollapsesCoincidentTwinButFlagsDistinctControl() throws {
+        // A tab-bar twin (two coincident "Open") plus a genuinely separate
+        // "Open" elsewhere: the twin collapses to one, leaving two distinct
+        // positions, so it still flags — carrying both distinct frames.
+        let tab = CGRect(x: 282, y: 795, width: 95, height: 54)
+        let toolbar = CGRect(x: 10, y: 60, width: 44, height: 44)
+        let issues = SupplementalAccessibilityChecks.duplicateLabelIssues(
+            interactiveElements: [
+                AuditedElement(identifier: "", label: "Open", frame: tab),
+                AuditedElement(identifier: "", label: "Open", frame: tab),
+                AuditedElement(identifier: "toolbar.open", label: "Open", frame: toolbar)
+            ]
+        )
+
+        let issue = try XCTUnwrap(issues.first)
+        XCTAssertEqual(issue.compactDescription, "2 interactive elements share the label \"Open\"")
+        XCTAssertEqual(issue.elementFrame, tab)
+        XCTAssertEqual(issue.additionalFrames, [toolbar])
     }
 
     func testDuplicateLabelsPassesUniqueLabels() {

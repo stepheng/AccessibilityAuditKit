@@ -180,34 +180,41 @@ public enum SupplementalAccessibilityChecks {
         }
 
         return groups.values
-            .filter { $0.count > 1 }
-            .sorted { $0[0].label < $1[0].label }
-            .map { group in
-                let members = group
+            .compactMap { group -> Issue? in
+                // Collapse elements that occupy the same frame: one control
+                // surfaced more than once in the accessibility tree (e.g. a
+                // system tab bar item exposed twice) is not a real
+                // duplicate-label violation. Only genuinely distinct positions
+                // count toward the duplicate.
+                let distinct = collapsingCoincidentFrames(group)
+                guard distinct.count > 1 else { return nil }
+
+                let members = distinct
                     .map { "\"\($0.identifier)\" (\(describe($0.frame)))" }
                     .joined(separator: ", ")
-                let sharedFrameNote = framesCoincide(group)
-                    ? " All instances occupy the same frame, so this is most likely one control exposed more than once by the framework (for example a system tab bar item) rather than \(group.count) distinct controls."
-                    : ""
                 return Issue(
                     auditType: "Duplicate Labels",
-                    compactDescription: "\(group.count) interactive elements share the label \"\(group[0].label)\"",
-                    detailedDescription: "Elements \(members) share the same accessible label, which is ambiguous for Voice Control and screen reader users. WCAG 2.4.6 requires labels that distinguish controls.\(sharedFrameNote)",
-                    elementIdentifier: group[0].identifier,
-                    elementLabel: group[0].label,
-                    elementFrame: group[0].frame,
-                    additionalFrames: group.dropFirst().map(\.frame)
+                    compactDescription: "\(distinct.count) interactive elements share the label \"\(distinct[0].label)\"",
+                    detailedDescription: "Elements \(members) share the same accessible label, which is ambiguous for Voice Control and screen reader users. WCAG 2.4.6 requires labels that distinguish controls.",
+                    elementIdentifier: distinct[0].identifier,
+                    elementLabel: distinct[0].label,
+                    elementFrame: distinct[0].frame,
+                    additionalFrames: distinct.dropFirst().map(\.frame)
                 )
             }
+            .sorted { $0.elementLabel < $1.elementLabel }
     }
 
-    /// Whether every element in the group occupies the same frame (within
-    /// half a point on each edge). When they do, the duplicate label is almost
-    /// certainly one control surfaced more than once in the accessibility tree
-    /// rather than genuinely distinct controls.
-    private static func framesCoincide(_ elements: [AuditedElement]) -> Bool {
-        guard let first = elements.first?.frame else { return false }
-        return elements.dropFirst().allSatisfy { framesApproximatelyEqual($0.frame, first) }
+    /// One representative element per distinct on-screen position, preserving
+    /// order. Elements whose frames coincide (within half a point) are treated
+    /// as the same control surfaced more than once and collapsed to the first.
+    private static func collapsingCoincidentFrames(_ elements: [AuditedElement]) -> [AuditedElement] {
+        var representatives: [AuditedElement] = []
+        for element in elements
+        where !representatives.contains(where: { framesApproximatelyEqual($0.frame, element.frame) }) {
+            representatives.append(element)
+        }
+        return representatives
     }
 
     private static func framesApproximatelyEqual(
