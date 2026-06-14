@@ -9,10 +9,12 @@ struct InputPurposeFixtureView: View {
         FixtureScaffold(check: check) {
             TextField("Album name", text: $pass)            // no personal-data tokens
                 .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Album name")
                 .accessibilityIdentifier("inputPurpose.pass")
         } fail: {
-            TextField("Email address", text: $fail)          // personal-data tokens
+            TextField("Email address", text: $fail)          // personal-data tokens → flagged
                 .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Email address")
                 .accessibilityIdentifier("inputPurpose.fail")
         }
     }

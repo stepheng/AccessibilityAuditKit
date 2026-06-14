@@ -17,6 +17,7 @@ struct EmptyValueSlider: UIViewRepresentable {
         let slider = ValuelessUISlider()
         slider.minimumValue = 0; slider.maximumValue = 1; slider.value = 0.5
         slider.isAccessibilityElement = true
+        slider.accessibilityTraits.insert(.adjustable)
         slider.accessibilityIdentifier = "adjustable.fail"
         slider.accessibilityLabel = "Brightness"
         return slider
