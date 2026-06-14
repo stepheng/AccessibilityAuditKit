@@ -106,8 +106,31 @@ final class AppAccessibilityTests: XCTestCase {
 
 `AccessibilityAuditLiveSupport` runs the frame/label checks against the live app
 process, so you can audit the current screen while driving the app by hand —
-no UI test. Link the product into your app target (Debug only; all of its code
-is behind `#if DEBUG`), then call it from LLDB at a paused breakpoint:
+no UI test.
+
+Setup (one-time):
+
+1. Link the product into your app target (its code is all behind `#if DEBUG`,
+   so nothing ships in Release).
+2. Call `AXAudit.link()` once at launch under `#if DEBUG`. This is required:
+   nothing else references the module, so without a reachable reference the
+   linker dead-strips it and `AXAudit` is absent at runtime (`po AXAudit.run()`
+   reports "cannot find 'AXAudit' in scope"). For example, in your `App.init()`:
+
+   ```swift
+   #if DEBUG
+   import AccessibilityAuditLiveSupport
+   #endif
+
+   init() {
+       #if DEBUG
+       AXAudit.link()
+       #endif
+       // …
+   }
+   ```
+
+Then call it from LLDB at a paused breakpoint:
 
 ```
 (lldb) po AXAudit.run()              // audit current screen, write HTML, print path
@@ -115,6 +138,11 @@ is behind `#if DEBUG`), then call it from LLDB at a paused breakpoint:
 (lldb) po AXAudit.record("Photos")
 (lldb) po AXAudit.dump()             // …then one combined report (+ consistent identification)
 ```
+
+`po AXAudit.run()` evaluates in a Swift frame; if LLDB is stopped in an
+Objective-C/system frame it falls back to Objective-C — use `po [AXAudit run]`
+there, or pause in a Swift frame. Launching the app with the `-AXAuditAtLaunch`
+argument runs an audit automatically at startup.
 
 `run()`/`dump()` write a self-contained HTML report to `NSTemporaryDirectory()`
 and print the path; on the simulator, `open <path>` shows it.
