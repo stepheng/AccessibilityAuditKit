@@ -132,6 +132,8 @@ public extension XCUIApplication {
             return true
         }
 
+        let capturedScreenshot = screenshot ?? XCUIScreen.main.screenshot()
+
         if !supplementalChecks.isEmpty {
             let snapshot = try snapshot()
             issues += SupplementalAuditScanner.issues(in: snapshot, checks: supplementalChecks)
@@ -141,15 +143,26 @@ public extension XCUIApplication {
                     elements: SupplementalAuditScanner.interactiveElementInventory(in: snapshot)
                 )
             }
+            // A failed PNG decode skips the check silently — it is an advisory
+            // warning, so a decode failure must not fail the test run.
+            if supplementalChecks.contains(.nonTextContrast),
+               let image = PixelImage(pngData: capturedScreenshot.pngRepresentation) {
+                let pointSize = capturedScreenshot.image.size
+                let scale = pointSize.width > 0 ? CGFloat(image.width) / pointSize.width : 1
+                issues += SupplementalAccessibilityChecks.nonTextContrastIssues(
+                    graphicalElements: SupplementalAuditScanner.graphicalElementInventory(in: snapshot),
+                    image: image,
+                    scale: scale
+                )
+            }
         }
 
-        let screenshot = screenshot ?? XCUIScreen.main.screenshot()
         report.record(
             ScreenResult(
                 variant: variant,
                 name: name,
-                screenshotPNGData: screenshot.pngRepresentation,
-                screenshotSize: screenshot.image.size,
+                screenshotPNGData: capturedScreenshot.pngRepresentation,
+                screenshotSize: capturedScreenshot.image.size,
                 issues: issues
             )
         )

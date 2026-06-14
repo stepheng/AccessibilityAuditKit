@@ -177,6 +177,7 @@ accessibility leaf, so Label-in-Name detection is best-effort.
 | `.adjustableValue` | 4.1.2 | Sliders and pickers with no accessibility value announcing their current state |
 | `.consistentIdentification` | 3.2.4 | Elements sharing an identifier but labelled differently across screens (see below) |
 | `.inputPurpose` | 1.3.5 | Text fields (not search fields) whose label, identifier, or visible text suggests they collect personal data (email, password, phone, postal address, name, …), prompting verification that the field declares a matching `textContentType`. Advisory **warning**: XCUITest cannot read `textContentType`, so it flags candidates, not confirmed failures. |
+| `.nonTextContrast` | 1.4.11 | Icons and icon-only controls (image elements, and `.button`/`.menuItem`/`.link` with no visible text) whose dominant graphical content has less than 3:1 contrast against its background, measured from the screenshot pixels. Advisory **warning**: the foreground/background split is inferred from pixels, and only clearly two-toned regions are judged — photos, gradients, flat fills, and thin/tiny glyphs are skipped, so it can miss real failures and is not a substitute for manual review. Needs the screenshot, so it runs from `recordAccessibilityAuditScreen`, not the bare `issues(in:checks:)` path. |
 
 Pass `.all` to run every check, or a subset such as `[.targetSize, .screenTitle]`. Issues appear in the report alongside XCTest audit issues.
 
@@ -214,8 +215,8 @@ Every finding carries a severity:
   Title, Duplicate Labels, Label in Name, Adjustable Value, Consistent
   Identification, Orientation) and all `performAccessibilityAudit` issues.
 - **Warning** (non-blocking) — the heuristic checks (Generic Label, Label
-  Hygiene, Input Purpose), which flag *likely* or advisory problems rather than
-  certain ones.
+  Hygiene, Input Purpose, Non-text Contrast), which flag *likely* or advisory
+  problems rather than certain ones.
 
 Warnings appear in the report but never fail the build.
 
@@ -327,9 +328,10 @@ decisions stay explicit:
 
 | WCAG | Level | Why it is not yet automated | Possible approach |
 |---|---|---|---|
-| 1.4.11 Non-text Contrast | AA | XCTest's `.contrast` audit targets text contrast; it does not check icons, control borders, or focus/state indicators. | Sample pixels within element frames from the screenshot and compare against the adjacent background luminance. |
 | 4.1.3 Status Messages | AA | Live-region announcements (`accessibilityLiveRegion`, `UIAccessibility.post`) are runtime events, not state in a single snapshot. | Observe accessibility notifications during a scripted interaction rather than from a static snapshot. |
 | 1.4.4 Resize Text / 1.4.10 Reflow | AA | Currently only partially covered by XCTest `.dynamicType` and `.textClipped`. | Drive the recommended test flow across explicit accessibility text-size and orientation variants and assert no clipping in each. |
+
+Non-text contrast (1.4.11) is now partially covered for icon-style graphical objects by the `.nonTextContrast` supplemental check; control borders and focus/state indicators remain manual review items.
 
 ## Running Package Tests
 

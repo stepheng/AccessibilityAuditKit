@@ -18,7 +18,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
     let exists = true
     let value: Any?
     let placeholderValue: String? = nil
-    let isEnabled = true
+    let isEnabled: Bool
     let isSelected = false
     let hasFocus = false
     let horizontalSizeClass = XCUIElement.SizeClass.unspecified
@@ -32,6 +32,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
         title: String = "",
         frame: CGRect = .zero,
         value: Any? = nil,
+        isEnabled: Bool = true,
         children: [any XCUIElementSnapshot] = []
     ) {
         self.elementType = elementType
@@ -40,6 +41,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
         self.title = title
         self.frame = frame
         self.value = value
+        self.isEnabled = isEnabled
         self.children = children
     }
 }
@@ -418,6 +420,9 @@ final class SupplementalAuditScannerTests: XCTestCase {
 
         let issues = SupplementalAuditScanner.issues(in: root, checks: .all)
 
+        // .nonTextContrast is pixel-based and a no-op in issues(in:checks:) — it
+        // runs from recordAccessibilityAuditScreen — so .all yields no Non-text
+        // Contrast issue here.
         XCTAssertEqual(
             Set(issues.map(\.auditType)),
             ["Target Size (Enhanced)", "Screen Title"]
@@ -483,5 +488,127 @@ final class SupplementalAuditScannerTests: XCTestCase {
         let issues = SupplementalAuditScanner.issues(in: root, checks: .inputPurpose)
 
         XCTAssertTrue(issues.isEmpty)
+    }
+
+    func testGraphicalInventoryCollectsImageElement() throws {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .image,
+                    identifier: "home.logo",
+                    label: "Logo",
+                    frame: CGRect(x: 10, y: 10, width: 40, height: 40)
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertEqual(elements.count, 1)
+        XCTAssertEqual(try XCTUnwrap(elements.first).identifier, "home.logo")
+    }
+
+    func testGraphicalInventoryCollectsIconOnlyButton() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "toolbar.share",
+                    label: "Share",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44)
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertEqual(elements.map(\.identifier), ["toolbar.share"])
+    }
+
+    func testGraphicalInventoryExcludesTextBearingButton() {
+        // A button containing visible static text is a text control; its
+        // contrast is the .contrast text audit's job, not 1.4.11.
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "compose.send",
+                    label: "Send",
+                    frame: CGRect(x: 0, y: 0, width: 80, height: 44),
+                    children: [
+                        FakeSnapshot(
+                            elementType: .staticText,
+                            label: "Send",
+                            frame: CGRect(x: 10, y: 10, width: 60, height: 24)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertTrue(elements.isEmpty)
+    }
+
+    func testGraphicalInventoryExcludesDisabledElement() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .image,
+                    identifier: "home.logo",
+                    label: "Logo",
+                    frame: CGRect(x: 10, y: 10, width: 40, height: 40),
+                    isEnabled: false
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertTrue(elements.isEmpty)
+    }
+
+    func testGraphicalInventoryExcludesDisabledIconButton() {
+        // Exercises the enabled guard on the icon-control branch (the disabled
+        // case above only covers the .image branch).
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .button,
+                    identifier: "toolbar.share",
+                    label: "Share",
+                    frame: CGRect(x: 0, y: 0, width: 44, height: 44),
+                    isEnabled: false
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertTrue(elements.isEmpty)
+    }
+
+    func testGraphicalInventoryIgnoresElementsOutsideRootFrame() {
+        let root = FakeSnapshot(
+            frame: screen,
+            children: [
+                FakeSnapshot(
+                    elementType: .image,
+                    identifier: "offscreen.image",
+                    label: "Off",
+                    frame: CGRect(x: -1000, y: 10, width: 40, height: 40)
+                )
+            ]
+        )
+
+        let elements = SupplementalAuditScanner.graphicalElementInventory(in: root)
+
+        XCTAssertTrue(elements.isEmpty)
     }
 }
