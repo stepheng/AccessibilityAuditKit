@@ -1,0 +1,1 @@
+../../AccessibilityFixtures/Catalog/FixtureModels.swift

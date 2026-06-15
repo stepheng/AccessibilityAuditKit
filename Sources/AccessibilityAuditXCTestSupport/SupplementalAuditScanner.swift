@@ -42,6 +42,7 @@ public struct SupplementalAuditType: OptionSet, Sendable {
     ]
 }
 
+@MainActor
 public enum SupplementalAuditScanner {
     /// Element types treated as interactive targets for size, spacing, and
     /// duplicate-label checks.

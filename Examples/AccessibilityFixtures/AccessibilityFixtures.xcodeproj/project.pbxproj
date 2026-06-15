@@ -156,6 +156,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					8BE252DFEAC3E826DFFF4A21 = {
+						TestTargetID = E516ED675B553587AAC0E07F;
+					};
+				};
 			};
 			buildConfigurationList = E404E547A2BE236F19B7C354 /* Build configuration list for PBXProject "AccessibilityFixtures" */;
 			compatibilityVersion = "Xcode 3.2";
