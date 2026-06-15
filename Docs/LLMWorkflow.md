@@ -9,9 +9,11 @@ Use JSON as the first LLM input. It is smaller, deterministic, and contains the
 fields an agent needs to decide where to look in source. Use HTML after the
 agent has a concrete question about visual placement or a screenshot overlay.
 
-Agents that support reusable skills can use the bundled
-`Skills/accessibility-audit-remediation` skill. For Codex, copy that folder into
-`~/.codex/skills/` before starting a remediation session.
+Agents and harnesses that support reusable skills or instruction bundles can use
+the bundled `Skills/accessibility-audit-remediation` skill. Load that folder with
+your harness's normal skill mechanism, or paste `SKILL.md` into systems that only
+accept prompt instructions. For Codex, copy the folder into `~/.codex/skills/`
+before starting a remediation session.
 
 ## Produce Agent-Friendly Artifacts
 

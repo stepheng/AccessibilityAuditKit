@@ -56,10 +56,11 @@ Do not silence the audit or update baselines as the fix.
 ```
 
 See [Docs/LLMWorkflow.md](Docs/LLMWorkflow.md) for a fuller agent workflow. A
-companion Codex skill is included at
+companion reusable agent skill is included at
 [Skills/accessibility-audit-remediation](Skills/accessibility-audit-remediation)
-for agents that support reusable skills. To install it locally for Codex, copy
-that folder into `~/.codex/skills/`.
+for harnesses that support skill-style instructions. Use the folder with your
+harness's normal skill or instruction-loading mechanism. For Codex, copy it into
+`~/.codex/skills/`.
 
 ### Getting the JSON
 
