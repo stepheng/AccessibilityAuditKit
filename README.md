@@ -1,4 +1,4 @@
-# AccessibilityAuditReport
+# AccessibilityAuditKit
 
 `AccessibilityAuditReport` builds an HTML accessibility audit report from screen snapshots and audit issues. It is designed for iOS UI test suites that navigate an app, run accessibility audits, capture screenshots, and attach a single HTML report to the test result.
 
@@ -364,7 +364,5 @@ review when it cannot be represented by an observation.
 From the repository root:
 
 ```bash
-xcodebuild test \
-  -scheme AccessibilityAuditReport-Package \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+swift test
 ```

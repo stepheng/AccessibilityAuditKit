@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "AccessibilityAuditReport",
+    name: "AccessibilityAuditKit",
     platforms: [
         .iOS(.v17),
         .macOS(.v13)
