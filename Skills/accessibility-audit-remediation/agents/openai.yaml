@@ -1,0 +1,4 @@
+interface:
+  display_name: "Accessibility Audit Remediation"
+  short_description: "Triage and fix AccessibilityAuditKit JSON findings"
+  default_prompt: "Use this skill with an AccessibilityAuditKit JSON artifact to group findings, inspect source, propose fixes, and verify remediation without silencing audits."

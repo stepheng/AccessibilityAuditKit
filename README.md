@@ -30,6 +30,36 @@ The generated HTML includes:
 - Full-size screenshot links.
 - Manual follow-up reminders for checks XCTest cannot fully automate.
 
+## Using With an LLM
+
+Use the structured JSON artifact as the primary LLM input and the HTML report as
+the visual cross-check. The JSON contains issue metadata, severity, element
+identifiers, labels, frames, acceptance state, and reviewer hints; the HTML
+contains screenshots and overlays for human inspection.
+
+From XCTest, prefer `attachAccessibilityAuditArtifacts(_:)` when an agent or CI
+workflow needs both files:
+
+```swift
+try attachAccessibilityAuditArtifacts(report)
+```
+
+Minimal prompt:
+
+```text
+Read this AccessibilityAuditKit JSON report. Triage active errors before
+warnings. Ignore accepted issues unless acceptance.isStale is true. For each
+finding, use reviewerHints, elementIdentifier, elementLabel, auditType, and
+frame to propose likely source locations, a fix, and a verification command.
+Do not silence the audit or update baselines as the fix.
+```
+
+See [Docs/LLMWorkflow.md](Docs/LLMWorkflow.md) for a fuller agent workflow. A
+companion Codex skill is included at
+[Skills/accessibility-audit-remediation](Skills/accessibility-audit-remediation)
+for agents that support reusable skills. To install it locally for Codex, copy
+that folder into `~/.codex/skills/`.
+
 ## Products
 
 The package exposes three library products:
