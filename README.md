@@ -2,6 +2,25 @@
 
 `AccessibilityAuditReport` builds an HTML accessibility audit report from screen snapshots and audit issues. It is designed for iOS UI test suites that navigate an app, run accessibility audits, capture screenshots, and attach a single HTML report to the test result.
 
+## Reference Fixtures
+
+The repository includes `Examples/AccessibilityFixtures`, a known-answer iOS app
+with passing and failing examples for automated, scripted, and manual-review
+accessibility checks.
+
+<table>
+  <tr>
+    <td align="center"><img src="Docs/Images/accessibility-fixtures-gallery.png" alt="AccessibilityFixtures gallery listing supplemental checks" width="260"></td>
+    <td align="center"><img src="Docs/Images/accessibility-fixtures-target-size.png" alt="Target Size fixture showing pass and fail examples" width="260"></td>
+    <td align="center"><img src="Docs/Images/accessibility-fixtures-non-text-contrast.png" alt="Non-text Contrast fixture showing pass and fail glyph examples" width="260"></td>
+  </tr>
+  <tr>
+    <td align="center">Fixture gallery</td>
+    <td align="center">Target size checks</td>
+    <td align="center">Screenshot-backed contrast checks</td>
+  </tr>
+</table>
+
 The generated HTML includes:
 
 - Summary counts by screen and audit variant.
