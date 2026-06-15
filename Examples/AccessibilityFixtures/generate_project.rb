@@ -25,6 +25,7 @@ app.build_configurations.each do |c|
   c.build_settings['MARKETING_VERSION']         = '1.0'
   c.build_settings['CURRENT_PROJECT_VERSION']   = '1'
   c.build_settings['TARGETED_DEVICE_FAMILY']    = '1,2'
+  c.build_settings['INFOPLIST_KEY_UILaunchScreen_Generation'] = 'YES'
   # Support all three usable orientations at the plist level; the AppDelegate
   # narrows to portrait only when launched with -lockOrientation portrait.
   c.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations'] =

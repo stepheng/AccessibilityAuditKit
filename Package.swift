@@ -43,6 +43,9 @@ let package = Package(
         .testTarget(
             name: "AccessibilityAuditLiveSupportTests",
             dependencies: ["AccessibilityAuditLiveSupport"]
+        ),
+        .testTarget(
+            name: "AccessibilityFixturesProjectTests"
         )
     ]
 )
