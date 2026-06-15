@@ -217,4 +217,36 @@ final class NonTextContrastCheckTests: XCTestCase {
         XCTAssertEqual(issues.count, 1)
         XCTAssertEqual(issues.first?.elementFrame, pointFrame)
     }
+
+    func testFractionalFrameDoesNotSampleTrailingBackgroundPixels() {
+        let width = 132, height = 133
+        var pixels = solidPixels(width: width, height: height, grey: 255)
+        for y in 0..<132 {
+            for x in 0..<width {
+                let offset = (y * width + x) * 4
+                pixels[offset] = 149
+                pixels[offset + 1] = 149
+                pixels[offset + 2] = 149
+            }
+        }
+        for y in 30..<102 {
+            for x in 30..<102 {
+                let offset = (y * width + x) * 4
+                pixels[offset] = 118
+                pixels[offset + 1] = 118
+                pixels[offset + 2] = 118
+            }
+        }
+        let image = PixelImage(width: width, height: height, pixels: pixels)
+        let fractionalFrame = CGRect(x: 0, y: 0, width: 44, height: 44.0000000001)
+
+        let issues = SupplementalAccessibilityChecks.nonTextContrastIssues(
+            graphicalElements: [element(fractionalFrame)],
+            image: image,
+            xScale: 3,
+            yScale: 3
+        )
+
+        XCTAssertEqual(issues.count, 1)
+    }
 }

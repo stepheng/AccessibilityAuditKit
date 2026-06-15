@@ -88,10 +88,11 @@ extension SupplementalAccessibilityChecks {
         minSeparability: Double,
         minClassFraction: Double
     ) -> Double? {
-        let minX = max(0, Int(((frame.minX - xOffset) * xScale).rounded(.down)))
-        let minY = max(0, Int(((frame.minY - yOffset) * yScale).rounded(.down)))
-        let maxX = min(image.width, Int(((frame.maxX - xOffset) * xScale).rounded(.up)))
-        let maxY = min(image.height, Int(((frame.maxY - yOffset) * yScale).rounded(.up)))
+        let pixelEpsilon: CGFloat = 0.000001
+        let minX = max(0, Int((((frame.minX - xOffset) * xScale) - pixelEpsilon).rounded(.up)))
+        let minY = max(0, Int((((frame.minY - yOffset) * yScale) - pixelEpsilon).rounded(.up)))
+        let maxX = min(image.width, Int((((frame.maxX - xOffset) * xScale) + pixelEpsilon).rounded(.down)))
+        let maxY = min(image.height, Int((((frame.maxY - yOffset) * yScale) + pixelEpsilon).rounded(.down)))
         guard maxX - minX >= 1, maxY - minY >= 1 else { return nil }
 
         // Histogram of relative luminance bucketed to 0…255, plus the true
