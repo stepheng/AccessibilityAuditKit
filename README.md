@@ -42,6 +42,53 @@ The package exposes three library products:
 
 Both `AccessibilityAuditXCTestSupport` and `AccessibilityAuditLiveSupport` depend on `AccessibilityAuditReport`. Consumers that only need HTML rendering do not need either.
 
+## Installation
+
+Add the package from:
+
+```text
+https://github.com/stepheng/AccessibilityAuditKit
+```
+
+In Xcode, choose **File > Add Package Dependencies…**, paste the repository URL,
+and select the package from the `main` branch. Then link the products you need:
+
+- Add `AccessibilityAuditReport` to a target that renders reports directly.
+- Add `AccessibilityAuditXCTestSupport` and `AccessibilityAuditReport` to a UI
+  test target that records XCTest audit screens.
+- Add `AccessibilityAuditLiveSupport` to an app target only when you want the
+  DEBUG-only LLDB audit hook.
+
+For a Swift package, declare the dependency and product links explicitly:
+
+```swift
+// Package.swift
+dependencies: [
+    .package(
+        url: "https://github.com/stepheng/AccessibilityAuditKit",
+        branch: "main"
+    )
+],
+targets: [
+    .testTarget(
+        name: "AppUITests",
+        dependencies: [
+            .product(
+                name: "AccessibilityAuditReport",
+                package: "AccessibilityAuditKit"
+            ),
+            .product(
+                name: "AccessibilityAuditXCTestSupport",
+                package: "AccessibilityAuditKit"
+            )
+        ]
+    )
+]
+```
+
+When the package has release tags, prefer a version requirement such as
+`from: "1.0.0"` instead of tracking `main`.
+
 ## Requirements
 
 - Swift 6.2 package tools.
