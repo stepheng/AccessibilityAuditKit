@@ -30,6 +30,9 @@ struct DeepLinkRouter: View {
         case "cidA":              ConsistentIdentificationFixtureView(screen: .a)
         case "cidB":              ConsistentIdentificationFixtureView(screen: .b)
         case "orientation":       OrientationFixtureView()
+        case "future.nonTextContrast": NonTextContrastFixtureView()
+        case "future.statusMessages": StatusMessagesFixtureView()
+        case "future.resizeReflow": ResizeReflowFixtureView()
         default:
             if id.hasPrefix("apple."),
                let (kind, mode) = AppleAuditFixtureView.parse(id) {

@@ -56,6 +56,66 @@ public struct AuditedScreenElements {
     }
 }
 
+/// A scripted observation that a user-visible status change emitted the
+/// accessibility announcement expected for WCAG 4.1.3 Status Messages.
+public struct StatusMessageObservation {
+    public let identifier: String
+    public let label: String
+    public let expectedMessage: String
+    public let observedMessage: String?
+    public let frame: CGRect?
+    public let reviewerHints: [IssueReviewerHint]
+
+    public init(
+        identifier: String,
+        label: String,
+        expectedMessage: String,
+        observedMessage: String?,
+        frame: CGRect? = nil,
+        reviewerHints: [IssueReviewerHint] = []
+    ) {
+        self.identifier = identifier
+        self.label = label
+        self.expectedMessage = expectedMessage
+        self.observedMessage = observedMessage
+        self.frame = frame
+        self.reviewerHints = reviewerHints
+    }
+}
+
+/// A scripted observation of one resizable/reflowable element under an explicit
+/// text-size and viewport variant.
+public struct ResizeReflowObservation {
+    public let identifier: String
+    public let label: String
+    public let variant: String
+    public let frame: CGRect
+    public let viewportFrame: CGRect
+    public let isClipped: Bool
+    public let allowsHorizontalScrolling: Bool
+    public let reviewerHints: [IssueReviewerHint]
+
+    public init(
+        identifier: String,
+        label: String,
+        variant: String,
+        frame: CGRect,
+        viewportFrame: CGRect,
+        isClipped: Bool = false,
+        allowsHorizontalScrolling: Bool = false,
+        reviewerHints: [IssueReviewerHint] = []
+    ) {
+        self.identifier = identifier
+        self.label = label
+        self.variant = variant
+        self.frame = frame
+        self.viewportFrame = viewportFrame
+        self.isClipped = isClipped
+        self.allowsHorizontalScrolling = allowsHorizontalScrolling
+        self.reviewerHints = reviewerHints
+    }
+}
+
 /// Frame- and label-based checks that close coverage gaps left by
 /// `XCUIApplication.performAccessibilityAudit`, mirroring rules from the
 /// Level Access mobile accessibility tester.
@@ -551,6 +611,86 @@ public enum SupplementalAccessibilityChecks {
                 elementLabel: element.label,
                 elementFrame: element.frame,
                 reviewerHints: issueReviewerHints(for: element, auditType: "Input Purpose"),
+                severity: .warning
+            )
+        }
+    }
+
+    /// Flags scripted status changes where the expected accessibility
+    /// announcement was not observed (WCAG 4.1.3 Status Messages, Level AA).
+    ///
+    /// This is an advisory **warning** because XCTest snapshots cannot observe
+    /// `UIAccessibility.post` or SwiftUI live-region events directly. Callers
+    /// should supply observations captured by a test hook around the
+    /// interaction that changes status.
+    public static func statusMessageIssues(
+        observations: [StatusMessageObservation]
+    ) -> [Issue] {
+        observations.compactMap { observation in
+            let expected = observation.expectedMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+            let observed = observation.observedMessage?.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard observed != expected else { return nil }
+
+            let observedDescription: String
+            if let observed, !observed.isEmpty {
+                observedDescription = "observed \"\(observed)\""
+            } else {
+                observedDescription = "observed no status announcement"
+            }
+
+            return Issue(
+                auditType: "Status Messages",
+                compactDescription: "Status change did not announce \"\(expected)\"",
+                detailedDescription: "Expected \"\(expected)\" for this status change, but \(observedDescription). WCAG 4.1.3 requires status messages to be programmatically determinable so assistive technologies can announce them without moving focus.",
+                elementIdentifier: observation.identifier,
+                elementLabel: observation.label,
+                elementFrame: observation.frame,
+                reviewerHints: deduplicatedReviewerHints(
+                    observation.reviewerHints
+                        + IssueReviewerHints.remediationHints(auditType: "Status Messages")
+                ),
+                severity: .warning
+            )
+        }
+    }
+
+    /// Flags scripted large-text/reflow observations that either clip content
+    /// or extend horizontally outside the viewport (WCAG 1.4.4 Resize Text and
+    /// 1.4.10 Reflow, Level AA).
+    ///
+    /// This is advisory because a static accessibility snapshot does not expose
+    /// every visual clipping state. Callers should run explicit content-size
+    /// and orientation variants, then pass the observed element and viewport
+    /// frames into this check.
+    public static func resizeReflowIssues(
+        observations: [ResizeReflowObservation]
+    ) -> [Issue] {
+        observations.compactMap { observation in
+            let horizontalOverflow = !observation.allowsHorizontalScrolling
+                && (observation.frame.minX < observation.viewportFrame.minX
+                    || observation.frame.maxX > observation.viewportFrame.maxX)
+            guard observation.isClipped || horizontalOverflow else { return nil }
+
+            let reason: String
+            if observation.isClipped && horizontalOverflow {
+                reason = "appears clipped and extends horizontally outside the viewport"
+            } else if observation.isClipped {
+                reason = "appears clipped"
+            } else {
+                reason = "extends horizontally outside the viewport"
+            }
+
+            return Issue(
+                auditType: "Resize Text / Reflow",
+                compactDescription: "Large-text layout \(reason)",
+                detailedDescription: "In variant \"\(observation.variant)\", this element \(reason). The element frame is \(format(observation.frame.width))×\(format(observation.frame.height))pt at x=\(format(observation.frame.minX)); the viewport is \(format(observation.viewportFrame.width))×\(format(observation.viewportFrame.height))pt. WCAG 1.4.4 requires text to resize without loss of content or functionality, and WCAG 1.4.10 requires content to reflow without two-dimensional scrolling for ordinary text layouts.",
+                elementIdentifier: observation.identifier,
+                elementLabel: observation.label,
+                elementFrame: observation.frame,
+                reviewerHints: deduplicatedReviewerHints(
+                    observation.reviewerHints
+                        + IssueReviewerHints.remediationHints(auditType: "Resize Text / Reflow")
+                ),
                 severity: .warning
             )
         }

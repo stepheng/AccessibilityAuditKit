@@ -19,6 +19,7 @@ enum CatalogMapping {
             case .adjustableValue:           type.insert(.adjustableValue)
             case .consistentIdentification:  type.insert(.consistentIdentification)
             case .inputPurpose:              type.insert(.inputPurpose)
+            case .nonTextContrast:           type.insert(.nonTextContrast)
             }
         }
         return type

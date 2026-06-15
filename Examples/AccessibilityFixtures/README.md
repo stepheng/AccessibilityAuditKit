@@ -2,8 +2,8 @@
 
 A known-answer fixtures app for `AccessibilityAuditReport`. Each check has a
 passing and a failing example. Deterministic checks are asserted by the UITest
-target; manual-review and not-yet-implemented checks are gallery-only with a
-documented expected outcome.
+target; scripted checks use bespoke UI tests; manual-review checks are
+gallery-only with a documented expected outcome.
 
 The app is a sibling of `CapsylDemo` and references the local package at
 `../AccessibilityAuditReport`. The app target is package-free; only the UITest
@@ -61,9 +61,9 @@ targets):
 | Switch Control | 2.1.1 | A | manual | human verifies switch reachability |
 | Voice Control Naming | 2.5.3 | A | manual | human verifies speakable names |
 | Grouped Content | 1.3.1 | A | manual | human verifies grouping |
-| Non-text Contrast | 1.4.11 | AA | future | gallery only until implemented |
-| Status Messages | 4.1.3 | AA | future | gallery only until implemented |
-| Resize Text / Reflow | 1.4.4 / 1.4.10 | AA | future | gallery only until implemented |
+| Non-text Contrast | 1.4.11 | AA | asserted | low-contrast glyph flagged; 3:1 glyph clean |
+| Status Messages | 4.1.3 | AA | asserted | silent status change flagged; announced change clean |
+| Resize Text / Reflow | 1.4.4 / 1.4.10 | AA | asserted | fixed-width overflow flagged; wrapping text clean |
 
 ## Apple-audit downgrades (2026-06-14, iPhone 16 / iOS 18.5)
 
@@ -91,4 +91,6 @@ OS/simulator detects them.
 `AccessibilityFixtures/Catalog/FixtureCatalog.swift` is the single source of
 truth: it drives the gallery, the assertions, and this table. Adding a new
 deterministic single-screen supplemental check is just a catalog entry plus a
-fixture view — the data-driven `DeterministicChecksTests` picks it up.
+fixture view — the data-driven `DeterministicChecksTests` picks it up. Scripted
+checks stay in the catalog as asserted coverage, but are verified by their own
+UITest classes.

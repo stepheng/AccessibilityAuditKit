@@ -192,22 +192,28 @@ enum FixtureCatalog {
             summary: "Custom groups expose the right children.",
             expectedOutcome: "VoiceOver on the good card reads it as one grouped element; the bad card exposes stray fragments."),
 
-        // ── Tier 5: Not-yet-implemented gaps (gallery only) ────────────────
+        // ── Tier 5: Scripted assertion fixtures ───────────────────────────
         FixtureCheck(
             id: "nonTextContrast", title: "Non-text Contrast", wcag: "1.4.11", level: "AA",
-            category: .futureGap, tier: .manual, screenId: "future.nonTextContrast",
-            summary: "Icon/border contrast (design spec exists).",
-            expectedOutcome: "Once implemented: low-contrast glyph flagged; 3:1 glyph clean."),
+            category: .scripted, tier: .scripted,
+            severity: .warning, auditType: "Non-text Contrast", supplementalKinds: [.nonTextContrast],
+            screenId: "future.nonTextContrast",
+            summary: "Screenshot-backed check for two-toned graphical objects.",
+            expectedOutcome: "Low-contrast glyph flagged as advisory warning; high-contrast glyph clean."),
         FixtureCheck(
             id: "statusMessages", title: "Status Messages", wcag: "4.1.3", level: "AA",
-            category: .futureGap, tier: .manual, screenId: "future.statusMessages",
-            summary: "Live-region announcements.",
-            expectedOutcome: "Once implemented: silent status change flagged; announced change clean."),
+            category: .scripted, tier: .scripted,
+            severity: .warning, auditType: "Status Messages",
+            screenId: "future.statusMessages",
+            summary: "Scripted observation of status-change announcements.",
+            expectedOutcome: "Silent status change flagged as advisory warning; announced change clean."),
         FixtureCheck(
             id: "resizeReflow", title: "Resize Text / Reflow", wcag: "1.4.4 / 1.4.10", level: "AA",
-            category: .futureGap, tier: .manual, screenId: "future.resizeReflow",
-            summary: "Text resize and reflow without clipping.",
-            expectedOutcome: "Once implemented: clipping at AX sizes flagged; reflowing layout clean."),
+            category: .scripted, tier: .scripted,
+            severity: .warning, auditType: "Resize Text / Reflow",
+            screenId: "future.resizeReflow",
+            summary: "Scripted large-text layout observation.",
+            expectedOutcome: "Fixed-width overflow flagged as advisory warning; wrapping text clean."),
     ]
 
     static func first(id: String) -> FixtureCheck? { all.first { $0.id == id } }

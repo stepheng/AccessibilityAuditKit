@@ -9,12 +9,13 @@ enum FixtureCategory: String, CaseIterable {
     case appleAudit     = "Apple performAccessibilityAudit"
     case orientation    = "Orientation"
     case manualReview   = "Manual review"
-    case futureGap      = "Not yet implemented"
+    case scripted       = "Scripted assertions"
 }
 
 enum AssertionTier {
     case exact      // assert auditType + element identifiers + severity (single screen)
     case lenient    // assert >=1 issue of auditType on fail screen, 0 on pass screen
+    case scripted   // asserted by a bespoke fixture/integration test
     case manual     // gallery only, no automated assertion
 }
 
@@ -25,7 +26,7 @@ enum ExpectedSeverity { case error, warning }
 enum SupplementalKind {
     case targetSize, targetSpacing, screenTitle, duplicateLabels
     case labelInName, genericLabels, labelHygiene, adjustableValue
-    case consistentIdentification, inputPurpose
+    case consistentIdentification, inputPurpose, nonTextContrast
 }
 
 /// Which Apple audit a fixture exercises.

@@ -53,4 +53,14 @@ final class DeterministicChecksTests: FixturesUITestCase {
             }
         }
     }
+
+    func testScriptedChecksAreCataloguedAsAssertedCoverage() {
+        let scriptedChecks = ["nonTextContrast", "statusMessages", "resizeReflow"]
+
+        for id in scriptedChecks {
+            let check = FixtureCatalog.first(id: id)
+            XCTAssertEqual(check?.category, .scripted)
+            XCTAssertEqual(check?.tier, .scripted)
+        }
+    }
 }

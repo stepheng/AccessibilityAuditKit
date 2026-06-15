@@ -193,6 +193,20 @@ accessibility leaf, so Label-in-Name detection is best-effort.
 
 Pass `.all` to run every check, or a subset such as `[.targetSize, .screenTitle]`. Issues appear in the report alongside XCTest audit issues.
 
+Status Messages (WCAG 4.1.3) are event-based rather than snapshot-based. Use
+`StatusMessageObservation` with `SupplementalAccessibilityChecks.statusMessageIssues`
+after a scripted interaction or app test hook records the announcement that was
+posted for the status change. Missing or mismatched observations are advisory
+warnings because XCTest cannot directly inspect `UIAccessibility.post` or
+SwiftUI live-region events from a static accessibility tree.
+
+Resize Text / Reflow (WCAG 1.4.4 and 1.4.10) is variant-based rather than a
+single-snapshot semantic property. Use `ResizeReflowObservation` with
+`SupplementalAccessibilityChecks.resizeReflowIssues` after launching an explicit
+large-text and/or orientation variant. Horizontal overflow and supplied clipping
+observations are advisory warnings because snapshots cannot expose every visual
+text-clipping state.
+
 `.consistentIdentification` is a cross-screen check: during each screen scan it only records the screen's interactive elements into the report's element inventory. After the last screen, evaluate it:
 
 ```swift
@@ -334,16 +348,16 @@ These checks should be treated as manual review items for critical flows.
 
 ## Known Coverage Gaps (Future Iterations)
 
-These WCAG criteria are machine-detectable in principle but are not yet
-implemented as supplemental checks. They are recorded here so coverage
-decisions stay explicit:
-
-| WCAG | Level | Why it is not yet automated | Possible approach |
-|---|---|---|---|
-| 4.1.3 Status Messages | AA | Live-region announcements (`accessibilityLiveRegion`, `UIAccessibility.post`) are runtime events, not state in a single snapshot. | Observe accessibility notifications during a scripted interaction rather than from a static snapshot. |
-| 1.4.4 Resize Text / 1.4.10 Reflow | AA | Currently only partially covered by XCTest `.dynamicType` and `.textClipped`. | Drive the recommended test flow across explicit accessibility text-size and orientation variants and assert no clipping in each. |
+No explicit machine-detectable WCAG criteria are currently left in this bucket.
+Keep this section for future audit gaps that are practical but not yet
+implemented as supplemental checks.
 
 Non-text contrast (1.4.11) is now partially covered for icon-style graphical objects by the `.nonTextContrast` supplemental check; control borders and focus/state indicators remain manual review items.
+Status messages (4.1.3) are covered when callers provide scripted event
+observations; they remain outside static snapshot scanning.
+Resize text/reflow (1.4.4/1.4.10) is covered when callers provide scripted
+large-text or orientation observations; arbitrary clipping still needs manual
+review when it cannot be represented by an observation.
 
 ## Running Package Tests
 
