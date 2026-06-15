@@ -1,8 +1,8 @@
 //
 //  CatalogMapping.swift
-//  AccessibilityFixturesUITests
+//  AccessibilityFixtures
 //
-//  Created by Stephen Gurnett on 15/06/2026.
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 import AccessibilityAuditReport

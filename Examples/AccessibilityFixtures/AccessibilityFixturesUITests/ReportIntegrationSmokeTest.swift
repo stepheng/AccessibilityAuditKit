@@ -1,8 +1,8 @@
 //
 //  ReportIntegrationSmokeTest.swift
-//  AccessibilityFixturesUITests
+//  AccessibilityFixtures
 //
-//  Created by Stephen Gurnett on 15/06/2026.
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 //  Confirms the public recordAccessibilityAuditScreen → report → issues path

@@ -2,7 +2,7 @@
 //  DeepLinkRouter.swift
 //  AccessibilityFixtures
 //
-//  Created by Stephen Gurnett on 15/06/2026.
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 import SwiftUI
@@ -24,7 +24,7 @@ struct DeepLinkRouter: View {
     func view(for id: String) -> some View {
         switch id {
         case "targetSize":        TargetSizeFixtureView()
-        case "targetSpacing":     TargetSpacin  gFixtureView()
+        case "targetSpacing":     TargetSpacingFixtureView()
         case "screenTitleFail":   ScreenTitleFixtureView(mode: .fail)
         case "screenTitlePass":   ScreenTitleFixtureView(mode: .pass)
         case "duplicateLabels":   DuplicateLabelsFixtureView()

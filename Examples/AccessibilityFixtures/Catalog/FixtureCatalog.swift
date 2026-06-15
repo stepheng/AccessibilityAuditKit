@@ -2,7 +2,7 @@
 //  FixtureCatalog.swift
 //  AccessibilityFixtures
 //
-//  Created by Stephen Gurnett on 15/06/2026.
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 //  The single source of truth for app, tests, and docs.
