@@ -46,6 +46,7 @@ private final class FakeSnapshot: XCUIElementSnapshot {
     }
 }
 
+@MainActor
 final class SupplementalAuditScannerTests: XCTestCase {
     private let screen = CGRect(x: 0, y: 0, width: 400, height: 800)
 
