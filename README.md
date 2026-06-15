@@ -414,10 +414,6 @@ These checks should be treated as manual review items for critical flows.
 
 ## Known Coverage Gaps (Future Iterations)
 
-No explicit machine-detectable WCAG criteria are currently left in this bucket.
-Keep this section for future audit gaps that are practical but not yet
-implemented as supplemental checks.
-
 Non-text contrast (1.4.11) is now partially covered for icon-style graphical objects by the `.nonTextContrast` supplemental check; control borders and focus/state indicators remain manual review items.
 Status messages (4.1.3) are covered when callers provide scripted event
 observations; they remain outside static snapshot scanning.
