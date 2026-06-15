@@ -1,4 +1,10 @@
+//
 //  ReportIntegrationSmokeTest.swift
+//  AccessibilityFixturesUITests
+//
+//  Created by Stephen Gurnett on 15/06/2026.
+//
+
 //  Confirms the public recordAccessibilityAuditScreen → report → issues path
 //  still surfaces a known supplemental finding end-to-end (not just the direct
 //  scanner calls the deterministic suite uses).

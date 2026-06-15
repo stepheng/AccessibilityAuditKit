@@ -1,4 +1,10 @@
+//
 //  OrientationTests.swift
+//  AccessibilityFixturesUITests
+//
+//  Created by Stephen Gurnett on 15/06/2026.
+//
+
 import AccessibilityAuditReport
 import AccessibilityAuditXCTestSupport
 import XCTest

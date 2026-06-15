@@ -24,7 +24,7 @@ struct DeepLinkRouter: View {
     func view(for id: String) -> some View {
         switch id {
         case "targetSize":        TargetSizeFixtureView()
-        case "targetSpacing":     TargetSpacingFixtureView()
+        case "targetSpacing":     TargetSpacin  gFixtureView()
         case "screenTitleFail":   ScreenTitleFixtureView(mode: .fail)
         case "screenTitlePass":   ScreenTitleFixtureView(mode: .pass)
         case "duplicateLabels":   DuplicateLabelsFixtureView()
