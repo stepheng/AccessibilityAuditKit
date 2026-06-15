@@ -51,7 +51,7 @@ https://github.com/stepheng/AccessibilityAuditKit
 ```
 
 In Xcode, choose **File > Add Package Dependencies…**, paste the repository URL,
-and select the package from the `main` branch. Then link the products you need:
+and select version `0.1.0` or later. Then link the products you need:
 
 - Add `AccessibilityAuditReport` to a target that renders reports directly.
 - Add `AccessibilityAuditXCTestSupport` and `AccessibilityAuditReport` to a UI
@@ -66,7 +66,7 @@ For a Swift package, declare the dependency and product links explicitly:
 dependencies: [
     .package(
         url: "https://github.com/stepheng/AccessibilityAuditKit",
-        branch: "main"
+        from: "0.1.0"
     )
 ],
 targets: [
@@ -86,8 +86,8 @@ targets: [
 ]
 ```
 
-When the package has release tags, prefer a version requirement such as
-`from: "1.0.0"` instead of tracking `main`.
+Use a `branch: "main"` dependency only when you explicitly want unreleased
+changes.
 
 ## Requirements
 
