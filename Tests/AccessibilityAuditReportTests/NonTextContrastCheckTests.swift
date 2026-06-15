@@ -172,4 +172,47 @@ final class NonTextContrastCheckTests: XCTestCase {
         XCTAssertEqual(issues.count, 1)
         XCTAssertEqual(issues.first?.elementFrame, pointFrame)
     }
+
+    func testMapsPointFrameToPixelsUsingSeparateAxisScales() {
+        // Letterboxed simulator screenshots can transform app snapshot
+        // coordinates non-uniformly; the crop must follow each axis separately.
+        let image = iconImage(
+            width: 80, height: 120, background: 149, glyph: 118,
+            glyphRect: CGRect(x: 30, y: 70, width: 20, height: 10)
+        )
+        let pointFrame = CGRect(x: 10, y: 10, width: 20, height: 20)
+        let issues = SupplementalAccessibilityChecks.nonTextContrastIssues(
+            graphicalElements: [element(pointFrame)],
+            image: image,
+            xScale: 2,
+            yScale: 3
+        )
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.elementFrame, pointFrame)
+
+        let oldSingleScaleCrop = SupplementalAccessibilityChecks.nonTextContrastIssues(
+            graphicalElements: [element(pointFrame)],
+            image: image,
+            scale: 2
+        )
+        XCTAssertTrue(oldSingleScaleCrop.isEmpty)
+    }
+
+    func testMapsPointFrameToPixelsUsingSnapshotOriginOffset() {
+        let image = iconImage(
+            width: 80, height: 120, background: 149, glyph: 118,
+            glyphRect: CGRect(x: 30, y: 45, width: 20, height: 30)
+        )
+        let pointFrame = CGRect(x: 110, y: 210, width: 20, height: 20)
+        let issues = SupplementalAccessibilityChecks.nonTextContrastIssues(
+            graphicalElements: [element(pointFrame)],
+            image: image,
+            xScale: 2,
+            yScale: 3,
+            xOffset: 100,
+            yOffset: 200
+        )
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertEqual(issues.first?.elementFrame, pointFrame)
+    }
 }

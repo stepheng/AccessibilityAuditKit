@@ -169,12 +169,16 @@ public extension XCUIApplication {
             // warning, so a decode failure must not fail the test run.
             if supplementalChecks.contains(.nonTextContrast),
                let image = PixelImage(pngData: capturedScreenshot.pngRepresentation) {
-                let pointSize = capturedScreenshot.image.size
-                let scale = pointSize.width > 0 ? CGFloat(image.width) / pointSize.width : 1
+                let snapshotFrame = snapshot.frame
+                let xScale = snapshotFrame.width > 0 ? CGFloat(image.width) / snapshotFrame.width : 1
+                let yScale = snapshotFrame.height > 0 ? CGFloat(image.height) / snapshotFrame.height : xScale
                 issues += SupplementalAccessibilityChecks.nonTextContrastIssues(
                     graphicalElements: SupplementalAuditScanner.graphicalElementInventory(in: snapshot),
                     image: image,
-                    scale: scale
+                    xScale: xScale,
+                    yScale: yScale,
+                    xOffset: snapshotFrame.minX,
+                    yOffset: snapshotFrame.minY
                 )
             }
         }

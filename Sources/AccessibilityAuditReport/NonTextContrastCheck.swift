@@ -23,8 +23,10 @@ extension SupplementalAccessibilityChecks {
     /// Flags icon-style graphical objects whose dominant foreground and
     /// background differ by less than 3:1 contrast (WCAG 1.4.11 Non-text
     /// Contrast, Level AA). Frames are in points; `scale` maps them to pixels of
-    /// `image` (screenshot pixel width ÷ point width). Each emitted issue keeps
-    /// the original point frame so the report overlay still aligns.
+    /// `image` (screenshot pixel width ÷ point width). Pass `xScale`, `yScale`,
+    /// `xOffset`, and `yOffset` when the screenshot has been transformed from a
+    /// non-origin or non-uniform app snapshot coordinate space. Each emitted
+    /// issue keeps the original point frame so the report overlay still aligns.
     ///
     /// Advisory **warning**: the foreground/background split is inferred from
     /// pixels, so it estimates rather than proves a failure, and it evaluates
@@ -35,15 +37,24 @@ extension SupplementalAccessibilityChecks {
         graphicalElements: [AuditedElement],
         image: PixelImage,
         scale: CGFloat = 1,
+        xScale: CGFloat? = nil,
+        yScale: CGFloat? = nil,
+        xOffset: CGFloat = 0,
+        yOffset: CGFloat = 0,
         threshold: Double = nonTextContrastThreshold,
         minSeparability: Double = nonTextContrastMinSeparability,
         minClassFraction: Double = nonTextContrastMinClassFraction
     ) -> [Issue] {
-        graphicalElements.compactMap { element in
+        let effectiveXScale = xScale ?? scale
+        let effectiveYScale = yScale ?? scale
+        return graphicalElements.compactMap { element -> Issue? in
             guard let ratio = dominantContrastRatio(
                 frame: element.frame,
                 image: image,
-                scale: scale,
+                xScale: effectiveXScale,
+                yScale: effectiveYScale,
+                xOffset: xOffset,
+                yOffset: yOffset,
                 minSeparability: minSeparability,
                 minClassFraction: minClassFraction
             ), ratio < threshold else {
@@ -70,14 +81,17 @@ extension SupplementalAccessibilityChecks {
     private static func dominantContrastRatio(
         frame: CGRect,
         image: PixelImage,
-        scale: CGFloat,
+        xScale: CGFloat,
+        yScale: CGFloat,
+        xOffset: CGFloat,
+        yOffset: CGFloat,
         minSeparability: Double,
         minClassFraction: Double
     ) -> Double? {
-        let minX = max(0, Int((frame.minX * scale).rounded(.down)))
-        let minY = max(0, Int((frame.minY * scale).rounded(.down)))
-        let maxX = min(image.width, Int((frame.maxX * scale).rounded(.up)))
-        let maxY = min(image.height, Int((frame.maxY * scale).rounded(.up)))
+        let minX = max(0, Int(((frame.minX - xOffset) * xScale).rounded(.down)))
+        let minY = max(0, Int(((frame.minY - yOffset) * yScale).rounded(.down)))
+        let maxX = min(image.width, Int(((frame.maxX - xOffset) * xScale).rounded(.up)))
+        let maxY = min(image.height, Int(((frame.maxY - yOffset) * yScale).rounded(.up)))
         guard maxX - minX >= 1, maxY - minY >= 1 else { return nil }
 
         // Histogram of relative luminance bucketed to 0…255, plus the true

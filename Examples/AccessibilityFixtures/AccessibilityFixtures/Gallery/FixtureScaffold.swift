@@ -103,21 +103,52 @@ struct NonTextContrastFixtureView: View {
         foreground: UInt8,
         background: UInt8
     ) -> some View {
-        Image(uiImage: image(foreground: foreground, background: background))
-            .resizable()
+        ContrastGlyphView(
+            identifier: identifier,
+            label: label,
+            foreground: foreground,
+            background: background
+        )
             .frame(width: 44, height: 44)
-            .accessibilityLabel(label)
-            .accessibilityIdentifier(identifier)
+    }
+}
+
+private struct ContrastGlyphView: UIViewRepresentable {
+    let identifier: String
+    let label: String
+    let foreground: UInt8
+    let background: UInt8
+
+    func makeUIView(context: Context) -> ContrastGlyphUIView {
+        let view = ContrastGlyphUIView()
+        view.isOpaque = true
+        view.isAccessibilityElement = true
+        view.accessibilityTraits = .image
+        return view
     }
 
-    private func image(foreground: UInt8, background: UInt8) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 44, height: 44))
-        return renderer.image { context in
-            UIColor(white: CGFloat(background) / 255, alpha: 1).setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 44, height: 44))
-            UIColor(white: CGFloat(foreground) / 255, alpha: 1).setFill()
-            context.fill(CGRect(x: 10, y: 10, width: 24, height: 24))
-        }
+    func updateUIView(_ view: ContrastGlyphUIView, context: Context) {
+        view.foreground = UIColor(white: CGFloat(foreground) / 255, alpha: 1)
+        view.background = UIColor(white: CGFloat(background) / 255, alpha: 1)
+        view.accessibilityIdentifier = identifier
+        view.accessibilityLabel = label
+        view.setNeedsDisplay()
+    }
+}
+
+private final class ContrastGlyphUIView: UIView {
+    var foreground = UIColor.black
+    var background = UIColor.white
+
+    override func draw(_ rect: CGRect) {
+        background.setFill()
+        UIRectFill(rect)
+
+        foreground.setFill()
+        let side = min(rect.width, rect.height)
+        let glyphSize = side * 24 / 44
+        let origin = (side - glyphSize) / 2
+        UIRectFill(CGRect(x: origin, y: origin, width: glyphSize, height: glyphSize))
     }
 }
 
