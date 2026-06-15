@@ -1,3 +1,10 @@
+//
+//  PlainTextRenderingTests.swift
+//  AccessibilityAuditReportTests
+//
+//  Created by Stephen Gurnett on 14/06/2026.
+//
+
 import AccessibilityAuditReport
 import CoreGraphics
 import Foundation

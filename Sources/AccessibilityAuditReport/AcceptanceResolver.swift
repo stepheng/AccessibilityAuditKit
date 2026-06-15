@@ -2,6 +2,8 @@
 //  AcceptanceResolver.swift
 //  AccessibilityAuditReport
 //
+//  Created by Stephen Gurnett on 13/06/2026.
+//
 
 /// Annotates issues with acceptance state by matching them against baseline
 /// rules. Pure and synchronous — no XCUITest dependency. Identity-first:

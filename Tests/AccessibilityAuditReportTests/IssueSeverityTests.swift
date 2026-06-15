@@ -1,3 +1,10 @@
+//
+//  IssueSeverityTests.swift
+//  AccessibilityAuditReportTests
+//
+//  Created by Stephen Gurnett on 13/06/2026.
+//
+
 import AccessibilityAuditReport
 import CoreGraphics
 import XCTest

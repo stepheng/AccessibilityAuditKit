@@ -32,10 +32,8 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FB54BA6B2FE0AAE700DCFD3E /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		FB54BA712FE0AAEE00DCFD3E /* Catalog */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Catalog; sourceTree = "<group>"; };
-		FB54BA762FE0AAEE00DCFD3E /* Gallery */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Gallery; sourceTree = "<group>"; };
-		FB54BA862FE0AAEE00DCFD3E /* Checks */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Checks; sourceTree = "<group>"; };
+		FB54BAE52FE0AE6D00DCFD3E /* AccessibilityFixturesUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AccessibilityFixturesUITests; sourceTree = "<group>"; };
+		FB54BB092FE0AE6D00DCFD3E /* AccessibilityFixtures */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AccessibilityFixtures; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,10 +63,8 @@
 		22E1860B70608F714ACD60B2 = {
 			isa = PBXGroup;
 			children = (
-				FB54BA6B2FE0AAE700DCFD3E /* App */,
-				FB54BA712FE0AAEE00DCFD3E /* Catalog */,
-				FB54BA862FE0AAEE00DCFD3E /* Checks */,
-				FB54BA762FE0AAEE00DCFD3E /* Gallery */,
+				FB54BB092FE0AE6D00DCFD3E /* AccessibilityFixtures */,
+				FB54BAE52FE0AE6D00DCFD3E /* AccessibilityFixturesUITests */,
 				F8A964946D667CE1E03AB4F7 /* Products */,
 				548FBE816CE25B740F0CD2C2 /* Frameworks */,
 			);
@@ -115,6 +111,9 @@
 			dependencies = (
 				0C132F32367A4488C04C048F /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				FB54BAE52FE0AE6D00DCFD3E /* AccessibilityFixturesUITests */,
+			);
 			name = AccessibilityFixturesUITests;
 			packageProductDependencies = (
 				3930EAADA8FAD61F57D54772 /* AccessibilityAuditReport */,
@@ -138,10 +137,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				FB54BA6B2FE0AAE700DCFD3E /* App */,
-				FB54BA712FE0AAEE00DCFD3E /* Catalog */,
-				FB54BA762FE0AAEE00DCFD3E /* Gallery */,
-				FB54BA862FE0AAEE00DCFD3E /* Checks */,
+				FB54BB092FE0AE6D00DCFD3E /* AccessibilityFixtures */,
 			);
 			name = AccessibilityFixtures;
 			packageProductDependencies = (

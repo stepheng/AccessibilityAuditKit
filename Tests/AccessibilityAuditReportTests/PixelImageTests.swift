@@ -1,6 +1,8 @@
 //
 //  PixelImageTests.swift
-//  AccessibilityAuditReport
+//  AccessibilityAuditReportTests
+//
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 import CoreGraphics

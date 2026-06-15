@@ -1,3 +1,10 @@
+//
+//  JSONRenderingTests.swift
+//  AccessibilityAuditReportTests
+//
+//  Created by Stephen Gurnett on 15/06/2026.
+//
+
 import AccessibilityAuditReport
 import CoreGraphics
 import Foundation

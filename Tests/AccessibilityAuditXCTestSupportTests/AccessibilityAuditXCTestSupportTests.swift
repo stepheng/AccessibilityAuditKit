@@ -1,6 +1,6 @@
 //
 //  AccessibilityAuditXCTestSupportTests.swift
-//  AccessibilityAuditReport
+//  AccessibilityAuditXCTestSupportTests
 //
 //  Created by Stephen Gurnett on 12/06/2026.
 //

@@ -1,6 +1,6 @@
 //
 //  AccessibilityAuditHTMLReportTests.swift
-//  AccessibilityAuditReport
+//  AccessibilityAuditReportTests
 //
 //  Created by Stephen Gurnett on 12/06/2026.
 //

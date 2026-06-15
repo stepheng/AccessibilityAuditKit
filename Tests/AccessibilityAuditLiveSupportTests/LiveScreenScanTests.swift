@@ -1,6 +1,6 @@
 //
 //  LiveScreenScanTests.swift
-//  AccessibilityAuditReport
+//  AccessibilityAuditLiveSupportTests
 //
 //  Created by Stephen Gurnett on 14/06/2026.
 //

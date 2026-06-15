@@ -1,3 +1,10 @@
+//
+//  AcceptanceBaselineTests.swift
+//  AccessibilityAuditXCTestSupportTests
+//
+//  Created by Stephen Gurnett on 14/06/2026.
+//
+
 import AccessibilityAuditReport
 import AccessibilityAuditXCTestSupport
 import Foundation

@@ -2,6 +2,8 @@
 //  AcceptanceRule.swift
 //  AccessibilityAuditReport
 //
+//  Created by Stephen Gurnett on 13/06/2026.
+//
 
 import Foundation
 

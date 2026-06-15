@@ -1,6 +1,8 @@
 //
 //  AcceptanceBaseline.swift
-//  AccessibilityAuditReport
+//  AccessibilityAuditXCTestSupport
+//
+//  Created by Stephen Gurnett on 14/06/2026.
 //
 
 import AccessibilityAuditReport
