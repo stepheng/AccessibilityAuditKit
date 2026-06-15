@@ -143,6 +143,15 @@ public struct AccessibilityAuditHTMLReport {
         """
     }
 
+    public func renderJSON(prettyPrinted: Bool = true) throws -> Data {
+        let options: JSONEncoder.OutputFormatting = prettyPrinted
+            ? [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+            : [.withoutEscapingSlashes]
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = options
+        return try encoder.encode(AccessibilityAuditJSONPayload(report: self, screens: resolvedScreens))
+    }
+
     /// Renders a plain-text summary of the audit, mirroring `renderHTML()`'s
     /// resolved-acceptance state and issue ordering. Intended for console output
     /// (e.g. the in-process LLDB audit) so a person or an LLM can act on the
@@ -617,4 +626,110 @@ public struct AccessibilityAuditHTMLReport {
       }
     }
     """
+}
+
+private struct AccessibilityAuditJSONPayload: Encodable {
+    let schemaVersion: String
+    let title: String
+    let summary: AccessibilityAuditJSONSummary
+    let screens: [AccessibilityAuditJSONScreen]
+
+    init(report: AccessibilityAuditHTMLReport, screens: [ScreenResult]) {
+        self.schemaVersion = "1.0"
+        self.title = report.title
+        self.summary = AccessibilityAuditJSONSummary(report: report)
+        self.screens = screens.map(AccessibilityAuditJSONScreen.init(screen:))
+    }
+}
+
+private struct AccessibilityAuditJSONSummary: Encodable {
+    let screensAudited: Int
+    let issuesFound: Int
+    let blockingErrors: Int
+    let warnings: Int
+    let accepted: Int
+
+    init(report: AccessibilityAuditHTMLReport) {
+        self.screensAudited = report.screens.count
+        self.issuesFound = report.issueCount
+        self.blockingErrors = report.blockingIssueCount
+        self.warnings = report.warningCount
+        self.accepted = report.acceptedCount
+    }
+}
+
+private struct AccessibilityAuditJSONScreen: Encodable {
+    let variant: String
+    let name: String
+    let screenshot: AccessibilityAuditJSONScreenshot
+    let issues: [AccessibilityAuditJSONIssue]
+
+    init(screen: ScreenResult) {
+        self.variant = screen.variant
+        self.name = screen.name
+        self.screenshot = AccessibilityAuditJSONScreenshot(size: screen.screenshotSize)
+        self.issues = screen.issues.map(AccessibilityAuditJSONIssue.init(issue:))
+    }
+}
+
+private struct AccessibilityAuditJSONScreenshot: Encodable {
+    let width: Double
+    let height: Double
+
+    init(size: CGSize) {
+        self.width = Double(size.width)
+        self.height = Double(size.height)
+    }
+}
+
+private struct AccessibilityAuditJSONIssue: Encodable {
+    let auditType: String
+    let compactDescription: String
+    let detailedDescription: String
+    let severity: String
+    let rawSeverity: String
+    let elementIdentifier: String
+    let elementLabel: String
+    let frame: AccessibilityAuditJSONFrame?
+    let additionalFrames: [AccessibilityAuditJSONFrame]
+    let reviewerHints: [IssueReviewerHint]
+    let acceptance: AccessibilityAuditJSONAcceptance?
+
+    init(issue: Issue) {
+        self.auditType = issue.auditType
+        self.compactDescription = issue.compactDescription
+        self.detailedDescription = issue.detailedDescription
+        self.severity = issue.acceptance == nil ? issue.severity.rawValue : "accepted"
+        self.rawSeverity = issue.severity.rawValue
+        self.elementIdentifier = issue.elementIdentifier
+        self.elementLabel = issue.elementLabel
+        self.frame = issue.elementFrame.map(AccessibilityAuditJSONFrame.init(frame:))
+        self.additionalFrames = issue.additionalFrames.map(AccessibilityAuditJSONFrame.init(frame:))
+        self.reviewerHints = issue.reviewerHints
+        self.acceptance = issue.acceptance.map(AccessibilityAuditJSONAcceptance.init(acceptance:))
+    }
+}
+
+private struct AccessibilityAuditJSONFrame: Encodable {
+    let x: Double
+    let y: Double
+    let width: Double
+    let height: Double
+
+    init(frame: CGRect) {
+        self.x = Double(frame.minX)
+        self.y = Double(frame.minY)
+        self.width = Double(frame.width)
+        self.height = Double(frame.height)
+    }
+}
+
+private struct AccessibilityAuditJSONAcceptance: Encodable {
+    let reason: String
+    let isStale: Bool
+
+    init(acceptance: Acceptance) {
+        self.reason = acceptance.reason
+        self.isStale = acceptance.isStale
+    }
 }

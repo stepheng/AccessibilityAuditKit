@@ -14,6 +14,8 @@ import XCTest
 
 - Human-readable names for `XCUIAccessibilityAuditType` values.
 - `XCTestCase.attachAccessibilityAuditReport(_:)` for attaching rendered HTML.
+- `XCTestCase.attachAccessibilityAuditArtifacts(_:)` for attaching both rendered HTML and machine-readable JSON.
+- `AccessibilityAuditArtifactWriter.write(_:to:baseFilename:)` for writing `.html` and `.json` artifacts to a known directory.
 - XCTest screenshot overloads for recording readiness and navigation failures.
 - `XCUIApplication.recordAccessibilityAuditScreen(_:variant:auditTypes:in:screenshot:)` for running an audit and appending the screen result to a report.
 
@@ -91,6 +93,22 @@ attachAccessibilityAuditReport(report)
 ```
 
 The attachment is written as `public.html` and uses `.keepAlways`, so the report remains available in failed test results.
+
+Use `attachAccessibilityAuditArtifacts` when CI or local debugging needs both the screenshot-backed HTML and the structured JSON output:
+
+```swift
+try attachAccessibilityAuditArtifacts(report)
+```
+
+To write artifacts to a known directory instead of relying only on the XCTest result bundle:
+
+```swift
+let urls = try AccessibilityAuditArtifactWriter.write(
+    report,
+    to: URL(fileURLWithPath: "/tmp/accessibility-audit"),
+    baseFilename: "capsyl-primary-screens"
+)
+```
 
 Pass a custom attachment name when needed:
 
