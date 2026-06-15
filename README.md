@@ -35,7 +35,8 @@ The generated HTML includes:
 Use the structured JSON artifact as the primary LLM input and the HTML report as
 the visual cross-check. The JSON contains issue metadata, severity, element
 identifiers, labels, frames, acceptance state, and reviewer hints; the HTML
-contains screenshots and overlays for human inspection.
+contains screenshots and overlays for human inspection. See
+[Getting the JSON](#getting-the-json) for the quickest ways to produce the file.
 
 From XCTest, prefer `attachAccessibilityAuditArtifacts(_:)` when an agent or CI
 workflow needs both files:
@@ -59,6 +60,30 @@ companion Codex skill is included at
 [Skills/accessibility-audit-remediation](Skills/accessibility-audit-remediation)
 for agents that support reusable skills. To install it locally for Codex, copy
 that folder into `~/.codex/skills/`.
+
+### Getting the JSON
+
+For local XCTest runs, attach both artifacts to the test result:
+
+```swift
+try attachAccessibilityAuditArtifacts(report)
+```
+
+The JSON attachment is kept as `Accessibility Audit Report.json` by default.
+
+For CI or LLM automation, write the artifacts to a known directory and upload or
+pass along the `.json` file:
+
+```swift
+let urls = try AccessibilityAuditArtifactWriter.write(
+    report,
+    to: URL(fileURLWithPath: "/tmp/accessibility-audit"),
+    baseFilename: "primary-screens"
+)
+```
+
+That produces `/tmp/accessibility-audit/primary-screens.json` and
+`/tmp/accessibility-audit/primary-screens.html`.
 
 ## Products
 
