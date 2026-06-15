@@ -8,7 +8,7 @@ ROOT       = File.expand_path(File.dirname(__FILE__))   # the AccessibilityFixtu
 PROJECT    = File.join(ROOT, 'AccessibilityFixtures.xcodeproj')
 APP_DIR    = 'AccessibilityFixtures'                     # relative to ROOT
 TEST_DIR   = 'AccessibilityFixturesUITests'
-PKG_REL    = '../AccessibilityAuditReport'
+PKG_REL    = '../..'
 TEAM       = '3TY8Z73V2D'
 
 Dir.chdir(ROOT)
@@ -41,18 +41,31 @@ end
 
 uitest.add_dependency(app)
 
-# Local Swift package, linked into the UITEST target only (the app is package-free).
+# Local Swift package. The app links LiveSupport for the in-process LLDB audit
+# hook; UI tests link the report and XCTest helpers used by assertions.
 pkg = project.new(Xcodeproj::Project::Object::XCLocalSwiftPackageReference)
 pkg.relative_path = PKG_REL
 project.root_object.package_references << pkg
-['AccessibilityAuditReport', 'AccessibilityAuditXCTestSupport'].each do |product|
+
+def add_package_product(project, target, package, product)
   dep = project.new(Xcodeproj::Project::Object::XCSwiftPackageProductDependency)
-  dep.package = pkg
+  dep.package = package
   dep.product_name = product
-  uitest.package_product_dependencies << dep
-  bf = project.new(Xcodeproj::Project::Object::PBXBuildFile)
-  bf.product_ref = dep
-  uitest.frameworks_build_phase.files << bf
+  target.package_product_dependencies << dep
+
+  build_file = project.new(Xcodeproj::Project::Object::PBXBuildFile)
+  build_file.product_ref = dep
+  target.frameworks_build_phase.files << build_file
+end
+
+add_package_product(project, app, pkg, 'AccessibilityAuditLiveSupport')
+
+[
+  'AccessibilityAuditReport',
+  'AccessibilityAuditXCTestSupport',
+  'AccessibilityAuditLiveSupport'
+].each do |product|
+  add_package_product(project, uitest, pkg, product)
 end
 
 def add(project, target, rel)

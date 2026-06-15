@@ -3,180 +3,182 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01A7CB08BA265159550D5EFC /* NonTextContrastFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9EB70C2D5D028B58BEB3BC /* NonTextContrastFixtureTests.swift */; };
-		117933463FF47EF5F3968189 /* ResizeReflowFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7584AAB23C0D21F0914A432C /* ResizeReflowFixtureTests.swift */; };
-		2506DBFA5F1DB552403A2530 /* AccessibilityAuditReport in Frameworks */ = {isa = PBXBuildFile; productRef = 085355F9C504D638FE3C8013 /* AccessibilityAuditReport */; };
-		2A04D1AF6CDEB6F03B78D580 /* OrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF6A900FA2229B92816CAEE /* OrientationTests.swift */; };
-		2ACA6103BF68F3F92CD95E37 /* EmptyValueSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98A174074E1D5CF108BE1EB /* EmptyValueSlider.swift */; };
-		2E89C1D114886D428F34251B /* GenericLabelFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03900A52EFD76D75094D593F /* GenericLabelFixtureView.swift */; };
-		39B183FC6E9A2EB1B084EE18 /* DeterministicChecksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571A763E5DD377D533F8F032 /* DeterministicChecksTests.swift */; };
-		3DF96C84920D1A9BEDEA8ECE /* FixtureListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE048FCDD96D85D03289CDC /* FixtureListView.swift */; };
-		4595BF412C3314340EA680E5 /* FixturesUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115D73B737F17ADE83D461E9 /* FixturesUITestCase.swift */; };
-		55E4D1F67B340D455F7B5F77 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A015C40F2B8DD8BC807DFE /* DeepLinkRouter.swift */; };
-		5D132F2021C4C0AE589D9BBF /* ReportIntegrationSmokeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71436C98717030EB3778E787 /* ReportIntegrationSmokeTest.swift */; };
-		61DC898CB4E801384B64D390 /* StatusMessagesFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D8C89E0A62FC460856ED03 /* StatusMessagesFixtureTests.swift */; };
-		66573F3EF5D5D625C22EDAFB /* AppleAuditFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83BF285868F09B18FF79FDFA /* AppleAuditFixtureView.swift */; };
-		8122053290F1979E05EC1CDD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B245BDEE3238D3183F17A83 /* Foundation.framework */; };
-		88AE1F58720D07612BD102B0 /* FixtureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9897D2F893E5950ED6AB4C64 /* FixtureCatalog.swift */; };
-		8FE5C000F84D34A10BE0F5D1 /* ConsistentIdentificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8D971AA6D8CA75E139D18F /* ConsistentIdentificationTests.swift */; };
-		90891D468EB7178CA239C3D8 /* AccessibilityFixturesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA447D5C6B8D8CB009D9D482 /* AccessibilityFixturesApp.swift */; };
-		9D74B648CF23E9D3AF5E8728 /* ConsistentIdentificationFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF95FF151772EED7295D641 /* ConsistentIdentificationFixtureView.swift */; };
-		A1174414519DF0FF9B9985B2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D99AE312B82B710662172B4 /* AppDelegate.swift */; };
-		A5C5C03E0C01327F1D04CC16 /* InputPurposeFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7745AE07CBA8A17FA67E2634 /* InputPurposeFixtureView.swift */; };
-		AC8D523F3CC3E1D8B6EA4599 /* FixtureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E5D5EADDA50F117730319D /* FixtureModels.swift */; };
-		AC8EC47D20501091F57651A5 /* OrientationFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76DAF648C714392077630C /* OrientationFixtureView.swift */; };
-		AFEA8CE280E10211C7C66412 /* ScreenTitleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4237DF54306134E769CEC065 /* ScreenTitleTests.swift */; };
-		B69B362F205A6ED58127A693 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B245BDEE3238D3183F17A83 /* Foundation.framework */; };
-		C259F44594A9EB71724F9451 /* LabelInNameFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6BBE9F6B06B285EF952102 /* LabelInNameFixtureView.swift */; };
-		C5C8295677CD22ED8CF4317B /* FixtureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E5D5EADDA50F117730319D /* FixtureModels.swift */; };
-		C83D15FE656F9534E95C66D6 /* LabelHygieneFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897750BF3B176A55DFEFF354 /* LabelHygieneFixtureView.swift */; };
-		CC0F226C47710A03E22F8E01 /* FixtureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9897D2F893E5950ED6AB4C64 /* FixtureCatalog.swift */; };
-		D3E3F19CC06CE21128AC7119 /* ScreenTitleFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A28D1713BC8F4BE2AE7A37 /* ScreenTitleFixtureView.swift */; };
-		E23776C724F3C5A4E1DFA4FA /* AppleAuditChecksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C60F52AB2907F881D503E7 /* AppleAuditChecksTests.swift */; };
-		EB89E434B486E5A27E0CEE02 /* CatalogMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9758CA264093BBD2D39E5381 /* CatalogMapping.swift */; };
-		EC7456EFD984DBF15934BE4F /* AccessibilityAuditXCTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 2CB4359502F8B6ABB9B9E42A /* AccessibilityAuditXCTestSupport */; };
-		F567CFBC321B18DA41D066A5 /* TargetSizeFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8920C120138E5638A6E5FBFD /* TargetSizeFixtureView.swift */; };
-		F7C99AF3F6F03DC241309134 /* DuplicateLabelsFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914A3CA5667AF65F199BE737 /* DuplicateLabelsFixtureView.swift */; };
-		FB3B091B2FDF4B430026189F /* AccessibilityAuditLiveSupport in Frameworks */ = {isa = PBXBuildFile; productRef = FB3B091A2FDF4B430026189F /* AccessibilityAuditLiveSupport */; };
-		FBDAB2048B1690FB53EC570F /* FixtureScaffold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9312C78FCF830F04FF1EBC3D /* FixtureScaffold.swift */; };
-		FD2BE7042F9E856E30D24B37 /* AdjustableValueFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77BA5B9C1F254E83EFDB3C7B /* AdjustableValueFixtureView.swift */; };
-		FECA7C396951539D0BABDBA2 /* TargetSpacingFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC40714C083C70AF2B9721A /* TargetSpacingFixtureView.swift */; };
+		08BDE5601CF64061C63DEB73 /* AppleAuditFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB9860E82EBD74554C8EF54 /* AppleAuditFixtureView.swift */; };
+		10E084E6E5CF31E102C94ED0 /* ResizeReflowFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5155F32A79F384767469FD /* ResizeReflowFixtureTests.swift */; };
+		11BE0CCF03ECE73C6528D1ED /* OrientationFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A02C22EE1FEE0755C975616 /* OrientationFixtureView.swift */; };
+		16B873136BF3A3071FD7C122 /* FixtureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3043C61D17AE104C734DF6 /* FixtureModels.swift */; };
+		1765F68784AE06207BD3CCCD /* AccessibilityAuditLiveSupport in Frameworks */ = {isa = PBXBuildFile; productRef = E91041C54E7487D43C9EAF20 /* AccessibilityAuditLiveSupport */; };
+		1B7096F3244475ACF95AA31E /* CatalogMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9693004A1A348A712ECBB6C7 /* CatalogMapping.swift */; };
+		21E1D7B253F3692822B5BFA5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6687BAF0C0EE3B03A75EB5A0 /* Foundation.framework */; };
+		31026EF732616EAA15AAE086 /* AccessibilityAuditLiveSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 36574DD8ECB217B212154F3C /* AccessibilityAuditLiveSupport */; };
+		35F8B226C48BB5C7B0623B80 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E13D156244FE89C0336DFE /* DeepLinkRouter.swift */; };
+		4E08B54F4DCB24650722954D /* ScreenTitleFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6E2C2D04E3CCF5B2AFC58A /* ScreenTitleFixtureView.swift */; };
+		50244F9C7CF40F6EFA3FB306 /* FixtureListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472DD9972E6EA29E5E9DF17 /* FixtureListView.swift */; };
+		54225CEB072B76497458AEAD /* FixtureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0089D003F550E889F07CB784 /* FixtureCatalog.swift */; };
+		62FD3CF54D3DA02CAFD0A26F /* TargetSpacingFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7B987B7881B7F22E671E11 /* TargetSpacingFixtureView.swift */; };
+		6825E9C0ED71262114D5D190 /* OrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D8D36BCFAA0BD0F7798FE6 /* OrientationTests.swift */; };
+		6AF54F0C970375140C4E31C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6687BAF0C0EE3B03A75EB5A0 /* Foundation.framework */; };
+		76E54E7AAC5E1F4DFCB8F2FF /* EmptyValueSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B17373A351400A0A1A2F345 /* EmptyValueSlider.swift */; };
+		7797F0B12CFA0C422E69AEA2 /* FixtureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0089D003F550E889F07CB784 /* FixtureCatalog.swift */; };
+		79DD8E89A5CBA79F9EBE9B9D /* GenericLabelFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033B477FB545F764DE7EAF0 /* GenericLabelFixtureView.swift */; };
+		79E00215700D7732FC010B42 /* FixtureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3043C61D17AE104C734DF6 /* FixtureModels.swift */; };
+		7D9C62F5C7808DE6E31B78F5 /* AccessibilityAuditReport in Frameworks */ = {isa = PBXBuildFile; productRef = 3930EAADA8FAD61F57D54772 /* AccessibilityAuditReport */; };
+		85B0D531C419F1BDE963562E /* LabelHygieneFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A15BEBFA3A676479271BE1 /* LabelHygieneFixtureView.swift */; };
+		88F7652EEE32483133319873 /* AccessibilityAuditXCTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 65318D78DD5E862B7C338D6D /* AccessibilityAuditXCTestSupport */; };
+		89520D18A5C3539281307144 /* FixturesUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAE24030C9DE1C63506079A /* FixturesUITestCase.swift */; };
+		8F33DEBEBA5E0BFC719A75EF /* InputPurposeFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4FEE7B56635399B7C0B034 /* InputPurposeFixtureView.swift */; };
+		A182C627E8640BDE182AA0EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA56F6B3F6DD07BF3BAEF34 /* AppDelegate.swift */; };
+		A2067F4D6495733A217DA38A /* AppleAuditChecksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33937C7FA8DAB64FE5998287 /* AppleAuditChecksTests.swift */; };
+		B3BB7A2886662DF3F2A2AC25 /* DeterministicChecksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61953EB33D7F6E37013C994D /* DeterministicChecksTests.swift */; };
+		B426ACDFA4AECDBB187A1795 /* TargetSizeFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C21A914E99D99F1E9B39732 /* TargetSizeFixtureView.swift */; };
+		B6051DA6E15FD8D4631FC8A4 /* NonTextContrastFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B280221D7A66799FBBE36E06 /* NonTextContrastFixtureTests.swift */; };
+		BC4BDE751FD80243FFBFACC3 /* ReportIntegrationSmokeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24F36B391C335925C1C68B0 /* ReportIntegrationSmokeTest.swift */; };
+		C1879AE8DA39604414CE6104 /* StatusMessagesFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07684670BA739E31B1BFE06 /* StatusMessagesFixtureTests.swift */; };
+		C51EBDEF65ABC945D6EF90AB /* AccessibilityFixturesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D00F92BF98AAA259282E40B /* AccessibilityFixturesApp.swift */; };
+		CFE81F8240E5249BC81F8B1B /* ScreenTitleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7B1607993E0475EA69777B /* ScreenTitleTests.swift */; };
+		DDD923E46BEE2E9B0FA9CD8D /* FixtureScaffold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623E9DC85B68AF6AAE345215 /* FixtureScaffold.swift */; };
+		E0F9139D43EE1DCABF816E50 /* AdjustableValueFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B1179FAA231431980D33A3 /* AdjustableValueFixtureView.swift */; };
+		E854B4ED435D620EEF4E7C6B /* ConsistentIdentificationFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6171D1F40258F0982A013F /* ConsistentIdentificationFixtureView.swift */; };
+		EF0E1EE2A82F50E59690FBFC /* DuplicateLabelsFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9C9BFDFA02B9353CBC0CB /* DuplicateLabelsFixtureView.swift */; };
+		F1F5C07358C6478E4205DD59 /* LabelInNameFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A90AC17FF06D5D2E34C241 /* LabelInNameFixtureView.swift */; };
+		F3A9D9B16389D567AFCE187A /* ConsistentIdentificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A0CE5960A7666E61D524E3 /* ConsistentIdentificationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D1A26C1EF7ABE8A64B46FD16 /* PBXContainerItemProxy */ = {
+		9DCFDEA490ED69D3D037A734 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F77D4E76DF6BD287F02A2F87 /* Project object */;
+			containerPortal = E9F12F32E29668AC4602D451 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BE34953E99C92B73B4B0F905;
+			remoteGlobalIDString = E516ED675B553587AAC0E07F;
 			remoteInfo = AccessibilityFixtures;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		03900A52EFD76D75094D593F /* GenericLabelFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GenericLabelFixtureView.swift; path = AccessibilityFixtures/Checks/GenericLabelFixtureView.swift; sourceTree = "<group>"; };
-		06C60F52AB2907F881D503E7 /* AppleAuditChecksTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleAuditChecksTests.swift; path = AccessibilityFixturesUITests/AppleAuditChecksTests.swift; sourceTree = "<group>"; };
-		06D8C89E0A62FC460856ED03 /* StatusMessagesFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatusMessagesFixtureTests.swift; path = AccessibilityFixturesUITests/StatusMessagesFixtureTests.swift; sourceTree = "<group>"; };
-		115D73B737F17ADE83D461E9 /* FixturesUITestCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixturesUITestCase.swift; path = AccessibilityFixturesUITests/Support/FixturesUITestCase.swift; sourceTree = "<group>"; };
-		1D99AE312B82B710662172B4 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = AccessibilityFixtures/App/AppDelegate.swift; sourceTree = "<group>"; };
-		31E5D5EADDA50F117730319D /* FixtureModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureModels.swift; path = AccessibilityFixtures/Catalog/FixtureModels.swift; sourceTree = "<group>"; };
-		4237DF54306134E769CEC065 /* ScreenTitleTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenTitleTests.swift; path = AccessibilityFixturesUITests/ScreenTitleTests.swift; sourceTree = "<group>"; };
-		4B245BDEE3238D3183F17A83 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		571A763E5DD377D533F8F032 /* DeterministicChecksTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeterministicChecksTests.swift; path = AccessibilityFixturesUITests/DeterministicChecksTests.swift; sourceTree = "<group>"; };
-		59A28D1713BC8F4BE2AE7A37 /* ScreenTitleFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenTitleFixtureView.swift; path = AccessibilityFixtures/Checks/ScreenTitleFixtureView.swift; sourceTree = "<group>"; };
-		68A015C40F2B8DD8BC807DFE /* DeepLinkRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeepLinkRouter.swift; path = AccessibilityFixtures/App/DeepLinkRouter.swift; sourceTree = "<group>"; };
-		6D8D971AA6D8CA75E139D18F /* ConsistentIdentificationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConsistentIdentificationTests.swift; path = AccessibilityFixturesUITests/ConsistentIdentificationTests.swift; sourceTree = "<group>"; };
-		6EC40714C083C70AF2B9721A /* TargetSpacingFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TargetSpacingFixtureView.swift; path = AccessibilityFixtures/Checks/TargetSpacingFixtureView.swift; sourceTree = "<group>"; };
-		6F6BBE9F6B06B285EF952102 /* LabelInNameFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabelInNameFixtureView.swift; path = AccessibilityFixtures/Checks/LabelInNameFixtureView.swift; sourceTree = "<group>"; };
-		6F9EB70C2D5D028B58BEB3BC /* NonTextContrastFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NonTextContrastFixtureTests.swift; path = AccessibilityFixturesUITests/NonTextContrastFixtureTests.swift; sourceTree = "<group>"; };
-		71436C98717030EB3778E787 /* ReportIntegrationSmokeTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReportIntegrationSmokeTest.swift; path = AccessibilityFixturesUITests/ReportIntegrationSmokeTest.swift; sourceTree = "<group>"; };
-		7584AAB23C0D21F0914A432C /* ResizeReflowFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ResizeReflowFixtureTests.swift; path = AccessibilityFixturesUITests/ResizeReflowFixtureTests.swift; sourceTree = "<group>"; };
-		7745AE07CBA8A17FA67E2634 /* InputPurposeFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InputPurposeFixtureView.swift; path = AccessibilityFixtures/Checks/InputPurposeFixtureView.swift; sourceTree = "<group>"; };
-		77BA5B9C1F254E83EFDB3C7B /* AdjustableValueFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdjustableValueFixtureView.swift; path = AccessibilityFixtures/Checks/AdjustableValueFixtureView.swift; sourceTree = "<group>"; };
-		7BF95FF151772EED7295D641 /* ConsistentIdentificationFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConsistentIdentificationFixtureView.swift; path = AccessibilityFixtures/Checks/ConsistentIdentificationFixtureView.swift; sourceTree = "<group>"; };
-		83BF285868F09B18FF79FDFA /* AppleAuditFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleAuditFixtureView.swift; path = AccessibilityFixtures/Checks/AppleAuditFixtureView.swift; sourceTree = "<group>"; };
-		8920C120138E5638A6E5FBFD /* TargetSizeFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TargetSizeFixtureView.swift; path = AccessibilityFixtures/Checks/TargetSizeFixtureView.swift; sourceTree = "<group>"; };
-		897750BF3B176A55DFEFF354 /* LabelHygieneFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabelHygieneFixtureView.swift; path = AccessibilityFixtures/Checks/LabelHygieneFixtureView.swift; sourceTree = "<group>"; };
-		914A3CA5667AF65F199BE737 /* DuplicateLabelsFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DuplicateLabelsFixtureView.swift; path = AccessibilityFixtures/Checks/DuplicateLabelsFixtureView.swift; sourceTree = "<group>"; };
-		9312C78FCF830F04FF1EBC3D /* FixtureScaffold.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureScaffold.swift; path = AccessibilityFixtures/Gallery/FixtureScaffold.swift; sourceTree = "<group>"; };
-		9758CA264093BBD2D39E5381 /* CatalogMapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CatalogMapping.swift; path = AccessibilityFixturesUITests/Support/CatalogMapping.swift; sourceTree = "<group>"; };
-		9897D2F893E5950ED6AB4C64 /* FixtureCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureCatalog.swift; path = AccessibilityFixtures/Catalog/FixtureCatalog.swift; sourceTree = "<group>"; };
-		ADE048FCDD96D85D03289CDC /* FixtureListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureListView.swift; path = AccessibilityFixtures/Gallery/FixtureListView.swift; sourceTree = "<group>"; };
-		D25432D7876A8D6F88D453A3 /* AccessibilityFixtures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AccessibilityFixtures.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE76DAF648C714392077630C /* OrientationFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OrientationFixtureView.swift; path = AccessibilityFixtures/Checks/OrientationFixtureView.swift; sourceTree = "<group>"; };
-		E4ED92D166A33AB0B2E82584 /* AccessibilityFixturesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AccessibilityFixturesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E98A174074E1D5CF108BE1EB /* EmptyValueSlider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmptyValueSlider.swift; path = AccessibilityFixtures/Checks/EmptyValueSlider.swift; sourceTree = "<group>"; };
-		EDF6A900FA2229B92816CAEE /* OrientationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OrientationTests.swift; path = AccessibilityFixturesUITests/OrientationTests.swift; sourceTree = "<group>"; };
-		FA447D5C6B8D8CB009D9D482 /* AccessibilityFixturesApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessibilityFixturesApp.swift; path = AccessibilityFixtures/App/AccessibilityFixturesApp.swift; sourceTree = "<group>"; };
+		0089D003F550E889F07CB784 /* FixtureCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureCatalog.swift; path = AccessibilityFixtures/Catalog/FixtureCatalog.swift; sourceTree = "<group>"; };
+		04A90AC17FF06D5D2E34C241 /* LabelInNameFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabelInNameFixtureView.swift; path = AccessibilityFixtures/Checks/LabelInNameFixtureView.swift; sourceTree = "<group>"; };
+		1DB9860E82EBD74554C8EF54 /* AppleAuditFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleAuditFixtureView.swift; path = AccessibilityFixtures/Checks/AppleAuditFixtureView.swift; sourceTree = "<group>"; };
+		28CE50375B8954BE51E0DACB /* AccessibilityFixtures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AccessibilityFixtures.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D7B1607993E0475EA69777B /* ScreenTitleTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenTitleTests.swift; path = AccessibilityFixturesUITests/ScreenTitleTests.swift; sourceTree = "<group>"; };
+		33937C7FA8DAB64FE5998287 /* AppleAuditChecksTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppleAuditChecksTests.swift; path = AccessibilityFixturesUITests/AppleAuditChecksTests.swift; sourceTree = "<group>"; };
+		3472DD9972E6EA29E5E9DF17 /* FixtureListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureListView.swift; path = AccessibilityFixtures/Gallery/FixtureListView.swift; sourceTree = "<group>"; };
+		3BAE24030C9DE1C63506079A /* FixturesUITestCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixturesUITestCase.swift; path = AccessibilityFixturesUITests/Support/FixturesUITestCase.swift; sourceTree = "<group>"; };
+		3D00F92BF98AAA259282E40B /* AccessibilityFixturesApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessibilityFixturesApp.swift; path = AccessibilityFixtures/App/AccessibilityFixturesApp.swift; sourceTree = "<group>"; };
+		4CA56F6B3F6DD07BF3BAEF34 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = AccessibilityFixtures/App/AppDelegate.swift; sourceTree = "<group>"; };
+		4D7B987B7881B7F22E671E11 /* TargetSpacingFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TargetSpacingFixtureView.swift; path = AccessibilityFixtures/Checks/TargetSpacingFixtureView.swift; sourceTree = "<group>"; };
+		5033B477FB545F764DE7EAF0 /* GenericLabelFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GenericLabelFixtureView.swift; path = AccessibilityFixtures/Checks/GenericLabelFixtureView.swift; sourceTree = "<group>"; };
+		50F9C9BFDFA02B9353CBC0CB /* DuplicateLabelsFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DuplicateLabelsFixtureView.swift; path = AccessibilityFixtures/Checks/DuplicateLabelsFixtureView.swift; sourceTree = "<group>"; };
+		61953EB33D7F6E37013C994D /* DeterministicChecksTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeterministicChecksTests.swift; path = AccessibilityFixturesUITests/DeterministicChecksTests.swift; sourceTree = "<group>"; };
+		623E9DC85B68AF6AAE345215 /* FixtureScaffold.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureScaffold.swift; path = AccessibilityFixtures/Gallery/FixtureScaffold.swift; sourceTree = "<group>"; };
+		64E13D156244FE89C0336DFE /* DeepLinkRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeepLinkRouter.swift; path = AccessibilityFixtures/App/DeepLinkRouter.swift; sourceTree = "<group>"; };
+		6687BAF0C0EE3B03A75EB5A0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		6A02C22EE1FEE0755C975616 /* OrientationFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OrientationFixtureView.swift; path = AccessibilityFixtures/Checks/OrientationFixtureView.swift; sourceTree = "<group>"; };
+		71B1179FAA231431980D33A3 /* AdjustableValueFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdjustableValueFixtureView.swift; path = AccessibilityFixtures/Checks/AdjustableValueFixtureView.swift; sourceTree = "<group>"; };
+		7A6E2C2D04E3CCF5B2AFC58A /* ScreenTitleFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenTitleFixtureView.swift; path = AccessibilityFixtures/Checks/ScreenTitleFixtureView.swift; sourceTree = "<group>"; };
+		8B17373A351400A0A1A2F345 /* EmptyValueSlider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EmptyValueSlider.swift; path = AccessibilityFixtures/Checks/EmptyValueSlider.swift; sourceTree = "<group>"; };
+		9693004A1A348A712ECBB6C7 /* CatalogMapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CatalogMapping.swift; path = AccessibilityFixturesUITests/Support/CatalogMapping.swift; sourceTree = "<group>"; };
+		9C21A914E99D99F1E9B39732 /* TargetSizeFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TargetSizeFixtureView.swift; path = AccessibilityFixtures/Checks/TargetSizeFixtureView.swift; sourceTree = "<group>"; };
+		A07684670BA739E31B1BFE06 /* StatusMessagesFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatusMessagesFixtureTests.swift; path = AccessibilityFixturesUITests/StatusMessagesFixtureTests.swift; sourceTree = "<group>"; };
+		A24F36B391C335925C1C68B0 /* ReportIntegrationSmokeTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReportIntegrationSmokeTest.swift; path = AccessibilityFixturesUITests/ReportIntegrationSmokeTest.swift; sourceTree = "<group>"; };
+		A9D8D36BCFAA0BD0F7798FE6 /* OrientationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OrientationTests.swift; path = AccessibilityFixturesUITests/OrientationTests.swift; sourceTree = "<group>"; };
+		AA4FEE7B56635399B7C0B034 /* InputPurposeFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InputPurposeFixtureView.swift; path = AccessibilityFixtures/Checks/InputPurposeFixtureView.swift; sourceTree = "<group>"; };
+		AB6171D1F40258F0982A013F /* ConsistentIdentificationFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConsistentIdentificationFixtureView.swift; path = AccessibilityFixtures/Checks/ConsistentIdentificationFixtureView.swift; sourceTree = "<group>"; };
+		B280221D7A66799FBBE36E06 /* NonTextContrastFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NonTextContrastFixtureTests.swift; path = AccessibilityFixturesUITests/NonTextContrastFixtureTests.swift; sourceTree = "<group>"; };
+		CC3043C61D17AE104C734DF6 /* FixtureModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FixtureModels.swift; path = AccessibilityFixtures/Catalog/FixtureModels.swift; sourceTree = "<group>"; };
+		D4A15BEBFA3A676479271BE1 /* LabelHygieneFixtureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LabelHygieneFixtureView.swift; path = AccessibilityFixtures/Checks/LabelHygieneFixtureView.swift; sourceTree = "<group>"; };
+		E0A0CE5960A7666E61D524E3 /* ConsistentIdentificationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConsistentIdentificationTests.swift; path = AccessibilityFixturesUITests/ConsistentIdentificationTests.swift; sourceTree = "<group>"; };
+		E70CC6B95B74A8F2C0BACCA6 /* AccessibilityFixturesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AccessibilityFixturesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE5155F32A79F384767469FD /* ResizeReflowFixtureTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ResizeReflowFixtureTests.swift; path = AccessibilityFixturesUITests/ResizeReflowFixtureTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		66BB10F21F63F01BE1C15540 /* Frameworks */ = {
+		681EBE2F19901A82FAF38708 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8122053290F1979E05EC1CDD /* Foundation.framework in Frameworks */,
-				FB3B091B2FDF4B430026189F /* AccessibilityAuditLiveSupport in Frameworks */,
+				6AF54F0C970375140C4E31C6 /* Foundation.framework in Frameworks */,
+				7D9C62F5C7808DE6E31B78F5 /* AccessibilityAuditReport in Frameworks */,
+				88F7652EEE32483133319873 /* AccessibilityAuditXCTestSupport in Frameworks */,
+				1765F68784AE06207BD3CCCD /* AccessibilityAuditLiveSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DF5895682F3FEAF8B3CA5A71 /* Frameworks */ = {
+		B4D3721B1C2CB25F93C5A3E5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B69B362F205A6ED58127A693 /* Foundation.framework in Frameworks */,
-				2506DBFA5F1DB552403A2530 /* AccessibilityAuditReport in Frameworks */,
-				EC7456EFD984DBF15934BE4F /* AccessibilityAuditXCTestSupport in Frameworks */,
+				21E1D7B253F3692822B5BFA5 /* Foundation.framework in Frameworks */,
+				31026EF732616EAA15AAE086 /* AccessibilityAuditLiveSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		05AE6754898DE3252715776F /* Frameworks */ = {
+		22E1860B70608F714ACD60B2 = {
 			isa = PBXGroup;
 			children = (
-				3EABAE4D8103A7DE836AC96A /* iOS */,
+				F8A964946D667CE1E03AB4F7 /* Products */,
+				548FBE816CE25B740F0CD2C2 /* Frameworks */,
+				3D00F92BF98AAA259282E40B /* AccessibilityFixturesApp.swift */,
+				4CA56F6B3F6DD07BF3BAEF34 /* AppDelegate.swift */,
+				64E13D156244FE89C0336DFE /* DeepLinkRouter.swift */,
+				0089D003F550E889F07CB784 /* FixtureCatalog.swift */,
+				CC3043C61D17AE104C734DF6 /* FixtureModels.swift */,
+				71B1179FAA231431980D33A3 /* AdjustableValueFixtureView.swift */,
+				1DB9860E82EBD74554C8EF54 /* AppleAuditFixtureView.swift */,
+				AB6171D1F40258F0982A013F /* ConsistentIdentificationFixtureView.swift */,
+				50F9C9BFDFA02B9353CBC0CB /* DuplicateLabelsFixtureView.swift */,
+				8B17373A351400A0A1A2F345 /* EmptyValueSlider.swift */,
+				5033B477FB545F764DE7EAF0 /* GenericLabelFixtureView.swift */,
+				AA4FEE7B56635399B7C0B034 /* InputPurposeFixtureView.swift */,
+				D4A15BEBFA3A676479271BE1 /* LabelHygieneFixtureView.swift */,
+				04A90AC17FF06D5D2E34C241 /* LabelInNameFixtureView.swift */,
+				6A02C22EE1FEE0755C975616 /* OrientationFixtureView.swift */,
+				7A6E2C2D04E3CCF5B2AFC58A /* ScreenTitleFixtureView.swift */,
+				9C21A914E99D99F1E9B39732 /* TargetSizeFixtureView.swift */,
+				4D7B987B7881B7F22E671E11 /* TargetSpacingFixtureView.swift */,
+				3472DD9972E6EA29E5E9DF17 /* FixtureListView.swift */,
+				623E9DC85B68AF6AAE345215 /* FixtureScaffold.swift */,
+				33937C7FA8DAB64FE5998287 /* AppleAuditChecksTests.swift */,
+				E0A0CE5960A7666E61D524E3 /* ConsistentIdentificationTests.swift */,
+				61953EB33D7F6E37013C994D /* DeterministicChecksTests.swift */,
+				B280221D7A66799FBBE36E06 /* NonTextContrastFixtureTests.swift */,
+				A9D8D36BCFAA0BD0F7798FE6 /* OrientationTests.swift */,
+				A24F36B391C335925C1C68B0 /* ReportIntegrationSmokeTest.swift */,
+				FE5155F32A79F384767469FD /* ResizeReflowFixtureTests.swift */,
+				2D7B1607993E0475EA69777B /* ScreenTitleTests.swift */,
+				A07684670BA739E31B1BFE06 /* StatusMessagesFixtureTests.swift */,
+				9693004A1A348A712ECBB6C7 /* CatalogMapping.swift */,
+				3BAE24030C9DE1C63506079A /* FixturesUITestCase.swift */,
+			);
+			sourceTree = "<group>";
+		};
+		548FBE816CE25B740F0CD2C2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B9FEB7873D5DCA85D52B2CBB /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3EABAE4D8103A7DE836AC96A /* iOS */ = {
+		B9FEB7873D5DCA85D52B2CBB /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				4B245BDEE3238D3183F17A83 /* Foundation.framework */,
+				6687BAF0C0EE3B03A75EB5A0 /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		8352BB1F21A67A4395693870 = {
+		F8A964946D667CE1E03AB4F7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9D91832FE4F3962AEAB38A52 /* Products */,
-				05AE6754898DE3252715776F /* Frameworks */,
-				FA447D5C6B8D8CB009D9D482 /* AccessibilityFixturesApp.swift */,
-				1D99AE312B82B710662172B4 /* AppDelegate.swift */,
-				68A015C40F2B8DD8BC807DFE /* DeepLinkRouter.swift */,
-				9897D2F893E5950ED6AB4C64 /* FixtureCatalog.swift */,
-				31E5D5EADDA50F117730319D /* FixtureModels.swift */,
-				77BA5B9C1F254E83EFDB3C7B /* AdjustableValueFixtureView.swift */,
-				83BF285868F09B18FF79FDFA /* AppleAuditFixtureView.swift */,
-				7BF95FF151772EED7295D641 /* ConsistentIdentificationFixtureView.swift */,
-				914A3CA5667AF65F199BE737 /* DuplicateLabelsFixtureView.swift */,
-				E98A174074E1D5CF108BE1EB /* EmptyValueSlider.swift */,
-				03900A52EFD76D75094D593F /* GenericLabelFixtureView.swift */,
-				7745AE07CBA8A17FA67E2634 /* InputPurposeFixtureView.swift */,
-				897750BF3B176A55DFEFF354 /* LabelHygieneFixtureView.swift */,
-				6F6BBE9F6B06B285EF952102 /* LabelInNameFixtureView.swift */,
-				DE76DAF648C714392077630C /* OrientationFixtureView.swift */,
-				59A28D1713BC8F4BE2AE7A37 /* ScreenTitleFixtureView.swift */,
-				8920C120138E5638A6E5FBFD /* TargetSizeFixtureView.swift */,
-				6EC40714C083C70AF2B9721A /* TargetSpacingFixtureView.swift */,
-				ADE048FCDD96D85D03289CDC /* FixtureListView.swift */,
-				9312C78FCF830F04FF1EBC3D /* FixtureScaffold.swift */,
-				06C60F52AB2907F881D503E7 /* AppleAuditChecksTests.swift */,
-				6D8D971AA6D8CA75E139D18F /* ConsistentIdentificationTests.swift */,
-				571A763E5DD377D533F8F032 /* DeterministicChecksTests.swift */,
-				6F9EB70C2D5D028B58BEB3BC /* NonTextContrastFixtureTests.swift */,
-				EDF6A900FA2229B92816CAEE /* OrientationTests.swift */,
-				71436C98717030EB3778E787 /* ReportIntegrationSmokeTest.swift */,
-				7584AAB23C0D21F0914A432C /* ResizeReflowFixtureTests.swift */,
-				4237DF54306134E769CEC065 /* ScreenTitleTests.swift */,
-				06D8C89E0A62FC460856ED03 /* StatusMessagesFixtureTests.swift */,
-				9758CA264093BBD2D39E5381 /* CatalogMapping.swift */,
-				115D73B737F17ADE83D461E9 /* FixturesUITestCase.swift */,
-			);
-			sourceTree = "<group>";
-		};
-		9D91832FE4F3962AEAB38A52 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D25432D7876A8D6F88D453A3 /* AccessibilityFixtures.app */,
-				E4ED92D166A33AB0B2E82584 /* AccessibilityFixturesUITests.xctest */,
+				28CE50375B8954BE51E0DACB /* AccessibilityFixtures.app */,
+				E70CC6B95B74A8F2C0BACCA6 /* AccessibilityFixturesUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -184,55 +186,59 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5AC0254251F52C4E3073AE18 /* AccessibilityFixturesUITests */ = {
+		8BE252DFEAC3E826DFFF4A21 /* AccessibilityFixturesUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9B7F064D90AE375A9D6C5C93 /* Build configuration list for PBXNativeTarget "AccessibilityFixturesUITests" */;
+			buildConfigurationList = 0E7AA2F5F2CE519A38E6DD63 /* Build configuration list for PBXNativeTarget "AccessibilityFixturesUITests" */;
 			buildPhases = (
-				BEDD4E5D9C6471ACF5A00911 /* Sources */,
-				DF5895682F3FEAF8B3CA5A71 /* Frameworks */,
-				19F571B2A5F7B4CB9B3E61D7 /* Resources */,
+				36BC993441099F7CA5BEBE1E /* Sources */,
+				681EBE2F19901A82FAF38708 /* Frameworks */,
+				87A87DC2196615A149404863 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CAD2FF285681FE99CEAD953F /* PBXTargetDependency */,
+				0C132F32367A4488C04C048F /* PBXTargetDependency */,
 			);
 			name = AccessibilityFixturesUITests;
 			packageProductDependencies = (
-				085355F9C504D638FE3C8013 /* AccessibilityAuditReport */,
-				2CB4359502F8B6ABB9B9E42A /* AccessibilityAuditXCTestSupport */,
+				3930EAADA8FAD61F57D54772 /* AccessibilityAuditReport */,
+				65318D78DD5E862B7C338D6D /* AccessibilityAuditXCTestSupport */,
+				E91041C54E7487D43C9EAF20 /* AccessibilityAuditLiveSupport */,
 			);
 			productName = AccessibilityFixturesUITests;
-			productReference = E4ED92D166A33AB0B2E82584 /* AccessibilityFixturesUITests.xctest */;
+			productReference = E70CC6B95B74A8F2C0BACCA6 /* AccessibilityFixturesUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		BE34953E99C92B73B4B0F905 /* AccessibilityFixtures */ = {
+		E516ED675B553587AAC0E07F /* AccessibilityFixtures */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5C48BA137144506A7A9E68C1 /* Build configuration list for PBXNativeTarget "AccessibilityFixtures" */;
+			buildConfigurationList = FF086DFCE15FE84272899A55 /* Build configuration list for PBXNativeTarget "AccessibilityFixtures" */;
 			buildPhases = (
-				3331EC11A35FACB246996D3D /* Sources */,
-				66BB10F21F63F01BE1C15540 /* Frameworks */,
-				F1B4861E215E86C57BEB0725 /* Resources */,
+				8D4FD091232FB9E230ACC291 /* Sources */,
+				B4D3721B1C2CB25F93C5A3E5 /* Frameworks */,
+				C2E4FDE2C0FD88FAC5149930 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = AccessibilityFixtures;
+			packageProductDependencies = (
+				36574DD8ECB217B212154F3C /* AccessibilityAuditLiveSupport */,
+			);
 			productName = AccessibilityFixtures;
-			productReference = D25432D7876A8D6F88D453A3 /* AccessibilityFixtures.app */;
+			productReference = 28CE50375B8954BE51E0DACB /* AccessibilityFixtures.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F77D4E76DF6BD287F02A2F87 /* Project object */ = {
+		E9F12F32E29668AC4602D451 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = 4EABC5C0BCFF4D9FC122C57D /* Build configuration list for PBXProject "AccessibilityFixtures" */;
+			buildConfigurationList = E404E547A2BE236F19B7C354 /* Build configuration list for PBXProject "AccessibilityFixtures" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -240,29 +246,31 @@
 				en,
 				Base,
 			);
-			mainGroup = 8352BB1F21A67A4395693870;
+			mainGroup = 22E1860B70608F714ACD60B2;
+			minimizedProjectReferenceProxies = 0;
 			packageReferences = (
-				04C80FC088C7E0EA0E6A359E /* XCLocalSwiftPackageReference "../AccessibilityAuditReport" */,
+				A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */,
 			);
-			productRefGroup = 9D91832FE4F3962AEAB38A52 /* Products */;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F8A964946D667CE1E03AB4F7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BE34953E99C92B73B4B0F905 /* AccessibilityFixtures */,
-				5AC0254251F52C4E3073AE18 /* AccessibilityFixturesUITests */,
+				E516ED675B553587AAC0E07F /* AccessibilityFixtures */,
+				8BE252DFEAC3E826DFFF4A21 /* AccessibilityFixturesUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		19F571B2A5F7B4CB9B3E61D7 /* Resources */ = {
+		87A87DC2196615A149404863 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F1B4861E215E86C57BEB0725 /* Resources */ = {
+		C2E4FDE2C0FD88FAC5149930 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -272,66 +280,66 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3331EC11A35FACB246996D3D /* Sources */ = {
+		36BC993441099F7CA5BEBE1E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90891D468EB7178CA239C3D8 /* AccessibilityFixturesApp.swift in Sources */,
-				A1174414519DF0FF9B9985B2 /* AppDelegate.swift in Sources */,
-				55E4D1F67B340D455F7B5F77 /* DeepLinkRouter.swift in Sources */,
-				CC0F226C47710A03E22F8E01 /* FixtureCatalog.swift in Sources */,
-				AC8D523F3CC3E1D8B6EA4599 /* FixtureModels.swift in Sources */,
-				FD2BE7042F9E856E30D24B37 /* AdjustableValueFixtureView.swift in Sources */,
-				66573F3EF5D5D625C22EDAFB /* AppleAuditFixtureView.swift in Sources */,
-				9D74B648CF23E9D3AF5E8728 /* ConsistentIdentificationFixtureView.swift in Sources */,
-				F7C99AF3F6F03DC241309134 /* DuplicateLabelsFixtureView.swift in Sources */,
-				2ACA6103BF68F3F92CD95E37 /* EmptyValueSlider.swift in Sources */,
-				2E89C1D114886D428F34251B /* GenericLabelFixtureView.swift in Sources */,
-				A5C5C03E0C01327F1D04CC16 /* InputPurposeFixtureView.swift in Sources */,
-				C83D15FE656F9534E95C66D6 /* LabelHygieneFixtureView.swift in Sources */,
-				C259F44594A9EB71724F9451 /* LabelInNameFixtureView.swift in Sources */,
-				AC8EC47D20501091F57651A5 /* OrientationFixtureView.swift in Sources */,
-				D3E3F19CC06CE21128AC7119 /* ScreenTitleFixtureView.swift in Sources */,
-				F567CFBC321B18DA41D066A5 /* TargetSizeFixtureView.swift in Sources */,
-				FECA7C396951539D0BABDBA2 /* TargetSpacingFixtureView.swift in Sources */,
-				3DF96C84920D1A9BEDEA8ECE /* FixtureListView.swift in Sources */,
-				FBDAB2048B1690FB53EC570F /* FixtureScaffold.swift in Sources */,
+				7797F0B12CFA0C422E69AEA2 /* FixtureCatalog.swift in Sources */,
+				16B873136BF3A3071FD7C122 /* FixtureModels.swift in Sources */,
+				A2067F4D6495733A217DA38A /* AppleAuditChecksTests.swift in Sources */,
+				F3A9D9B16389D567AFCE187A /* ConsistentIdentificationTests.swift in Sources */,
+				B3BB7A2886662DF3F2A2AC25 /* DeterministicChecksTests.swift in Sources */,
+				B6051DA6E15FD8D4631FC8A4 /* NonTextContrastFixtureTests.swift in Sources */,
+				6825E9C0ED71262114D5D190 /* OrientationTests.swift in Sources */,
+				BC4BDE751FD80243FFBFACC3 /* ReportIntegrationSmokeTest.swift in Sources */,
+				10E084E6E5CF31E102C94ED0 /* ResizeReflowFixtureTests.swift in Sources */,
+				CFE81F8240E5249BC81F8B1B /* ScreenTitleTests.swift in Sources */,
+				C1879AE8DA39604414CE6104 /* StatusMessagesFixtureTests.swift in Sources */,
+				1B7096F3244475ACF95AA31E /* CatalogMapping.swift in Sources */,
+				89520D18A5C3539281307144 /* FixturesUITestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BEDD4E5D9C6471ACF5A00911 /* Sources */ = {
+		8D4FD091232FB9E230ACC291 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				88AE1F58720D07612BD102B0 /* FixtureCatalog.swift in Sources */,
-				C5C8295677CD22ED8CF4317B /* FixtureModels.swift in Sources */,
-				E23776C724F3C5A4E1DFA4FA /* AppleAuditChecksTests.swift in Sources */,
-				8FE5C000F84D34A10BE0F5D1 /* ConsistentIdentificationTests.swift in Sources */,
-				39B183FC6E9A2EB1B084EE18 /* DeterministicChecksTests.swift in Sources */,
-				01A7CB08BA265159550D5EFC /* NonTextContrastFixtureTests.swift in Sources */,
-				2A04D1AF6CDEB6F03B78D580 /* OrientationTests.swift in Sources */,
-				5D132F2021C4C0AE589D9BBF /* ReportIntegrationSmokeTest.swift in Sources */,
-				117933463FF47EF5F3968189 /* ResizeReflowFixtureTests.swift in Sources */,
-				AFEA8CE280E10211C7C66412 /* ScreenTitleTests.swift in Sources */,
-				61DC898CB4E801384B64D390 /* StatusMessagesFixtureTests.swift in Sources */,
-				EB89E434B486E5A27E0CEE02 /* CatalogMapping.swift in Sources */,
-				4595BF412C3314340EA680E5 /* FixturesUITestCase.swift in Sources */,
+				C51EBDEF65ABC945D6EF90AB /* AccessibilityFixturesApp.swift in Sources */,
+				A182C627E8640BDE182AA0EF /* AppDelegate.swift in Sources */,
+				35F8B226C48BB5C7B0623B80 /* DeepLinkRouter.swift in Sources */,
+				54225CEB072B76497458AEAD /* FixtureCatalog.swift in Sources */,
+				79E00215700D7732FC010B42 /* FixtureModels.swift in Sources */,
+				E0F9139D43EE1DCABF816E50 /* AdjustableValueFixtureView.swift in Sources */,
+				08BDE5601CF64061C63DEB73 /* AppleAuditFixtureView.swift in Sources */,
+				E854B4ED435D620EEF4E7C6B /* ConsistentIdentificationFixtureView.swift in Sources */,
+				EF0E1EE2A82F50E59690FBFC /* DuplicateLabelsFixtureView.swift in Sources */,
+				76E54E7AAC5E1F4DFCB8F2FF /* EmptyValueSlider.swift in Sources */,
+				79DD8E89A5CBA79F9EBE9B9D /* GenericLabelFixtureView.swift in Sources */,
+				8F33DEBEBA5E0BFC719A75EF /* InputPurposeFixtureView.swift in Sources */,
+				85B0D531C419F1BDE963562E /* LabelHygieneFixtureView.swift in Sources */,
+				F1F5C07358C6478E4205DD59 /* LabelInNameFixtureView.swift in Sources */,
+				11BE0CCF03ECE73C6528D1ED /* OrientationFixtureView.swift in Sources */,
+				4E08B54F4DCB24650722954D /* ScreenTitleFixtureView.swift in Sources */,
+				B426ACDFA4AECDBB187A1795 /* TargetSizeFixtureView.swift in Sources */,
+				62FD3CF54D3DA02CAFD0A26F /* TargetSpacingFixtureView.swift in Sources */,
+				50244F9C7CF40F6EFA3FB306 /* FixtureListView.swift in Sources */,
+				DDD923E46BEE2E9B0FA9CD8D /* FixtureScaffold.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		CAD2FF285681FE99CEAD953F /* PBXTargetDependency */ = {
+		0C132F32367A4488C04C048F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AccessibilityFixtures;
-			target = BE34953E99C92B73B4B0F905 /* AccessibilityFixtures */;
-			targetProxy = D1A26C1EF7ABE8A64B46FD16 /* PBXContainerItemProxy */;
+			target = E516ED675B553587AAC0E07F /* AccessibilityFixtures */;
+			targetProxy = 9DCFDEA490ED69D3D037A734 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0D1BFB7AE99C58782AD00188 /* Release */ = {
+		33F07C2B82E645E9913B8E73 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -342,10 +350,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.synchonross.capsylspike.AccessibilityFixtures;
 				SDKROOT = iphoneos;
@@ -355,99 +360,7 @@
 			};
 			name = Release;
 		};
-		30D40D8009382E9AE1E5001F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				DEVELOPMENT_TEAM = 3TY8Z73V2D;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.synchonross.capsylspike.AccessibilityFixturesUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = AccessibilityFixtures;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		3FEB5403FBB05737D9052EAF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		8705D5BE699D2E2A36F3721F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3TY8Z73V2D;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.synchonross.capsylspike.AccessibilityFixtures;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		AD8F879AAEA435A9AC144BE4 /* Debug */ = {
+		3635FF5995A2EFC2CCC500B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -508,7 +421,7 @@
 			};
 			name = Debug;
 		};
-		DEB4EFAC63250BCE505F622D /* Debug */ = {
+		5AB1E96467111C5B3034D59F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -522,32 +435,121 @@
 			};
 			name = Debug;
 		};
+		769684F3517C689919B11C06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3TY8Z73V2D;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.synchonross.capsylspike.AccessibilityFixtures;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		87FC55AD601E422833A1648E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D4F898613EAA87B2023F1EE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				DEVELOPMENT_TEAM = 3TY8Z73V2D;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.synchonross.capsylspike.AccessibilityFixturesUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = AccessibilityFixtures;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4EABC5C0BCFF4D9FC122C57D /* Build configuration list for PBXProject "AccessibilityFixtures" */ = {
+		0E7AA2F5F2CE519A38E6DD63 /* Build configuration list for PBXNativeTarget "AccessibilityFixturesUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AD8F879AAEA435A9AC144BE4 /* Debug */,
-				3FEB5403FBB05737D9052EAF /* Release */,
+				D4F898613EAA87B2023F1EE0 /* Release */,
+				5AB1E96467111C5B3034D59F /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5C48BA137144506A7A9E68C1 /* Build configuration list for PBXNativeTarget "AccessibilityFixtures" */ = {
+		E404E547A2BE236F19B7C354 /* Build configuration list for PBXProject "AccessibilityFixtures" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0D1BFB7AE99C58782AD00188 /* Release */,
-				8705D5BE699D2E2A36F3721F /* Debug */,
+				3635FF5995A2EFC2CCC500B4 /* Debug */,
+				87FC55AD601E422833A1648E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9B7F064D90AE375A9D6C5C93 /* Build configuration list for PBXNativeTarget "AccessibilityFixturesUITests" */ = {
+		FF086DFCE15FE84272899A55 /* Build configuration list for PBXNativeTarget "AccessibilityFixtures" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				30D40D8009382E9AE1E5001F /* Release */,
-				DEB4EFAC63250BCE505F622D /* Debug */,
+				33F07C2B82E645E9913B8E73 /* Release */,
+				769684F3517C689919B11C06 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -555,29 +557,34 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		04C80FC088C7E0EA0E6A359E /* XCLocalSwiftPackageReference "../AccessibilityAuditReport" */ = {
+		A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../AccessibilityAuditReport;
+			relativePath = ../..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		085355F9C504D638FE3C8013 /* AccessibilityAuditReport */ = {
+		36574DD8ECB217B212154F3C /* AccessibilityAuditLiveSupport */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 04C80FC088C7E0EA0E6A359E /* XCLocalSwiftPackageReference "../AccessibilityAuditReport" */;
+			package = A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */;
+			productName = AccessibilityAuditLiveSupport;
+		};
+		3930EAADA8FAD61F57D54772 /* AccessibilityAuditReport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */;
 			productName = AccessibilityAuditReport;
 		};
-		2CB4359502F8B6ABB9B9E42A /* AccessibilityAuditXCTestSupport */ = {
+		65318D78DD5E862B7C338D6D /* AccessibilityAuditXCTestSupport */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 04C80FC088C7E0EA0E6A359E /* XCLocalSwiftPackageReference "../AccessibilityAuditReport" */;
+			package = A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */;
 			productName = AccessibilityAuditXCTestSupport;
 		};
-		FB3B091A2FDF4B430026189F /* AccessibilityAuditLiveSupport */ = {
+		E91041C54E7487D43C9EAF20 /* AccessibilityAuditLiveSupport */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 04C80FC088C7E0EA0E6A359E /* XCLocalSwiftPackageReference "../AccessibilityAuditReport" */;
+			package = A326CEF42728C04728B49C82 /* XCLocalSwiftPackageReference ".." */;
 			productName = AccessibilityAuditLiveSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = F77D4E76DF6BD287F02A2F87 /* Project object */;
+	rootObject = E9F12F32E29668AC4602D451 /* Project object */;
 }

@@ -5,22 +5,25 @@ passing and a failing example. Deterministic checks are asserted by the UITest
 target; scripted checks use bespoke UI tests; manual-review checks are
 gallery-only with a documented expected outcome.
 
-The app is a sibling of `CapsylDemo` and references the local package at
-`../AccessibilityAuditReport`. The app target is package-free; only the UITest
-target links the audit package.
+The app is a runnable reference example and known-answer regression suite for
+`AccessibilityAuditReport`. It lives under `Examples/AccessibilityFixtures` and
+references the repository-root Swift package at `../..`. The app target links
+`AccessibilityAuditLiveSupport` for the in-process LLDB audit hook; the UITest
+target links the report and XCTest package products used by assertions.
 
 ## Run
 
 Gallery (browse by hand):
 
-    Open Capsyl.xcworkspace, select the AccessibilityFixtures scheme, Run.
+    Open AccessibilityAuditKit.xcworkspace, select the AccessibilityFixtures scheme, Run.
 
 Each fixture screen is also deep-linkable directly via the `-fixtureScreen <id>`
 launch argument (this is how the UI tests boot straight into one screen).
 
 Tests:
 
-    xcodebuild test -scheme AccessibilityFixtures \
+    xcodebuild test -workspace ../../AccessibilityAuditKit.xcworkspace \
+      -scheme AccessibilityFixtures \
       -destination 'platform=iOS Simulator,id=<an iPhone 16 simulator udid>'
 
 > Note: a bare `-destination 'platform=iOS Simulator,name=iPhone 16'` is
